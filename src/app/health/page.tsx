@@ -16,13 +16,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useWeeklySleepStats,
   useSleepLogs,
   useCreateSleepLog,
@@ -116,18 +109,20 @@ export default function HealthPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="quality">Качество сна</Label>
-                  <Select name="quality" defaultValue="3">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите качество" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 - Очень плохо 😴</SelectItem>
-                      <SelectItem value="2">2 - Плохо 😕</SelectItem>
-                      <SelectItem value="3">3 - Нормально 😐</SelectItem>
-                      <SelectItem value="4">4 - Хорошо 😊</SelectItem>
-                      <SelectItem value="5">5 - Отлично 😁</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="quality"
+                    defaultValue="3"
+                    
+                    
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите качество</option>
+                      <option value="1">1 - Очень плохо 😴</option>
+                      <option value="2">2 - Плохо 😕</option>
+                      <option value="3">3 - Нормально 😐</option>
+                      <option value="4">4 - Хорошо 😊</option>
+                      <option value="5">5 - Отлично 😁</option>
+                  </select>
                 </div>
               </div>
               <DialogFooter>

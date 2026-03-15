@@ -15,13 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useDailyNutrition,
@@ -133,38 +126,30 @@ export default function NutritionPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="meal_type">Приём пищи</Label>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  <Select value={selectedMeal} onValueChange={(v) => setSelectedMeal(v as any)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите приём пищи" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="breakfast">Завтрак</SelectItem>
-                      <SelectItem value="lunch">Обед</SelectItem>
-                      <SelectItem value="dinner">Ужин</SelectItem>
-                      <SelectItem value="snack">Перекус</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    value={selectedMeal}
+                    onChange={(e) => setSelectedMeal(e.target.value as any)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите приём пищи</option>
+                    <option value="breakfast">Завтрак</option>
+                    <option value="lunch">Обед</option>
+                    <option value="dinner">Ужин</option>
+                    <option value="snack">Перекус</option>
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="food_id">Продукт</Label>
-                  <Select name="food_id">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите продукт" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {foods.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">Нет продуктов</div>
-                      ) : (
-                        foods.map((food) => (
-                          <SelectItem key={food.id} value={food.id}>
-                            {food.name} ({food.calories} ккал / {food.serving_size}
-                            {food.serving_unit})
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="food_id"
+
+
+
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите продукт</option>
+
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="quantity">

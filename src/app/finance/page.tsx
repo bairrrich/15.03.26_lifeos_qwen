@@ -23,13 +23,6 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useTransactions,
   useCategories,
   useAccounts,
@@ -114,21 +107,18 @@ export default function FinancePage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="type">Тип</Label>
-                  <Select
+                  <select
                     name="type"
                     value={selectedType}
-                    onValueChange={(value) => {
-                      if (value) setSelectedType(value as 'income' | 'expense');
+                    onChange={(e) => {
+                      if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense');
                     }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите тип" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="expense">Расход</SelectItem>
-                      <SelectItem value="income">Доход</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">Выберите тип</option>
+                    <option value="expense">Расход</option>
+                    <option value="income">Доход</option>
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="amount">Сумма</Label>
@@ -136,33 +126,31 @@ export default function FinancePage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="account_id">Счёт</Label>
-                  <Select name="account_id">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите счёт" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name} ({account.balance} {account.currency})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="account_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите счёт</option>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name} ({account.balance} {account.currency})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="category_id">Категория</Label>
-                  <Select name="category_id">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите категорию" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="category_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="description">Описание</Label>

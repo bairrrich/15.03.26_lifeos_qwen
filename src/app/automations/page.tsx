@@ -16,13 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useActiveAutomations, useCreateAutomation, useToggleAutomation, useRecentAutomationLogs } from '@/modules/automations/hooks'
 import { Plus, Zap, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react'
 import { toast } from 'sonner'
@@ -135,29 +128,29 @@ export default function AutomationsPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label>Триггер</Label>
-                  <Select name="trigger_type" defaultValue="time_of_day">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите триггер" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(triggerLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="trigger_type"
+                    defaultValue="time_of_day"
+
+
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите триггер</option>
+
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Действие</Label>
-                  <Select name="action_type" defaultValue="send_notification">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите действие" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(actionLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="action_type"
+                    defaultValue="send_notification"
+
+
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите действие</option>
+
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Сообщение</Label>

@@ -15,13 +15,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useWorkouts,
   useWorkoutLogs,
   useWeeklyWorkoutStats,
@@ -115,22 +108,18 @@ export default function WorkoutsPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="workout_id">Тренировка</Label>
-                  <Select name="workout_id" onValueChange={setSelectedWorkout}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите тренировку" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {workouts.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">Нет тренировок</div>
-                      ) : (
-                        workouts.map((workout) => (
-                          <SelectItem key={workout.id} value={workout.id}>
-                            {workout.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="workout_id"
+                    onChange={(e) => setSelectedWorkout(e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите тренировку</option>
+                    {workouts.map((workout) => (
+                      <option key={workout.id} value={workout.id}>
+                        {workout.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="duration">Длительность (минут)</Label>

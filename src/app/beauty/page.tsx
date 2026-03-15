@@ -22,13 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useBeautyProducts,
@@ -126,18 +119,15 @@ export default function BeautyPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label>Категория</Label>
-                  <Select name="category" defaultValue="skincare">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(categoryLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="category"
+                    defaultValue="skincare"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    {Object.entries(categoryLabels).map(([key, label]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Тип</Label>
@@ -318,11 +308,10 @@ export default function BeautyPage() {
                         {[1, 2, 3, 4, 5].map((level) => (
                           <div
                             key={level}
-                            className={`h-2 w-4 rounded ${
-                              level <= (latestAnalysis.hydration_level || 0)
+                            className={`h-2 w-4 rounded ${level <= (latestAnalysis.hydration_level || 0)
                                 ? 'bg-blue-500'
                                 : 'bg-muted'
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
@@ -333,11 +322,10 @@ export default function BeautyPage() {
                         {[1, 2, 3, 4, 5].map((level) => (
                           <div
                             key={level}
-                            className={`h-2 w-4 rounded ${
-                              level <= (latestAnalysis.sensitivity_level || 0)
+                            className={`h-2 w-4 rounded ${level <= (latestAnalysis.sensitivity_level || 0)
                                 ? 'bg-red-500'
                                 : 'bg-muted'
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>

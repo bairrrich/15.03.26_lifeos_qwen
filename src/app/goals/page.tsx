@@ -17,13 +17,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useGoals,
   useActiveGoals,
   useCreateGoal,
@@ -132,18 +125,16 @@ export default function GoalsPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="category">Категория</Label>
-                  <Select name="category" defaultValue="other">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите категорию" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(categoryLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="category"
+                    defaultValue="other"
+                    
+                    
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите категорию</option>
+
+                  </select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="target_date">Целевая дата (опционально)</Label>

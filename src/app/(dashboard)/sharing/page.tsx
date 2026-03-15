@@ -16,13 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useFamily, useFamilyMembers, useCreateFamily, useCreateInvitation, useRemoveMember } from '@/modules/sharing/hooks'
 import { Plus, Users, Mail, Shield, UserX, Copy, Check } from 'lucide-react'
@@ -216,16 +209,15 @@ export default function SharingPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label>Роль</Label>
-                  <Select name="role" defaultValue="member">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(roleLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="role"
+                    defaultValue="member"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    {Object.entries(roleLabels).map(([key, label]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <DialogFooter>

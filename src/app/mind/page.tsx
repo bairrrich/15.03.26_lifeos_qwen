@@ -15,13 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useBooks,
@@ -205,16 +198,16 @@ export default function MindPage() {
                     </div>
                     <div className="grid gap-2">
                       <Label>Статус</Label>
-                      <Select name="status" defaultValue="want_to_read">
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="want_to_read">Хочу прочитать</SelectItem>
-                          <SelectItem value="reading">Читаю</SelectItem>
-                          <SelectItem value="completed">Прочитано</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <select
+                        name="status"
+                        defaultValue="want_to_read"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="">Выберите статус</option>
+                        <option value="want_to_read">Хочу прочитать</option>
+                        <option value="reading">Читаю</option>
+                        <option value="completed">Прочитано</option>
+                      </select>
                     </div>
                     <div className="grid gap-2">
                       <Label>Всего страниц</Label>
@@ -368,7 +361,7 @@ export default function MindPage() {
                     </div>
                     <div className="grid gap-2">
                       <Label>Содержание</Label>
-                      {}
+                      { }
                       <textarea
                         name="content"
                         className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
