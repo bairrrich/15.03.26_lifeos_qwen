@@ -347,4 +347,9 @@ db.version(1).stores({
   family_members: 'id, user_id, family_id, email, role, sync_status',
   family_invitations: 'id, user_id, family_id, email, token, status, sync_status',
   shared_data: 'id, user_id, family_id, owner_id, data_type, data_id, sync_status',
+
+  // Widgets
+  widget_definitions: 'id, name, type, category, is_system, sync_status',
+  widget_instances: 'id, user_id, widget_id, is_visible, sync_status',
+  custom_widgets: 'id, user_id, name, is_active, sync_status',
 });
