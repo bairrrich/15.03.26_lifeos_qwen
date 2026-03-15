@@ -352,4 +352,7 @@ db.version(1).stores({
   widget_definitions: 'id, name, type, category, is_system, sync_status',
   widget_instances: 'id, user_id, widget_id, is_visible, sync_status',
   custom_widgets: 'id, user_id, name, is_active, sync_status',
+
+  // Test (для тестов)
+  test_entities: 'id, user_id, name, value, sync_status',
 });

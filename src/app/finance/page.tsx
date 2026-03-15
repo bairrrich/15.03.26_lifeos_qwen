@@ -48,6 +48,7 @@ export default function FinancePage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
 
   const filteredTransactions = transactions.filter((t) => {
     if (filter === 'all') return true;
@@ -113,7 +114,13 @@ export default function FinancePage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="type">Тип</Label>
-                  <Select name="type" defaultValue="expense">
+                  <Select
+                    name="type"
+                    value={selectedType}
+                    onValueChange={(value) => {
+                      if (value) setSelectedType(value as 'income' | 'expense');
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Выберите тип" />
                     </SelectTrigger>
@@ -282,9 +289,8 @@ export default function FinancePage() {
                         </span>
                       </TableCell>
                       <TableCell
-                        className={`text-right font-medium ${
-                          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                        }`}
+                        className={`text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          }`}
                       >
                         {transaction.type === 'income' ? '+' : '-'}
                         {transaction.amount.toFixed(2)} {transaction.currency}
