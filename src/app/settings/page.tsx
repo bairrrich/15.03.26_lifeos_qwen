@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
 import { NotificationSettingsCard } from '@/shared/components/notification-settings';
-import { Moon, Sun, Monitor, User, Database, LogOut, Download, Upload, Trash2 } from 'lucide-react';
+import { Moon, Sun, Monitor, User, Database, LogOut, Download, Upload, Trash2, LayoutGrid, Users } from 'lucide-react';
 import { signOut } from '@/core/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -154,6 +154,36 @@ export default function SettingsPage() {
               <Label htmlFor="sidebar">Боковая панель</Label>
             </div>
             <Switch id="sidebar" checked={sidebarOpen} onCheckedChange={toggleSidebar} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Интеграции</CardTitle>
+          <CardDescription>Дополнительные возможности</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => router.push('/widgets')}>
+            <div className="flex items-center gap-3">
+              <LayoutGrid className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">Виджеты</p>
+                <p className="text-sm text-muted-foreground">Настройте свой дашборд</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm">Открыть</Button>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => router.push('/sharing')}>
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">Семейный доступ</p>
+                <p className="text-sm text-muted-foreground">Делитесь данными с семьёй</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm">Открыть</Button>
           </div>
         </CardContent>
       </Card>
