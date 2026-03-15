@@ -17,13 +17,20 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   const { sidebarOpen, toggleSidebar } = useAppStore();
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   // Страницы без layout (login и т.д.)
   const isAuthPage = pathname === '/login';
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setMobileOpen(false);
+      }
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -33,19 +40,22 @@ export default function AppLayout({ children }: AppLayoutProps) {
     return <>{children}</>;
   }
 
+  const isOpen = isMobile ? mobileOpen : sidebarOpen;
+  const handleToggle = isMobile ? () => setMobileOpen(!mobileOpen) : toggleSidebar;
+
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar collapsed={isMobile ? false : !sidebarOpen} onToggle={toggleSidebar} />
+      <Sidebar collapsed={!isOpen} onToggle={handleToggle} />
 
       <main
         className={cn(
           'transition-all duration-300',
-          isMobile ? 'ml-0' : sidebarOpen ? 'ml-64' : 'ml-16'
+          isMobile ? 'ml-0' : isOpen ? 'ml-64' : 'ml-16'
         )}
       >
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
           {isMobile && (
-            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+            <Button variant="ghost" size="icon" onClick={handleToggle}>
               <Menu className="h-5 w-5" />
             </Button>
           )}
