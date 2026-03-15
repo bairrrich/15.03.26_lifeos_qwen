@@ -55,7 +55,11 @@ export function useCreateHealthMetric() {
 export function useSleepLogs(date?: number) {
   return useQuery({
     queryKey: ['sleep-logs', date],
-    queryFn: () => (date ? sleepLogService.getByDate(date) : Promise.resolve(undefined)),
+    queryFn: async () => {
+      if (!date) return [];
+      const log = await sleepLogService.getByDate(date);
+      return log ? [log] : [];
+    },
     enabled: !!date,
   });
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { HealthMetric, SleepLog } from '@/modules/health/entities';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -171,10 +172,12 @@ export default function HealthPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {weight ? `${weight.value} ${weight.unit}` : '-'}
+              {weight && typeof weight === 'object' && 'value' in weight ? `${weight.value} ${weight.unit}` : '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {weight ? format(weight.recorded_at, 'dd MMM', { locale: ru }) : 'Нет данных'}
+              {weight && typeof weight === 'object' && 'recorded_at' in weight
+                ? format(weight.recorded_at, 'dd MMM', { locale: ru })
+                : 'Нет данных'}
             </p>
           </CardContent>
         </Card>
@@ -185,10 +188,14 @@ export default function HealthPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {sleepLog ? `${sleepLog.duration_hours}ч ${getQualityEmoji(sleepLog.quality)}` : '-'}
+              {sleepLog && (sleepLog as SleepLog[]).length > 0
+                ? `${(sleepLog as SleepLog[])[0].duration_hours}ч ${getQualityEmoji((sleepLog as SleepLog[])[0].quality)}`
+                : '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {sleepLog ? `Качество: ${sleepLog.quality}/5` : 'Нет данных'}
+              {sleepLog && (sleepLog as SleepLog[]).length > 0
+                ? `Качество: ${(sleepLog as SleepLog[])[0].quality}/5`
+                : 'Нет данных'}
             </p>
           </CardContent>
         </Card>
@@ -225,11 +232,11 @@ export default function HealthPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {sleepLog ? (
+              {sleepLog && (sleepLog as SleepLog[]).length > 0 ? (
                 <div className="p-3 rounded-lg bg-muted">
                   <p className="font-medium">Сегодня</p>
                   <p className="text-sm text-muted-foreground">
-                    {sleepLog.duration_hours}ч • Качество: {sleepLog.quality}/5
+                    {(sleepLog as SleepLog[])[0].duration_hours}ч • Качество: {(sleepLog as SleepLog[])[0].quality}/5
                   </p>
                 </div>
               ) : (
