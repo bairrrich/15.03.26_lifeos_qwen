@@ -16,7 +16,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
+  Zap,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/core/auth';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ const navigation = [
   { name: 'Здоровье', href: '/health', icon: Heart },
   { name: 'Ум', href: '/mind', icon: BookOpen },
   { name: 'Красота', href: '/beauty', icon: Sparkles },
+  { name: 'Автоматизации', href: '/automations', icon: Zap },
   { name: 'Настройки', href: '/settings', icon: Settings },
 ];
 

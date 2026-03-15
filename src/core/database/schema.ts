@@ -268,6 +268,28 @@ export class LifeOSDatabase extends Dexie {
       steps: string[];
     }
   >;
+
+  // Automations
+  automations!: Table<
+    BaseEntity & {
+      name: string;
+      description?: string;
+      trigger: { type: string; config: Record<string, unknown> };
+      actions: Array<{ type: string; config: Record<string, unknown> }>;
+      is_active: boolean;
+      last_triggered_at?: number;
+      trigger_count: number;
+    }
+  >;
+  automation_logs!: Table<
+    BaseEntity & {
+      rule_id: string;
+      rule_name: string;
+      triggered_at: number;
+      trigger_data?: Record<string, unknown>;
+      actions_executed: Array<{ type: string; success: boolean; error?: string }>;
+    }
+  >;
 }
 
 export const db = new LifeOSDatabase('LifeOS');
@@ -315,4 +337,8 @@ db.version(1).stores({
   // Beauty
   beauty_products: 'id, user_id, name, category, sync_status',
   beauty_routines: 'id, user_id, name, time_of_day, sync_status',
+
+  // Automations
+  automations: 'id, user_id, name, is_active, sync_status',
+  automation_logs: 'id, user_id, rule_id, triggered_at, sync_status',
 });
