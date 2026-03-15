@@ -3,6 +3,7 @@ import './globals.css';
 import { Providers } from '@/shared/hooks/providers';
 import { Toaster } from '@/components/ui/sonner';
 import { PWAInstallPrompt } from '@/shared/components/pwa-install-prompt';
+import AppLayout from './app-layout';
 
 export const viewport: Viewport = {
   themeColor: '#6366f1',
@@ -37,7 +38,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <Providers>
-          {children}
+          <AppLayout>{children}</AppLayout>
           <Toaster />
           <PWAInstallPrompt />
         </Providers>
