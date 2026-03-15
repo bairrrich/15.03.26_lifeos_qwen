@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LifeOS
 
-## Getting Started
+**LifeOS** — это универсальная платформа типа «Life Dashboard» для управления всеми основными аспектами жизни через централизованный интерфейс и аналитику.
 
-First, run the development server:
+## 🚀 Стек технологий
+
+| Категория    | Технология                       |
+| ------------ | -------------------------------- |
+| Framework    | Next.js 16 (App Router)          |
+| UI Library   | React 19                         |
+| Язык         | TypeScript 5.x                   |
+| Стилизация   | Tailwind CSS 4 + OKLCH цвета     |
+| Компоненты   | shadcn/ui                        |
+| Локальная БД | Dexie.js (IndexedDB)             |
+| Удалённая БД | Supabase (PostgreSQL + Realtime) |
+| Состояние    | Zustand                          |
+| Графики      | Recharts 3                       |
+| Формы        | react-hook-form + zod            |
+| Уведомления  | sonner                           |
+| Запросы      | @tanstack/react-query            |
+
+## 📦 Модули
+
+- **Финансы** — счета, транзакции, бюджеты, подписки, инвестиции
+- **Питание** — дневник питания, продукты, рецепты, КБЖУ
+- **Тренировки** — планы, журнал тренировок, упражнения, прогресс
+- **Привычки** — трекер привычек, streaks, статистика
+- **Цели** — долгосрочные цели, этапы, прогресс
+- **Здоровье** — сон, витамины, анализы, метрики
+- **Ум** — книги, курсы, фильмы, статьи, заметки
+- **Красота** — косметика, уход, рутины
+
+## 🛠️ Начало работы
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+```
+
+### 2. Настройка переменных окружения
+
+Скопируйте `.env.example` в `.env.local` и заполните значения:
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 3. Запуск разработки
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Структура проекта
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+lifeos/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Страницы аутентификации
+│   ├── (dashboard)/              # Основной dashboard
+│   ├── api/                      # API routes
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── core/                         # Ядро приложения
+│   ├── entity/                   # Базовые сущности
+│   ├── database/                 # Dexie схема БД
+│   ├── crud/                     # CRUD сервисы
+│   ├── sync/                     # Синхронизация
+│   ├── auth/                     # Аутентификация (Supabase)
+│   └── ...
+├── modules/                      # Функциональные модули
+│   ├── finance/
+│   ├── nutrition/
+│   ├── workouts/
+│   └── ...
+├── ui/                           # UI компоненты
+│   ├── components/
+│   ├── navigation/
+│   ├── forms/
+│   └── charts/
+├── shared/                       # Общие утилиты
+│   ├── hooks/
+│   ├── utils/
+│   ├── types/
+│   └── constants/
+└── public/
+```
 
-## Learn More
+## 🔑 Основные возможности
 
-To learn more about Next.js, take a look at the following resources:
+- ✅ **Offline-first** — работа без подключения к интернету
+- ✅ **Синхронизация** — автоматическая синхронизация с Supabase
+- ✅ **Тёмная тема** — переключатель светлой/тёмной темы
+- ✅ **Command Palette** — быстрая навигация (Cmd+K)
+- ✅ **Quick Add** — быстрое добавление записей (+)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 Команды
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Разработка
+npm run dev
 
-## Deploy on Vercel
+# Сборка
+npm run build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Запуск production
+npm run start
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Линтинг
+npm run lint
+
+# Форматирование
+npm run format
+```
+
+## 📄 Лицензия
+
+MIT

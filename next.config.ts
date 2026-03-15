@@ -1,8 +1,10 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  // Отключаем статическую генерацию для разработки
+  // output: 'standalone',
+  // Отключаем react compiler
+  // reactCompiler: true,
 };
 
 export default nextConfig;
