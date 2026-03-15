@@ -1,25 +1,82 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
-import { Moon, Sun, Monitor, User, Database, LogOut } from 'lucide-react';
+import { Moon, Sun, Monitor, User, Database, LogOut, Download, Upload, Trash2 } from 'lucide-react';
 import { signOut } from '@/core/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { dataExportImportService } from '@/core/database/export-import';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { sidebarOpen, toggleSidebar } = useAppStore();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     toast.success('Вы успешно вышли');
     router.push('/login');
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const data = await dataExportImportService.exportAllData();
+      const timestamp = new Date().toISOString().split('T')[0];
+      dataExportImportService.downloadExport(data, `lifeos-backup-${timestamp}.json`);
+      toast.success('Данные успешно экспортированы');
+    } catch (error) {
+      toast.error('Ошибка при экспорте данных');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const data = await dataExportImportService.loadFromFile(file);
+      const result = await dataExportImportService.importData(data);
+
+      if (result.success) {
+        toast.success('Данные успешно импортированы');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast.error(result.errors.join(', '));
+      }
+    } catch (error) {
+      toast.error('Ошибка при импорте данных');
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleClearAll = async () => {
+    const confirmed = confirm('Вы уверены? Все данные будут безвозвратно удалены.');
+    if (!confirmed) return;
+
+    try {
+      await dataExportImportService.clearAllData();
+      toast.success('Все данные удалены');
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      toast.error('Ошибка при удалении данных');
+    }
   };
 
   return (
@@ -114,7 +171,15 @@ export default function SettingsPage() {
               <Label>Экспорт данных</Label>
               <p className="text-sm text-muted-foreground">Скачать все данные в JSON</p>
             </div>
-            <Button variant="outline">Экспорт</Button>
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={isExporting}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {isExporting ? 'Экспорт...' : 'Экспорт'}
+            </Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
@@ -122,7 +187,24 @@ export default function SettingsPage() {
               <Label>Импорт данных</Label>
               <p className="text-sm text-muted-foreground">Загрузить данные из JSON</p>
             </div>
-            <Button variant="outline">Импорт</Button>
+            <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                className="hidden"
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                className="gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                {isImporting ? 'Импорт...' : 'Импорт'}
+              </Button>
+            </div>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
@@ -130,7 +212,10 @@ export default function SettingsPage() {
               <Label className="text-destructive">Очистить все данные</Label>
               <p className="text-sm text-muted-foreground">Удалить все локальные данные</p>
             </div>
-            <Button variant="destructive">Очистить</Button>
+            <Button variant="destructive" onClick={handleClearAll} className="gap-2">
+              <Trash2 className="h-4 w-4" />
+              Очистить
+            </Button>
           </div>
         </CardContent>
       </Card>
