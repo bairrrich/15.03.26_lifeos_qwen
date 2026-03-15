@@ -341,4 +341,10 @@ db.version(1).stores({
   // Automations
   automations: 'id, user_id, name, is_active, sync_status',
   automation_logs: 'id, user_id, rule_id, triggered_at, sync_status',
+
+  // Sharing (Family)
+  families: 'id, user_id, owner_id, name, sync_status',
+  family_members: 'id, user_id, family_id, email, role, sync_status',
+  family_invitations: 'id, user_id, family_id, email, token, status, sync_status',
+  shared_data: 'id, user_id, family_id, owner_id, data_type, data_id, sync_status',
 });
