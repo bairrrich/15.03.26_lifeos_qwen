@@ -11,7 +11,17 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { useAppStore } from '@/shared/hooks/use-app-store';
-import { CreditCard, Settings, User, Target, Heart, Book, Dumbbell, Utensils } from 'lucide-react';
+import {
+  CreditCard,
+  Settings,
+  User,
+  Target,
+  Heart,
+  Book,
+  Dumbbell,
+  Utensils,
+  Sparkles,
+} from 'lucide-react';
 
 const navigationItems = [
   {
@@ -24,6 +34,7 @@ const navigationItems = [
       { icon: Target, label: 'Цели', value: 'goals', href: '/goals' },
       { icon: Heart, label: 'Здоровье', value: 'health', href: '/health' },
       { icon: Book, label: 'Ум', value: 'mind', href: '/mind' },
+      { icon: Sparkles, label: 'Красота', value: 'beauty', href: '/beauty' },
     ],
   },
   {

@@ -11,6 +11,7 @@ import {
   Target,
   Heart,
   BookOpen,
+  Sparkles,
   Settings,
   LogOut,
   ChevronLeft,
@@ -29,6 +30,7 @@ const navigation = [
   { name: 'Цели', href: '/goals', icon: Target },
   { name: 'Здоровье', href: '/health', icon: Heart },
   { name: 'Ум', href: '/mind', icon: BookOpen },
+  { name: 'Красота', href: '/beauty', icon: Sparkles },
   { name: 'Настройки', href: '/settings', icon: Settings },
 ];
 
