@@ -172,11 +172,31 @@ export default function HealthPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {weight && typeof weight === 'object' && 'value' in weight ? `${weight.value} ${weight.unit}` : '-'}
+              {weight && weight !== null && typeof weight === 'object' && 'value' in weight
+                ? `${(weight as HealthMetric).value} ${(weight as HealthMetric).unit}`
+                : '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {weight && typeof weight === 'object' && 'recorded_at' in weight
-                ? format(weight.recorded_at, 'dd MMM', { locale: ru })
+              {weight && weight !== null && typeof weight === 'object' && 'recorded_at' in weight
+                ? format((weight as HealthMetric).recorded_at, 'dd MMM', { locale: ru })
+                : 'Нет данных'}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Сон сегодня</CardTitle>
+            <Thermometer className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {sleepLog && (sleepLog as SleepLog[]).length > 0
+                ? `${(sleepLog as SleepLog[])[0].duration_hours}ч ${getQualityEmoji((sleepLog as SleepLog[])[0].quality)}`
+                : '-'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {sleepLog && (sleepLog as SleepLog[]).length > 0
+                ? `Качество: ${(sleepLog as SleepLog[])[0].quality}/5`
                 : 'Нет данных'}
             </p>
           </CardContent>

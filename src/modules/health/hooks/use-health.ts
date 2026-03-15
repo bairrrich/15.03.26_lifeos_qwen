@@ -25,7 +25,10 @@ export function useHealthMetrics(type?: HealthMetric['type']) {
 export function useLatestHealthMetric(type: HealthMetric['type']) {
   return useQuery({
     queryKey: ['health-metrics', 'latest', type],
-    queryFn: () => healthMetricService.getLatestByType(type),
+    queryFn: async () => {
+      const metric = await healthMetricService.getLatestByType(type);
+      return metric ?? null;
+    },
     enabled: !!type,
   });
 }
