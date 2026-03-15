@@ -13,10 +13,19 @@ interface UseNotificationOptions {
 
 export function useNotification(options: UseNotificationOptions = {}) {
   const { onPermissionChange } = options;
-  const [isSupported] = useState(() => NotificationService.isSupported());
-  const [permission, setPermission] = useState<NotificationPermission>(
-    NotificationService.getPermissionStatus()
-  );
+  const [isSupported, setIsSupported] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>({
+    granted: false,
+    denied: false,
+    default: true,
+  });
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsSupported(NotificationService.isSupported());
+
+    setPermission(NotificationService.getPermissionStatus());
+  }, []);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!isSupported) return false;

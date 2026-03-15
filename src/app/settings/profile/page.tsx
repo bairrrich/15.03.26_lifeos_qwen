@@ -12,7 +12,6 @@ import { User, Mail, Camera, Save, X, Target, Calendar, Award } from 'lucide-rea
 import { toast } from 'sonner';
 
 export default function ProfilePage() {
-  const { userId } = useAppStore();
   const [isEditing, setIsEditing] = useState(false);
 
   // Демо данные профиля (в реальности загружать из бэкенда)

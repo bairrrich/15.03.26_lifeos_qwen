@@ -159,9 +159,12 @@ export default function MindPage() {
         </Card>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-        {' '}
-        {/* eslint-disable-line @typescript-eslint/no-explicit-any */}
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) =>
+          setActiveTab(v as any)
+        } /* eslint-disable-line @typescript-eslint/no-explicit-any */
+      >
         <TabsList className="grid grid-cols-3 gap-2">
           <TabsTrigger value="books">
             <BookOpen className="h-4 w-4 mr-2" />
