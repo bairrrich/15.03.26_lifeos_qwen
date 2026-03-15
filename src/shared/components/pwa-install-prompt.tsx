@@ -18,12 +18,27 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+const PWA_DISMISSED_KEY = 'pwa-install-dismissed';
+const PWA_DISMISSED_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 дней
+
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
 
   useEffect(() => {
+    // Проверяем, не нажимал ли пользователь "Позже" недавно
+    const dismissed = localStorage.getItem(PWA_DISMISSED_KEY);
+    if (dismissed) {
+      const dismissedTime = parseInt(dismissed, 10);
+      const now = Date.now();
+      if (now - dismissedTime < PWA_DISMISSED_EXPIRY) {
+        return; // Не показываем диалог
+      }
+      // Истекло время, удаляем запись
+      localStorage.removeItem(PWA_DISMISSED_KEY);
+    }
+
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -60,7 +75,19 @@ export function PWAInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       setShowInstall(false);
+      // Пользователь установил — больше не показываем
+      localStorage.setItem(PWA_DISMISSED_KEY, 'installed');
+    } else {
+      // Пользователь отменил — запоминаем на 7 дней
+      localStorage.setItem(PWA_DISMISSED_KEY, Date.now().toString());
     }
+    setDeferredPrompt(null);
+  };
+
+  const handleDismiss = () => {
+    // Запоминаем, что пользователь нажал "Позже"
+    localStorage.setItem(PWA_DISMISSED_KEY, Date.now().toString());
+    setShowInstall(false);
     setDeferredPrompt(null);
   };
 
@@ -74,7 +101,7 @@ export function PWAInstallPrompt() {
 
   return (
     <>
-      <Dialog open={showInstall} onOpenChange={setShowInstall}>
+      <Dialog open={showInstall} onOpenChange={handleDismiss}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -86,7 +113,7 @@ export function PWAInstallPrompt() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowInstall(false)}>
+            <Button variant="outline" onClick={handleDismiss}>
               Позже
             </Button>
             <Button onClick={handleInstall}>
