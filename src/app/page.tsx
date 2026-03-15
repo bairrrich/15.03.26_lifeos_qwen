@@ -10,6 +10,10 @@ import {
   Heart,
   Sparkles,
   Utensils,
+  Zap,
+  Activity,
+  Moon,
+  Award,
 } from 'lucide-react';
 import {
   LineChart,
@@ -21,88 +25,88 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
+import { useDashboardStats, useFinanceChartData, useHabitsChartData } from '@/core/analytics/use-analytics';
 
-const widgets = [
-  {
-    title: 'Баланс',
-    value: '$12,450',
-    change: '+12.5%',
-    trend: 'up',
-    icon: DollarSign,
-    color: 'text-green-600',
-  },
-  {
-    title: 'Расходы за месяц',
-    value: '$2,340',
-    change: '-5.2%',
-    trend: 'down',
-    icon: TrendingDown,
-    color: 'text-red-600',
-  },
-  {
-    title: 'Привычки сегодня',
-    value: '4/6',
-    change: '67%',
-    trend: 'up',
-    icon: Target,
-    color: 'text-blue-600',
-  },
-  {
-    title: 'Тренировки за неделю',
-    value: '3',
-    change: '+1',
-    trend: 'up',
-    icon: Dumbbell,
-    color: 'text-purple-600',
-  },
-  {
-    title: 'Книги в процессе',
-    value: '2',
-    change: '',
-    trend: 'neutral',
-    icon: BookOpen,
-    color: 'text-amber-600',
-  },
-  {
-    title: 'Сон (средний)',
-    value: '7.5ч',
-    change: '+0.5ч',
-    trend: 'up',
-    icon: Heart,
-    color: 'text-rose-600',
-  },
-  {
-    title: 'Продукты',
-    value: '12',
-    change: '',
-    trend: 'neutral',
-    icon: Sparkles,
-    color: 'text-pink-600',
-  },
-];
-
-// Демо данные для графиков
-const financeData = [
-  { month: 'Янв', income: 4000, expenses: 2400 },
-  { month: 'Фев', income: 3000, expenses: 1398 },
-  { month: 'Мар', income: 2000, expenses: 9800 },
-  { month: 'Апр', income: 2780, expenses: 3908 },
-  { month: 'Май', income: 1890, expenses: 4800 },
-  { month: 'Июн', income: 2390, expenses: 3800 },
-];
-
-const habitsData = [
-  { day: 'Пн', completed: 5 },
-  { day: 'Вт', completed: 3 },
-  { day: 'Ср', completed: 6 },
-  { day: 'Чт', completed: 4 },
-  { day: 'Пт', completed: 5 },
-  { day: 'Сб', completed: 2 },
-  { day: 'Вс', completed: 4 },
-];
+const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4'];
 
 export default function DashboardPage() {
+  const { data: stats, isLoading: statsLoading } = useDashboardStats(30);
+  const { data: financeData, isLoading: financeLoading } = useFinanceChartData(6);
+  const { data: habitsData, isLoading: habitsLoading } = useHabitsChartData();
+
+  const widgets = [
+    {
+      title: 'Баланс',
+      value: stats ? `${stats.balance.toLocaleString()} ₽` : '...',
+      change: stats?.totalIncome ? `+${Math.round((stats.totalIncome / 30) * 100)} ₽/день` : '',
+      trend: stats && stats.balance >= 0 ? 'up' : 'down',
+      icon: DollarSign,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Расходы (мес)',
+      value: stats ? `${stats.totalExpenses.toLocaleString()} ₽` : '...',
+      change: financeData?.[financeData.length - 1]?.expenses
+        ? `${financeData[financeData.length - 1].expenses.toLocaleString()} ₽`
+        : '',
+      trend: 'down',
+      icon: TrendingDown,
+      color: 'text-red-600',
+    },
+    {
+      title: 'Привычки',
+      value: stats ? `${stats.habitsCompleted}/${stats.habitsTotal}` : '...',
+      change: stats ? `${stats.habitsCompletionRate}%` : '',
+      trend: 'up',
+      icon: Target,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Тренировки',
+      value: stats ? `${stats.workoutsCompleted}` : '...',
+      change: stats ? `${Math.round(stats.totalWorkoutDuration / 60)}ч всего` : '',
+      trend: 'up',
+      icon: Dumbbell,
+      color: 'text-purple-600',
+    },
+    {
+      title: 'Сон',
+      value: stats ? `${stats.avgSleepDuration}ч` : '...',
+      change: stats ? `Качество: ${stats.avgSleepQuality}/5` : '',
+      trend: stats && stats.avgSleepQuality >= 4 ? 'up' : 'neutral',
+      icon: Moon,
+      color: 'text-indigo-600',
+    },
+    {
+      title: 'КБЖУ (сред.)',
+      value: stats ? `${stats.avgDailyCalories} ккал` : '...',
+      change: stats ? `Б: ${stats.avgDailyProtein}г | Ж: ${stats.avgDailyFat}г | У: ${stats.avgDailyCarbs}г` : '',
+      trend: 'neutral',
+      icon: Utensils,
+      color: 'text-orange-600',
+    },
+    {
+      title: 'Цели',
+      value: stats ? `${stats.completedGoals}/${stats.activeGoals + stats.completedGoals}` : '...',
+      change: stats ? `${stats.avgGoalProgress}% средний прогресс` : '',
+      trend: stats && stats.avgGoalProgress >= 50 ? 'up' : 'neutral',
+      icon: Award,
+      color: 'text-yellow-600',
+    },
+    {
+      title: 'Автоматизации',
+      value: '⚡',
+      change: 'Активны',
+      trend: 'up',
+      icon: Zap,
+      color: 'text-cyan-600',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -110,7 +114,7 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">Ваша персональная панель управления жизнью</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {widgets.map((widget) => (
           <Card key={widget.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -120,9 +124,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">{widget.value}</div>
               {widget.change && (
-                <p
-                  className={`text-xs ${widget.trend === 'up' ? 'text-green-600' : widget.trend === 'down' ? 'text-red-600' : 'text-muted-foreground'}`}
-                >
+                <p className={`text-xs ${widget.trend === 'up' ? 'text-green-600' : widget.trend === 'down' ? 'text-red-600' : 'text-muted-foreground'}`}>
                   {widget.trend === 'up' && '↑ '}
                   {widget.trend === 'down' && '↓ '}
                   {widget.change}
@@ -140,64 +142,76 @@ export default function DashboardPage() {
             <CardDescription>Доходы и расходы за последние 6 месяцев</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={financeData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                  <XAxis dataKey="month" stroke="#9CA3AF" fontSize={12} />
-                  <YAxis stroke="#9CA3AF" fontSize={12} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1F2937',
-                      border: '1px solid #374151',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="income"
-                    stroke="#22c55e"
-                    strokeWidth={2}
-                    dot={{ fill: '#22c55e' }}
-                    name="Доходы"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="expenses"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    dot={{ fill: '#ef4444' }}
-                    name="Расходы"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            {financeLoading ? (
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Загрузка...
+              </div>
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={financeData || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis dataKey="month" stroke="#9CA3AF" fontSize={12} />
+                    <YAxis stroke="#9CA3AF" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1F2937',
+                        border: '1px solid #374151',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="income"
+                      stroke="#22c55e"
+                      strokeWidth={2}
+                      dot={{ fill: '#22c55e' }}
+                      name="Доходы"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="expenses"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      dot={{ fill: '#ef4444' }}
+                      name="Расходы"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Активные привычки</CardTitle>
-            <CardDescription>Прогресс за неделю</CardDescription>
+            <CardTitle>Привычки по дням</CardTitle>
+            <CardDescription>Выполненные привычки за неделю</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={habitsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                  <XAxis dataKey="day" stroke="#9CA3AF" fontSize={12} />
-                  <YAxis stroke="#9CA3AF" fontSize={12} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1F2937',
-                      border: '1px solid #374151',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Bar dataKey="completed" fill="#6366f1" radius={[4, 4, 0, 0]} name="Выполнено" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {habitsLoading ? (
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Загрузка...
+              </div>
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={habitsData || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={12} />
+                    <YAxis stroke="#9CA3AF" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1F2937',
+                        border: '1px solid #374151',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Bar dataKey="completed" fill="#6366f1" radius={[4, 4, 0, 0]} name="Выполнено" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -232,39 +246,32 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Последняя активность</CardTitle>
-            <CardDescription>Ваши последние действия</CardDescription>
+            <CardTitle>Категории расходов</CardTitle>
+            <CardDescription>Распределение по категориям</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Тренировка завершена</p>
-                  <p className="text-xs text-muted-foreground">2 часа назад</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-blue-500" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Привычка выполнена</p>
-                  <p className="text-xs text-muted-foreground">4 часа назад</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-purple-500" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Транзакция добавлена</p>
-                  <p className="text-xs text-muted-foreground">Вчера</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-orange-500" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Книга обновлена</p>
-                  <p className="text-xs text-muted-foreground">2 дня назад</p>
-                </div>
-              </div>
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+              <PieChart width={200} height={200}>
+                <Pie
+                  data={[
+                    { name: 'Еда', value: 35 },
+                    { name: 'Транспорт', value: 20 },
+                    { name: 'Развлечения', value: 15 },
+                    { name: 'Другое', value: 30 },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {COLORS.map((color, index) => (
+                    <Cell key={`cell-${index}`} fill={color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
             </div>
           </CardContent>
         </Card>
