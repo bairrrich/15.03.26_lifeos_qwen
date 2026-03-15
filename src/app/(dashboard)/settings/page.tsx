@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
+import { NotificationSettingsCard } from '@/shared/components/notification-settings';
 import { Moon, Sun, Monitor, User, Database, LogOut, Download, Upload, Trash2 } from 'lucide-react';
 import { signOut } from '@/core/auth';
 import { toast } from 'sonner';
@@ -34,7 +35,7 @@ export default function SettingsPage() {
       const timestamp = new Date().toISOString().split('T')[0];
       dataExportImportService.downloadExport(data, `lifeos-backup-${timestamp}.json`);
       toast.success('Данные успешно экспортированы');
-    } catch (error) {
+    } catch {
       toast.error('Ошибка при экспорте данных');
     } finally {
       setIsExporting(false);
@@ -56,7 +57,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.errors.join(', '));
       }
-    } catch (error) {
+    } catch {
       toast.error('Ошибка при импорте данных');
     } finally {
       setIsImporting(false);
@@ -74,7 +75,7 @@ export default function SettingsPage() {
       await dataExportImportService.clearAllData();
       toast.success('Все данные удалены');
       setTimeout(() => window.location.reload(), 1000);
-    } catch (error) {
+    } catch {
       toast.error('Ошибка при удалении данных');
     }
   };
@@ -156,6 +157,8 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <NotificationSettingsCard />
 
       <Card>
         <CardHeader>
