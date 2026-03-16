@@ -54,7 +54,7 @@ export default function FoodsPage() {
         carbs: Number(formData.get('carbs')),
         serving_size: Number(formData.get('serving_size')) || 100,
         serving_unit: formData.get('serving_unit') as string || 'г',
-        category: formData.get('category') as string || 'other',
+        category: formData.get('category') as 'protein' | 'fat' | 'carbs' | 'vegetable' | 'fruit' | 'other' || 'other',
         user_id: userId,
       },
       {
