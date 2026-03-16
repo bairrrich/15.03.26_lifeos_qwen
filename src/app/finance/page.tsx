@@ -30,10 +30,20 @@ import {
   useCreateAccount,
   useCreateCategory,
 } from '@/modules/finance/hooks';
-import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 export default function FinancePage() {
   const { data: transactions = [] } = useTransactions();
@@ -155,6 +165,19 @@ export default function FinancePage() {
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
+  // Данные для графика расходов по категориям
+  const expensesByCategory = categories
+    .filter((c) => c.type === 'expense')
+    .map((category) => ({
+      name: category.name,
+      value: transactions
+        .filter((t) => t.category_id === category.id && t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0),
+      color: category.color || '#6366f1',
+    }))
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -171,6 +194,10 @@ export default function FinancePage() {
           <Button variant="outline" onClick={() => window.location.href = '/finance/subscriptions'}>
             <Repeat className="mr-2 h-4 w-4" />
             Подписки
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = '/finance/investments'}>
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Инвестиции
           </Button>
           <Button variant="outline" onClick={() => setAccountDialogOpen(true)}>
             <Wallet className="mr-2 h-4 w-4" />
@@ -291,6 +318,40 @@ export default function FinancePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* График расходов по категориям */}
+      {expensesByCategory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Расходы по категориям</CardTitle>
+            <CardDescription>Текущий месяц</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={expensesByCategory} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
+                  <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={12} width={100} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1F2937',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value) => [`${Number(value).toLocaleString()} ₽`, 'Расходы']}
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                    {expensesByCategory.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Transactions Table */}
       <Card>
