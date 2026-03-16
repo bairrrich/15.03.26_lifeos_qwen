@@ -24,7 +24,7 @@ import {
 } from '@/modules/finance/hooks';
 import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import { initializeFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
+import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 
 const typeIcons: Record<string, any> = {
   cash: Wallet,
@@ -61,6 +61,14 @@ export default function AccountsPage() {
       initializeFinanceAccounts();
     }
   }, [isLoading, accounts.length]);
+
+  const handleResetAccounts = async () => {
+    if (confirm('Это УДАЛИТ ВСЕ счета и создаст их заново со стандартными счетами по умолчанию. Продолжить?')) {
+      await resetFinanceAccounts();
+      toast.success('Счета сброшены и пересозданы');
+      window.location.reload();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -143,6 +151,10 @@ export default function AccountsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetAccounts}>
+          <RotateCcw className="h-4 w-4 mr-2" />
+          <span>Сбросить</span>
+        </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingAccount(null)} style={{ height: '32px' }}>
