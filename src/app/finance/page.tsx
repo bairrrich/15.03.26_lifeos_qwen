@@ -44,12 +44,23 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import { useEffect } from 'react';
+import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
 
 export default function FinancePage() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
   const createTransaction = useCreateTransaction();
+
+  // Инициализация seed-категорий (только один раз)
+  useEffect(() => {
+    const hasInitialized = sessionStorage.getItem('finance_categories_init');
+    if (categories.length === 0 && !hasInitialized) {
+      sessionStorage.setItem('finance_categories_init', 'true');
+      initializeFinanceCategories();
+    }
+  }, []); // Пустой массив зависимостей - запускается только один раз при монтировании
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
@@ -269,19 +280,24 @@ export default function FinancePage() {
                       >
                         <option value="">Выберите категорию</option>
                         {categories
-                          .filter((c) => !c.parent_id)
-                          .map((rootCategory) => (
-                            <optgroup key={rootCategory.id} label={rootCategory.name}>
-                              <option value={rootCategory.id}>{rootCategory.name}</option>
-                              {categories
-                                .filter((c) => c.parent_id === rootCategory.id)
-                                .map((child) => (
-                                  <option key={child.id} value={child.id}>
-                                    └─ {child.name}
-                                  </option>
-                                ))}
-                            </optgroup>
-                          ))}
+                          .filter((c) => !c.parent_id && c.type === selectedType)
+                          .map((rootCategory) => {
+                            const children = categories.filter(
+                              (c) => c.parent_id === rootCategory.id && c.type === selectedType
+                            );
+                            return [
+                              // Родительская категория
+                              <option key={rootCategory.id} value={rootCategory.id}>
+                                {rootCategory.name}
+                              </option>,
+                              // Подкатегории с отступом
+                              ...children.map((child) => (
+                                <option key={child.id} value={child.id}>
+                                  {'\u00A0\u00A0'}└─ {child.name}
+                                </option>
+                              ))
+                            ];
+                          })}
                       </select>
                     </div>
                     <div className="grid gap-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,9 +20,11 @@ import {
   useCreateCategory,
   useDeleteCategory,
 } from '@/modules/finance/hooks';
-import { Plus, Folder, FolderOpen, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
+import { Plus, Folder, FolderOpen, Trash2, ChevronRight, ChevronDown, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Category } from '@/modules/finance/entities';
+import { resetFinanceCategories } from '@/modules/finance/data/seed-init';
+import { cn } from '@/lib/utils';
 
 export default function FinanceCategoriesPage() {
   const { data: categories = [] } = useCategories();
@@ -32,14 +34,45 @@ export default function FinanceCategoriesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedParent, setSelectedParent] = useState<string>('');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
+  const [selectedIcon, setSelectedIcon] = useState<string>('🍔');
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+
+  // Предустановленные emoji для категорий
+  const expenseIcons = [
+    // Еда
+    '🍔', '🍕', '🍟', '🌭', '🍿',
+    // Транспорт
+    '🚗', '🚕', '🚌', '🚲', '⛽',
+    // Дом
+    '🏠', '🏢', '🏪', '🏦', '🏥',
+    // Покупки
+    '🛍️', '🛒', '🎁', '💎', '👕',
+    // Финансы
+    '💵', '💳', '💰', '📊', '🏦',
+    // Развлечения
+    '🎬', '🎮', '🎵', '⚽', '🎉',
+    // Здоровье
+    '💊', '🏋️', '🧘', '💉', '🦷',
+    // Образование
+    '📚', '🎓', '✏️', '📝', '🎨',
+    // Технологии
+    '💻', '📱', '⌚', '📷', '🎧',
+    // Природа
+    '🌟', '⚡', '🔥', '💡', '🌈',
+  ];
+  const incomeIcons = ['💼', '🏢', '📈', '🎁', '💸', '💰', '🏆', '🌟', '📊', '💎', '💵', '💳', '🏅', '🎯', '🚀'];
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    // Добавляем выбранную иконку к названию
+    const nameWithIcon = `${selectedIcon} ${formData.get('name')}`;
+
     createCategory.mutate(
       {
-        name: formData.get('name') as string,
+        name: nameWithIcon,
         type: formData.get('type') as 'income' | 'expense',
         color: formData.get('color') as string || '#6366f1',
         parent_id: selectedParent || undefined,
@@ -50,6 +83,7 @@ export default function FinanceCategoriesPage() {
           toast.success('Категория создана');
           setDialogOpen(false);
           setSelectedParent('');
+          setIconPickerOpen(false);
         },
         onError: () => {
           toast.error('Ошибка при создании категории');
@@ -57,6 +91,17 @@ export default function FinanceCategoriesPage() {
       }
     );
   };
+
+  // Закрытие попапа при клике вне
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (iconPickerOpen) {
+        setIconPickerOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [iconPickerOpen]);
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Вы уверены, что хотите удалить категорию "${name}"? Подкатегории также будут удалены.`)) {
@@ -68,6 +113,14 @@ export default function FinanceCategoriesPage() {
           toast.error('Ошибка при удалении категории');
         },
       });
+    }
+  };
+
+  const handleResetSeed = async () => {
+    if (confirm('Это УДАЛИТ ВСЕ категории и создаст их заново с правильной иерархией. Продолжить?')) {
+      await resetFinanceCategories();
+      toast.success('Категории сброшены и пересозданы');
+      window.location.reload(); // Перезагружаем для обновления списка
     }
   };
 
@@ -108,8 +161,16 @@ export default function FinanceCategoriesPage() {
     return tree.map((category) => (
       <div key={category.id}>
         <div
-          className="flex items-center justify-between py-2 px-3 hover:bg-muted/50 rounded-md"
-          style={{ paddingLeft: `${level * 24 + 12}px` }}
+          className={cn(
+            "flex items-center justify-between py-2 rounded-md transition-colors",
+            level === 0
+              ? "bg-muted/30 px-3 font-semibold"
+              : "px-3 hover:bg-muted/50"
+          )}
+          style={{
+            paddingLeft: level === 0 ? '12px' : `${level * 24 + 20}px`,
+            borderLeft: level > 0 ? `2px solid ${category.color}` : 'none',
+          }}
         >
           <div className="flex items-center gap-2">
             {category.children && category.children.length > 0 ? (
@@ -128,14 +189,15 @@ export default function FinanceCategoriesPage() {
             ) : (
               <span className="w-6" />
             )}
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: category.color }}
-            />
-            <span className="font-medium">{category.name}</span>
-            {category.parent_id && (
+            {level === 0 ? (
+              <FolderOpen className="h-4 w-4" style={{ color: category.color }} />
+            ) : (
+              <Folder className="h-3 w-3" style={{ color: category.color }} />
+            )}
+            <span className={level === 0 ? 'text-base' : 'text-sm'}>{category.name}</span>
+            {level === 0 && (
               <Badge variant="secondary" className="text-xs">
-                Подкатегория
+                {category.children?.length || 0} подкатегорий
               </Badge>
             )}
           </div>
@@ -159,6 +221,10 @@ export default function FinanceCategoriesPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetSeed}>
+          <RotateCcw className="h-4 w-4 mr-2" />
+          <span>Сбросить</span>
+        </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button style={{ height: '32px' }}>
@@ -182,11 +248,76 @@ export default function FinanceCategoriesPage() {
                   <select
                     name="type"
                     defaultValue="expense"
+                    onChange={(e) => {
+                      setSelectedType(e.target.value as 'income' | 'expense');
+                      setSelectedParent('');
+                      setSelectedIcon(e.target.value === 'expense' ? '🍔' : '💼');
+                    }}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="expense">Расход</option>
                     <option value="income">Доход</option>
                   </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Иконка</Label>
+                    <div className="relative">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIconPickerOpen(!iconPickerOpen);
+                        }}
+                      >
+                        <span className="text-xl mr-2">{selectedIcon}</span>
+                        <span className="text-sm">Выбрать</span>
+                      </Button>
+                      {iconPickerOpen && (
+                        <div
+                          className="fixed left-2 right-2 sm:absolute sm:left-0 sm:right-auto sm:w-auto sm:min-w-[400px] sm:max-w-[700px] top-auto sm:top-full z-50 mt-1 p-3 bg-popover border rounded-lg shadow-lg"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="grid grid-cols-[repeat(10,36px)] gap-0 max-h-80 overflow-y-auto justify-center">
+                            {(selectedType === 'expense' ? expenseIcons : incomeIcons).map((icon, index) => (
+                              <button
+                                key={`${icon}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedIcon(icon);
+                                  setIconPickerOpen(false);
+                                }}
+                                className={cn(
+                                  "flex h-9 w-9 items-center justify-center rounded-md text-lg transition-colors shrink-0",
+                                  selectedIcon === icon
+                                    ? "bg-primary text-primary-foreground"
+                                    : "hover:bg-muted"
+                                )}
+                              >
+                                {icon}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="color">Цвет</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        name="color"
+                        type="color"
+                        defaultValue="#6366f1"
+                        className="w-16 h-10 p-1"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        Выберите цвет
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="parent_id">Родительская категория (опционально)</Label>
@@ -197,7 +328,7 @@ export default function FinanceCategoriesPage() {
                   >
                     <option value="">Без родительской</option>
                     {categories
-                      .filter((c) => !c.parent_id)
+                      .filter((c) => !c.parent_id && c.type === selectedType)
                       .map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.name}
@@ -208,13 +339,14 @@ export default function FinanceCategoriesPage() {
                     Если выбрать родительскую категорию, будет создана подкатегория
                   </p>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="color">Цвет</Label>
-                  <Input name="color" type="color" defaultValue="#6366f1" />
-                </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); setSelectedParent(''); }}>
+                <Button type="button" variant="outline" onClick={() => {
+                  setDialogOpen(false);
+                  setSelectedParent('');
+                  setSelectedIcon('🍔');
+                  setIconPickerOpen(false);
+                }}>
                   Отмена
                 </Button>
                 <Button type="submit" disabled={createCategory.isPending}>

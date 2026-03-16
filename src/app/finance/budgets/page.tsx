@@ -126,11 +126,25 @@ export default function BudgetsPage() {
                     required
                   >
                     <option value="">Выберите категорию</option>
-                    {expenseCategories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                    {expenseCategories
+                      .filter((c) => !c.parent_id)
+                      .map((rootCategory) => {
+                        const children = expenseCategories.filter(
+                          (c) => c.parent_id === rootCategory.id
+                        );
+                        return [
+                          // Родительская категория
+                          <option key={rootCategory.id} value={rootCategory.id}>
+                            {rootCategory.name}
+                          </option>,
+                          // Подкатегории с отступом
+                          ...children.map((child) => (
+                            <option key={child.id} value={child.id}>
+                              {'\u00A0\u00A0'}└─ {child.name}
+                            </option>
+                          ))
+                        ];
+                      })}
                   </select>
                 </div>
                 <div className="grid gap-2">
