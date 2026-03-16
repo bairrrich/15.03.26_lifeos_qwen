@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   DollarSign,
   TrendingDown,
@@ -30,6 +31,8 @@ import {
   Cell,
 } from 'recharts';
 import { useDashboardStats, useFinanceChartData, useHabitsChartData } from '@/core/analytics/use-analytics';
+import { useWeeklyWorkoutStats } from '@/modules/workouts/hooks';
+import { WorkoutSummaryCard } from '@/modules/workouts/components';
 
 const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4'];
 
@@ -37,6 +40,7 @@ export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats(30);
   const { data: financeData, isLoading: financeLoading } = useFinanceChartData(6);
   const { data: habitsData, isLoading: habitsLoading } = useHabitsChartData();
+  const { data: weeklyWorkoutStats } = useWeeklyWorkoutStats(Date.now());
 
   const widgets = [
     {
@@ -217,6 +221,63 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
+        {/* Тренировки - виджет */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Тренировки</CardTitle>
+                <CardDescription>Последняя активность</CardDescription>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => (window.location.href = '/workouts')}
+              >
+                Все
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {weeklyWorkoutStats?.totalWorkouts === 0 || !weeklyWorkoutStats ? (
+              <div className="py-8 text-center text-muted-foreground">
+                <Dumbbell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">Нет тренировок за неделю</p>
+                <Button
+                  size="sm"
+                  className="mt-4"
+                  onClick={() => (window.location.href = '/workouts')}
+                >
+                  Начать тренировку
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{weeklyWorkoutStats.totalWorkouts}</p>
+                    <p className="text-xs text-muted-foreground">тренировок</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">
+                      {Math.round((weeklyWorkoutStats.totalDuration || 0) / 60)}м
+                    </p>
+                    <p className="text-xs text-muted-foreground">время</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{weeklyWorkoutStats.avgRating || 0}</p>
+                    <p className="text-xs text-muted-foreground">рейтинг</p>
+                  </div>
+                </div>
+                <Button className="w-full" onClick={() => (window.location.href = '/workouts')}>
+                  <Dumbbell className="h-4 w-4 mr-2" />
+                  Начать тренировку
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Быстрые действия</CardTitle>

@@ -7,6 +7,7 @@ import { db } from '@/core/database';
  */
 export class CrudService<T extends BaseEntity> {
   protected table: Table<T>;
+  protected db = db;
 
   constructor(tableName: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

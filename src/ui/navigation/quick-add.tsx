@@ -53,30 +53,30 @@ export function QuickAdd() {
           </DialogHeader>
 
           <Tabs defaultValue="finance">
-            <TabsList className="grid w-full grid-cols-3 gap-2 mb-6">
-              <TabsTrigger value="finance" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+            <TabsList className="grid grid-cols-6 gap-2 mb-6">
+              <TabsTrigger value="finance" className="flex items-center justify-center gap-2">
                 <DollarSign className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Финансы</span>
+                <span className="text-sm truncate">Финансы</span>
               </TabsTrigger>
-              <TabsTrigger value="habit" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+              <TabsTrigger value="habit" className="flex items-center justify-center gap-2">
                 <Target className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Привычка</span>
+                <span className="text-sm truncate">Привычка</span>
               </TabsTrigger>
-              <TabsTrigger value="food" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+              <TabsTrigger value="food" className="flex items-center justify-center gap-2">
                 <Utensils className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Питание</span>
+                <span className="text-sm truncate">Питание</span>
               </TabsTrigger>
-              <TabsTrigger value="workout" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+              <TabsTrigger value="workout" className="flex items-center justify-center gap-2">
                 <Dumbbell className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Тренировка</span>
+                <span className="text-sm truncate">Тренировка</span>
               </TabsTrigger>
-              <TabsTrigger value="book" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+              <TabsTrigger value="book" className="flex items-center justify-center gap-2">
                 <BookOpen className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Книга</span>
+                <span className="text-sm truncate">Книга</span>
               </TabsTrigger>
-              <TabsTrigger value="goal" className="flex items-center justify-center gap-2 py-2 h-12 sm:h-auto sm:min-h-[48px]">
+              <TabsTrigger value="goal" className="flex items-center justify-center gap-2">
                 <Target className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap hidden sm:inline">Цель</span>
+                <span className="text-sm truncate">Цель</span>
               </TabsTrigger>
             </TabsList>
 
