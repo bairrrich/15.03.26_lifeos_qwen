@@ -24,6 +24,7 @@ import {
   useDeleteBudget,
   useTransactions,
 } from '@/modules/finance/hooks';
+import type { Budget } from '@/modules/finance/entities';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, AlertCircle, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -49,11 +50,11 @@ export default function BudgetsPage() {
   const deleteBudget = useDeleteBudget();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingBudget, setEditingBudget] = useState<Record<string, unknown> | null>(null);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [statsPeriod, setStatsPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [deleteBudgetId, setDeleteBudgetId] = useState<string | null>(null);
 
-  const handleEdit = (budget: Record<string, unknown>) => {
+  const handleEdit = (budget: Budget) => {
     setEditingBudget(budget);
     setDialogOpen(true);
   };
@@ -142,7 +143,7 @@ export default function BudgetsPage() {
   };
 
   // Подсчёт расходов по категории и всем её подкатегориям за период бюджета
-  const getBudgetExpenses = (budget: Record<string, unknown>) => {
+  const getBudgetExpenses = (budget: Budget) => {
     const now = Date.now();
     let periodStart: number;
     let periodEnd: number = now;
@@ -186,7 +187,7 @@ export default function BudgetsPage() {
 
       default:
         // Если период не задан, используем start_date
-        periodStart = budget.start_date || now;
+        periodStart = (budget.start_date as number) || now;
     }
 
     // Суммируем расходы по всем категориям (родительская + подкатегории)
@@ -223,7 +224,7 @@ export default function BudgetsPage() {
         break;
     }
 
-    const budgetsInPeriod = budgets.filter((b) => b.start_date >= periodStart);
+    const budgetsInPeriod = budgets.filter((b: Budget) => b.start_date >= periodStart);
     const totalLimit = budgetsInPeriod.reduce((sum, b) => sum + b.amount, 0);
     const withinBudget = budgetsInPeriod.filter((b) => getBudgetExpenses(b) <= b.amount).length;
 

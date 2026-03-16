@@ -45,6 +45,8 @@ export class CrudService<T extends BaseEntity> {
     if (!anonId) {
       anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
       localStorage.setItem(ANON_KEY, anonId);
+      // Устанавливаем cookie для middleware
+      document.cookie = `${ANON_KEY}=${anonId}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
     }
     return anonId;
   }

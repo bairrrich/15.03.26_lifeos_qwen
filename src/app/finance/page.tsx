@@ -30,6 +30,7 @@ import {
   useUpdateTransaction,
   useDeleteTransaction,
 } from '@/modules/finance/hooks';
+import type { Transaction } from '@/modules/finance/entities';
 import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -86,7 +87,7 @@ export default function FinancePage() {
   const [selectedAccount, setSelectedAccount] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
-  const [editingTransaction, setEditingTransaction] = useState<Record<string, unknown> | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deleteTransactionId, setDeleteTransactionId] = useState<string | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
@@ -102,7 +103,7 @@ export default function FinancePage() {
     }
   }, [editingTransaction]);
 
-  const handleEdit = (transaction: Record<string, unknown>) => {
+  const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
     setDialogOpen(true);
   };
@@ -381,7 +382,7 @@ export default function FinancePage() {
                         name="category_id"
                         defaultValue={editingTransaction?.category_id}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        required={selectedType !== 'transfer'}
+                        required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')}
                       >
                         <option value="">Выберите категорию</option>
                         {categories
@@ -407,7 +408,7 @@ export default function FinancePage() {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="description">Описание</Label>
-                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== 'transfer'} />
+                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')} />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="merchant">Мерчант (опционально)</Label>

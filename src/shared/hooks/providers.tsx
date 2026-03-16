@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState, type ReactNode, useEffect } from 'react';
 import { syncService } from '@/core/sync';
 import { MigrationPrompt } from '@/components/ui/migration-prompt';
+import { AuthProvider } from '@/core/auth/auth-context';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -36,10 +37,12 @@ export function Providers({ children }: ProvidersProps) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <MigrationPrompt />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <MigrationPrompt />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }

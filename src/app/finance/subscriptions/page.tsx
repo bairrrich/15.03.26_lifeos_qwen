@@ -24,6 +24,7 @@ import {
   useProcessSubscriptionPayments,
   useSubscriptionPaymentHistory,
 } from '@/modules/finance/hooks';
+import type { Transaction } from '@/modules/finance/entities';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell } from 'lucide-react';
 import { format, addMonths, addWeeks, addYears } from 'date-fns';
@@ -396,20 +397,20 @@ export default function SubscriptionsPage() {
                 История платежей пуста
               </p>
             ) : (
-              paymentHistory.map((transaction: Record<string, unknown>) => (
+              paymentHistory.map((transaction) => (
                 <div
                   key={(transaction.id as string)}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
                 >
                   <div>
-                    <p className="font-medium">{transaction.description}</p>
+                    <p className="font-medium">{transaction.description as string}</p>
                     <p className="text-sm text-muted-foreground">
-                      {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
+                      {format(transaction.date as number, 'dd MMM yyyy', { locale: ru })}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-red-600">-{transaction.amount} ₽</p>
-                    <p className="text-xs text-muted-foreground">{transaction.currency}</p>
+                    <p className="font-bold text-red-600">-{transaction.amount as number} ₽</p>
+                    <p className="text-xs text-muted-foreground">{transaction.currency as string}</p>
                   </div>
                 </div>
               ))

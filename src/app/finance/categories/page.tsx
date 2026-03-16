@@ -182,7 +182,7 @@ export default function FinanceCategoriesPage() {
   const incomeTree = buildCategoryTree('income');
   const expenseTree = buildCategoryTree('expense');
 
-  const renderCategoryTree = (tree: Record<string, unknown>[], level: number = 0) => {
+  const renderCategoryTree = (tree: Category[], level: number = 0) => {
     return tree.map((category) => (
       <div key={(category.id as string)}>
         <div

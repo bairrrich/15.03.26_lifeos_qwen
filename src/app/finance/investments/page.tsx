@@ -21,6 +21,7 @@ import {
   useUpdateInvestment,
   useAccounts,
   useCreateTransaction,
+  useCreateInvestmentTransaction,
 } from '@/modules/finance/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History } from 'lucide-react'
@@ -66,7 +67,7 @@ export default function InvestmentsPage() {
     createInvestment.mutate(
       {
         name: formData.get('name') as string,
-        type: formData.get('type') as string,
+        type: formData.get('type') as 'stock' | 'bond' | 'etf' | 'crypto' | 'real_estate' | 'other',
         ticker: (formData.get('ticker') as string) || undefined,
         quantity: Number(formData.get('quantity')),
         purchase_price: Number(formData.get('purchase_price')),

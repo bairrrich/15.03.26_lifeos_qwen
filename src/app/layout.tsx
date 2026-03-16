@@ -3,6 +3,7 @@ import './globals.css';
 import { Providers } from '@/shared/hooks/providers';
 import { Toaster } from '@/components/ui/sonner';
 import { PWAInstallPrompt } from '@/shared/components/pwa-install-prompt';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import AppLayout from './app-layout';
 
 export const viewport: Viewport = {
@@ -37,11 +38,13 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className="antialiased">
-        <Providers>
-          <AppLayout>{children}</AppLayout>
-          <Toaster />
-          <PWAInstallPrompt />
-        </Providers>
+        <ErrorBoundary>
+          <Providers>
+            <AppLayout>{children}</AppLayout>
+            <Toaster />
+            <PWAInstallPrompt />
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   );

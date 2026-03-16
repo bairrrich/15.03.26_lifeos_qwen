@@ -63,11 +63,14 @@ export function middleware(request: NextRequest) {
 
   // Проверяем локальный режим
   const localUserCookie = request.cookies.get('lifeos_local_user');
+  
+  // Проверяем анонимного пользователя
+  const anonUserCookie = request.cookies.get('lifeos_anon_user_id');
 
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
-  // Если нет сессии и нет локального пользователя и роут защищенный - редирект на логин
-  if (isProtectedRoute && !sessionCookie && !localUserCookie) {
+  // Если нет сессии и нет локального/анонимного пользователя и роут защищенный - редирект на логин
+  if (isProtectedRoute && !sessionCookie && !localUserCookie && !anonUserCookie) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);

@@ -18,6 +18,7 @@ export function getCurrentUserId(): string {
 
 /**
  * Получить или создать анонимный ID пользователя
+ * Также устанавливает cookie для middleware
  */
 function getAnonymousUserId(): string {
   const ANON_KEY = 'lifeos_anon_user_id';
@@ -27,6 +28,9 @@ function getAnonymousUserId(): string {
   if (!anonId) {
     anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
     localStorage.setItem(ANON_KEY, anonId);
+
+    // Также устанавливаем cookie для middleware
+    document.cookie = `${ANON_KEY}=${anonId}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
   }
   return anonId;
 }

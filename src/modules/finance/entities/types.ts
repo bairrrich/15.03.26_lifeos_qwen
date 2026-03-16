@@ -31,6 +31,7 @@ export interface Category extends BaseEntity {
   icon?: string;
   parent_id?: string;
   is_system?: boolean;
+  children?: Category[];
 }
 
 export interface Budget extends BaseEntity {
