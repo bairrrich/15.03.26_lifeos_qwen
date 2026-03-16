@@ -2,7 +2,7 @@ import type { BaseEntity } from '@/core/entity';
 
 export interface Account extends BaseEntity {
   name: string;
-  type: 'cash' | 'bank' | 'card' | 'investment' | 'crypto' | 'other';
+  type: 'cash' | 'bank' | 'card' | 'investment' | 'crypto' | 'savings' | 'other';
   balance: number;
   currency: string;
   icon?: string;
@@ -50,9 +50,12 @@ export interface Subscription extends BaseEntity {
   currency: string;
   billing_period: 'monthly' | 'yearly' | 'weekly';
   next_billing_date: number;
+  account_id: string;
+  category_id: string;
   url?: string;
   icon?: string;
   is_active?: boolean;
+  description?: string;
 }
 
 export interface Investment extends BaseEntity {

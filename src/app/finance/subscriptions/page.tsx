@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,18 +19,63 @@ import {
 import {
   useSubscriptions,
   useCreateSubscription,
+  useAccounts,
+  useCategories,
+  useProcessSubscriptionPayments,
+  useSubscriptionPaymentHistory,
 } from '@/modules/finance/hooks';
-import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell } from 'lucide-react';
 import { format, addMonths, addWeeks, addYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 export default function SubscriptionsPage() {
   const { data: subscriptions = [] } = useSubscriptions();
+  const { data: accounts = [] } = useAccounts();
+  const { data: categories = [] } = useCategories();
   const createSubscription = useCreateSubscription();
+  const processPayments = useProcessSubscriptionPayments();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<string | null>(null);
+
+  // Автоматическая обработка подписок при загрузке
+  useEffect(() => {
+    if (subscriptions.length > 0) {
+      processPayments.mutate(undefined, {
+        onSuccess: ({ processed, created }) => {
+          if (created > 0) {
+            toast.success(`Создано ${created} транзакций для подписок`);
+          }
+        },
+      });
+    }
+  }, [subscriptions.length]);
+
+  // Уведомления о предстоящих платежах
+  useEffect(() => {
+    if (subscriptions.length > 0) {
+      import('@/modules/finance/services').then((m) => {
+        m.getUpcomingPayments(7).then((upcoming) => {
+          if (upcoming.length > 0) {
+            upcoming.forEach((sub) => {
+              const daysUntil = Math.ceil(
+                (sub.next_billing_date - Date.now()) / (1000 * 60 * 60 * 24)
+              );
+              if (daysUntil === 1) {
+                toast.warning(`Завтра платеж: ${sub.name} (${sub.amount} ₽)`);
+              } else if (daysUntil === 0) {
+                toast.warning(`Сегодня платеж: ${sub.name} (${sub.amount} ₽)`);
+              }
+            });
+          }
+        });
+      });
+    }
+  }, [subscriptions.length]);
+
+  const { data: paymentHistory = [] } = useSubscriptionPaymentHistory(selectedSubscription || undefined);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,6 +99,9 @@ export default function SubscriptionsPage() {
         currency: 'RUB',
         billing_period: period,
         next_billing_date: nextBillingDate.getTime(),
+        account_id: formData.get('account_id') as string,
+        category_id: formData.get('category_id') as string,
+        description: (formData.get('description') as string) || undefined,
         url: (formData.get('url') as string) || undefined,
         user_id: 'current-user',
       },
@@ -104,6 +152,21 @@ export default function SubscriptionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          style={{ height: '32px' }}
+          onClick={() => {
+            processPayments.mutate(undefined, {
+              onSuccess: ({ created }) => {
+                toast.success(`Создано ${created} транзакций`);
+              },
+            });
+          }}
+        >
+          <Bell className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Проверить платежи</span>
+        </Button>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Switch
@@ -132,20 +195,72 @@ export default function SubscriptionsPage() {
                     <Input name="name" placeholder="Например: Netflix" required />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="amount">Сумма</Label>
-                    <Input name="amount" type="number" step="0.01" required />
+                    <Label htmlFor="description">Описание (опционально)</Label>
+                    <Input name="description" placeholder="Например: Стриминг фильмов" />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="billing_period">Период</Label>
-                    <select
-                      name="billing_period"
-                      defaultValue="monthly"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="weekly">Еженедельно</option>
-                      <option value="monthly">Ежемесячно</option>
-                      <option value="yearly">Ежегодно</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="amount">Сумма</Label>
+                      <Input name="amount" type="number" step="0.01" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="billing_period">Период</Label>
+                      <select
+                        name="billing_period"
+                        defaultValue="monthly"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="weekly">Еженедельно</option>
+                        <option value="monthly">Ежемесячно</option>
+                        <option value="yearly">Ежегодно</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="account_id">Счёт списания</Label>
+                      <select
+                        name="account_id"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        required
+                      >
+                        <option value="">Выберите счёт</option>
+                        {accounts.map((account) => (
+                          <option key={account.id} value={account.id}>
+                            {account.name} ({account.balance} {account.currency})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="category_id">Категория</Label>
+                      <select
+                        name="category_id"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        required
+                      >
+                        <option value="">Выберите категорию</option>
+                        {categories
+                          .filter((c) => !c.parent_id && c.type === 'expense')
+                          .map((rootCategory) => {
+                            const children = categories.filter(
+                              (c) => c.parent_id === rootCategory.id && c.type === 'expense'
+                            );
+                            return [
+                              // Родительская категория
+                              <option key={rootCategory.id} value={rootCategory.id}>
+                                {rootCategory.name}
+                              </option>,
+                              // Подкатегории с отступом
+                              ...children.map((child) => (
+                                <option key={child.id} value={child.id}>
+                                  {'\u00A0\u00A0'}└─ {child.name}
+                                </option>
+                              ))
+                            ];
+                          })}
+                      </select>
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="url">Ссылка (опционально)</Label>
@@ -233,18 +348,27 @@ export default function SubscriptionsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     {sub.url && (
                       <a
                         href={sub.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline"
+                        className="text-sm text-primary hover:underline truncate"
                       >
-                        Открыть сайт →
+                        🔗 Сайт
                       </a>
                     )}
-                    <Button variant="ghost" size="icon" className="ml-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-auto"
+                      onClick={() => setSelectedSubscription(sub.id)}
+                    >
+                      <History className="h-4 w-4 mr-2" />
+                      История
+                    </Button>
+                    <Button variant="ghost" size="icon">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -254,6 +378,43 @@ export default function SubscriptionsPage() {
           })
         )}
       </div>
+
+      {/* Payment History Dialog */}
+      <Dialog open={!!selectedSubscription} onOpenChange={() => setSelectedSubscription(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>История платежей</DialogTitle>
+            <DialogDescription>
+              {subscriptions.find((s) => s.id === selectedSubscription)?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {paymentHistory.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                История платежей пуста
+              </p>
+            ) : (
+              paymentHistory.map((transaction: any) => (
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                >
+                  <div>
+                    <p className="font-medium">{transaction.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-red-600">-{transaction.amount} ₽</p>
+                    <p className="text-xs text-muted-foreground">{transaction.currency}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

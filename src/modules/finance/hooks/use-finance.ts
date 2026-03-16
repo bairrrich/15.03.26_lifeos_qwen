@@ -215,6 +215,29 @@ export function useCreateSubscription() {
   });
 }
 
+// Subscription Payments
+export function useProcessSubscriptionPayments() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => import('../services').then(m => m.processSubscriptionPayments()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+}
+
+export function useSubscriptionPaymentHistory(subscriptionId?: string) {
+  return useQuery({
+    queryKey: ['subscription-payments', subscriptionId],
+    queryFn: () =>
+      subscriptionId
+        ? import('../services').then(m => m.getSubscriptionPaymentHistory(subscriptionId))
+        : Promise.resolve([]),
+    enabled: !!subscriptionId,
+  });
+}
+
 // Investments
 export function useInvestments() {
   return useQuery({

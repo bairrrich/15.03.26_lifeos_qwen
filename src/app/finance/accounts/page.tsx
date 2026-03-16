@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,8 +22,9 @@ import {
   useUpdateAccount,
   useDeleteAccount,
 } from '@/modules/finance/hooks';
-import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, Archive, Edit, Trash2 } from 'lucide-react';
+import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { initializeFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 
 const typeIcons: Record<string, any> = {
   cash: Wallet,
@@ -31,6 +32,7 @@ const typeIcons: Record<string, any> = {
   card: CreditCard,
   investment: TrendingUp,
   crypto: Bitcoin,
+  savings: PiggyBank,
   other: Wallet,
 };
 
@@ -40,17 +42,25 @@ const typeLabels: Record<string, string> = {
   card: 'Карта',
   investment: 'Инвестиции',
   crypto: 'Криптовалюта',
+  savings: 'Вклад',
   other: 'Другое',
 };
 
 export default function AccountsPage() {
-  const { data: accounts = [] } = useAccounts();
+  const { data: accounts = [], isLoading } = useAccounts();
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
   const deleteAccount = useDeleteAccount();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<{ id: string; name: string; balance: number; type: string; currency?: string } | null>(null);
+
+  // Инициализация счетов по умолчанию
+  useEffect(() => {
+    if (!isLoading && accounts.length === 0) {
+      initializeFinanceAccounts();
+    }
+  }, [isLoading, accounts.length]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -167,6 +177,7 @@ export default function AccountsPage() {
                     <option value="bank">Банковский счёт</option>
                     <option value="card">Карта</option>
                     <option value="investment">Инвестиции</option>
+                    <option value="savings">Вклад</option>
                     <option value="crypto">Криптовалюта</option>
                     <option value="other">Другое</option>
                   </select>
@@ -255,7 +266,7 @@ export default function AccountsPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                          <Icon className="h-5 w-5 text-primary" />
+                          <Icon className="h-5 w-5 text-primary shrink-0" />
                         </div>
                         <div>
                           <CardTitle className="text-base">{account.name}</CardTitle>
@@ -317,7 +328,7 @@ export default function AccountsPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          <Icon className="h-5 w-5 text-muted-foreground" />
+                          <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
                         </div>
                         <div>
                           <CardTitle className="text-base">{account.name}</CardTitle>
