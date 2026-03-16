@@ -52,36 +52,36 @@ export function QuickAdd() {
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="finance" className="mt-4">
-            <TabsList className="grid w-full grid-cols-3 gap-2 mb-4">
-              <TabsTrigger value="finance" className="flex items-center gap-2 py-2 h-12">
+          <Tabs defaultValue="finance">
+            <TabsList className="grid w-full grid-cols-3 gap-2 mb-6">
+              <TabsTrigger value="finance" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <DollarSign className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Финансы</span>
               </TabsTrigger>
-              <TabsTrigger value="habit" className="flex items-center gap-2 py-2 h-12">
+              <TabsTrigger value="habit" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <Target className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Привычка</span>
               </TabsTrigger>
-              <TabsTrigger value="food" className="flex items-center gap-2 py-2 h-12">
+              <TabsTrigger value="food" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <Utensils className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Питание</span>
               </TabsTrigger>
-              <TabsTrigger value="workout" className="flex items-center gap-2 py-2 h-12">
+              <TabsTrigger value="workout" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <Dumbbell className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Тренировка</span>
               </TabsTrigger>
-              <TabsTrigger value="book" className="flex items-center gap-2 py-2 h-12">
+              <TabsTrigger value="book" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <BookOpen className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Книга</span>
               </TabsTrigger>
-              <TabsTrigger value="goal" className="flex items-center gap-2 py-2 h-12">
+              <TabsTrigger value="goal" className="flex items-center justify-center gap-2 py-3 h-auto min-h-[48px]">
                 <Target className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm whitespace-nowrap">Цель</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Finance */}
-            <TabsContent value="finance" className="space-y-4 mt-0">
+            <TabsContent value="finance" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Тип</Label>
@@ -105,7 +105,7 @@ export function QuickAdd() {
             </TabsContent>
 
             {/* Habit */}
-            <TabsContent value="habit" className="space-y-4 mt-0">
+            <TabsContent value="habit" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Название</Label>
@@ -126,7 +126,7 @@ export function QuickAdd() {
             </TabsContent>
 
             {/* Food */}
-            <TabsContent value="food" className="space-y-4 mt-0">
+            <TabsContent value="food" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Название</Label>
@@ -159,7 +159,7 @@ export function QuickAdd() {
             </TabsContent>
 
             {/* Workout */}
-            <TabsContent value="workout" className="space-y-4 mt-0">
+            <TabsContent value="workout" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Название</Label>
@@ -176,7 +176,7 @@ export function QuickAdd() {
             </TabsContent>
 
             {/* Book */}
-            <TabsContent value="book" className="space-y-4 mt-0">
+            <TabsContent value="book" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Название</Label>
@@ -193,7 +193,7 @@ export function QuickAdd() {
             </TabsContent>
 
             {/* Goal */}
-            <TabsContent value="goal" className="space-y-4 mt-0">
+            <TabsContent value="goal" className="space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Название</Label>
