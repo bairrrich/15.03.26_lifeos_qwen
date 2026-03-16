@@ -29,6 +29,8 @@ import {
   useInvestmentTransactions,
   useCreateInvestmentTransaction,
   useUpdateInvestment,
+  useAccounts,
+  useCreateTransaction,
 } from '@/modules/finance/hooks';
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { format } from 'date-fns';
@@ -56,9 +58,11 @@ const transactionTypeLabels: Record<InvestmentTransactionType['type'], string> =
 
 export default function InvestmentsPage() {
   const { data: investments = [] } = useInvestments();
+  const { data: accounts = [] } = useAccounts();
   const createInvestment = useCreateInvestment();
   const updateInvestment = useUpdateInvestment();
   const createInvestmentTransaction = useCreateInvestmentTransaction();
+  const createTransaction = useCreateTransaction();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
@@ -104,7 +108,9 @@ export default function InvestmentsPage() {
     const quantity = Number(formData.get('quantity'));
     const price = Number(formData.get('price'));
     const total = quantity * price;
+    const accountId = formData.get('account_id') as string;
 
+    // Создаём операцию с инвестицией
     createInvestmentTransaction.mutate(
       {
         investment_id: selectedInvestment,
@@ -127,6 +133,22 @@ export default function InvestmentsPage() {
             updateInvestment.mutate({
               id: selectedInvestment,
               data: { quantity: newQuantity },
+            });
+          }
+
+          // Создаём обычную транзакцию для учёта денег
+          if (accountId && (transactionType === 'buy' || transactionType === 'sell' || transactionType === 'dividend')) {
+            createTransaction.mutate({
+              account_id: accountId,
+              amount: total,
+              currency: investment.currency,
+              category_id: transactionType === 'dividend' ? undefined : undefined, // TODO: категория
+              type: transactionType === 'buy' ? 'expense' : 'income',
+              description: `${transactionTypeLabels[transactionType]} ${investment.ticker || investment.name}`,
+              date: Date.now(),
+              merchant: investment.name,
+              tags: ['investment', transactionType],
+              user_id: 'current-user',
             });
           }
 
@@ -411,6 +433,23 @@ export default function InvestmentsPage() {
                   <Input name="price" type="number" step="0.01" required />
                 </div>
               </div>
+              {(transactionType === 'buy' || transactionType === 'sell' || transactionType === 'dividend') && (
+                <div className="grid gap-2">
+                  <Label htmlFor="account_id">Счёт</Label>
+                  <select
+                    name="account_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    required
+                  >
+                    <option value="">Выберите счёт</option>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name} ({account.balance} {account.currency})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setTransactionDialogOpen(false)}>
