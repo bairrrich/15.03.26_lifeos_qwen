@@ -5,4 +5,5 @@ export {
   BudgetService,
   SubscriptionService,
   InvestmentService,
+  InvestmentTransactionService,
 } from './finance-services';

@@ -7,18 +7,20 @@ export interface Account extends BaseEntity {
   currency: string;
   icon?: string;
   color?: string;
+  is_archived?: boolean;
 }
 
 export interface Transaction extends BaseEntity {
   account_id: string;
   amount: number;
   currency: string;
-  category_id: string;
-  type: 'income' | 'expense';
+  category_id?: string;
+  type: 'income' | 'expense' | 'transfer';
   description: string;
   date: number;
   merchant?: string;
   tags?: string[];
+  transfer_to_account_id?: string;
 }
 
 export interface Category extends BaseEntity {
@@ -26,6 +28,8 @@ export interface Category extends BaseEntity {
   type: 'income' | 'expense';
   color?: string;
   icon?: string;
+  parent_id?: string;
+  is_system?: boolean;
 }
 
 export interface Budget extends BaseEntity {
@@ -34,6 +38,9 @@ export interface Budget extends BaseEntity {
   currency: string;
   period: 'month' | 'week' | 'year';
   start_date: number;
+  end_date?: number;
+  spent?: number;
+  alert_threshold?: number;
 }
 
 export interface Subscription extends BaseEntity {
@@ -44,6 +51,7 @@ export interface Subscription extends BaseEntity {
   next_billing_date: number;
   url?: string;
   icon?: string;
+  is_active?: boolean;
 }
 
 export interface Investment extends BaseEntity {
@@ -52,6 +60,26 @@ export interface Investment extends BaseEntity {
   ticker?: string;
   quantity: number;
   purchase_price: number;
+  average_buy_price?: number;
   current_price?: number;
+  current_value?: number;
+  invested_amount?: number;
+  unrealized_pnl?: number;
+  realized_pnl?: number;
   currency: string;
+  notes?: string;
+  tags?: string[];
+  is_archived?: boolean;
+}
+
+export interface InvestmentTransaction extends BaseEntity {
+  investment_id: string;
+  type: 'buy' | 'sell' | 'dividend' | 'fee' | 'split' | 'interest';
+  date: number;
+  quantity: number;
+  price: number;
+  fee?: number;
+  total: number;
+  currency: string;
+  notes?: string;
 }

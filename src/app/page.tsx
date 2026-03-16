@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   DollarSign,
   TrendingDown,
+  TrendingUp,
   Target,
   Dumbbell,
   BookOpen,
@@ -32,6 +33,7 @@ import {
 } from 'recharts';
 import { useDashboardStats, useFinanceChartData, useHabitsChartData } from '@/core/analytics/use-analytics';
 import { useWeeklyWorkoutStats } from '@/modules/workouts/hooks';
+import { useAccounts, useInvestments } from '@/modules/finance/hooks';
 import { WorkoutSummaryCard } from '@/modules/workouts/components';
 
 const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4'];
@@ -41,6 +43,20 @@ export default function DashboardPage() {
   const { data: financeData, isLoading: financeLoading } = useFinanceChartData(6);
   const { data: habitsData, isLoading: habitsLoading } = useHabitsChartData();
   const { data: weeklyWorkoutStats } = useWeeklyWorkoutStats(Date.now());
+  const { data: accounts = [] } = useAccounts();
+  const { data: investments = [] } = useInvestments();
+
+  // Расчет Net Worth
+  const totalBankBalance = accounts
+    .filter((a) => a.type !== 'investment' && a.type !== 'crypto')
+    .reduce((sum, acc) => sum + acc.balance, 0);
+
+  const totalInvestmentValue = investments.reduce((sum, inv) => {
+    const price = inv.current_price || inv.purchase_price;
+    return sum + price * inv.quantity;
+  }, 0);
+
+  const netWorth = totalBankBalance + totalInvestmentValue;
 
   const widgets = [
     {
@@ -50,6 +66,14 @@ export default function DashboardPage() {
       trend: stats && stats.balance >= 0 ? 'up' : 'down',
       icon: DollarSign,
       color: 'text-green-600',
+    },
+    {
+      title: 'Net Worth',
+      value: netWorth ? `${netWorth.toLocaleString()} ₽` : '...',
+      change: `${totalInvestmentValue.toLocaleString()} ₽ в инвестициях`,
+      trend: 'up',
+      icon: TrendingUp,
+      color: 'text-blue-600',
     },
     {
       title: 'Расходы (мес)',

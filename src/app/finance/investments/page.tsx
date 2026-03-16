@@ -16,11 +16,25 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
   useInvestments,
   useCreateInvestment,
+  useInvestmentTransactions,
+  useCreateInvestmentTransaction,
+  useUpdateInvestment,
 } from '@/modules/finance/hooks';
-import { Plus, TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
+import type { InvestmentTransaction as InvestmentTransactionType } from '@/modules/finance/entities';
 
 const typeLabels: Record<string, string> = {
   stock: 'Акции',
@@ -31,11 +45,25 @@ const typeLabels: Record<string, string> = {
   other: 'Другое',
 };
 
+const transactionTypeLabels: Record<InvestmentTransactionType['type'], string> = {
+  buy: 'Покупка',
+  sell: 'Продажа',
+  dividend: 'Дивиденд',
+  fee: 'Комиссия',
+  split: 'Сплит',
+  interest: 'Процент',
+};
+
 export default function InvestmentsPage() {
   const { data: investments = [] } = useInvestments();
   const createInvestment = useCreateInvestment();
+  const updateInvestment = useUpdateInvestment();
+  const createInvestmentTransaction = useCreateInvestmentTransaction();
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
+  const [selectedInvestment, setSelectedInvestment] = useState<string | null>(null);
+  const [transactionType, setTransactionType] = useState<InvestmentTransactionType['type']>('buy');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,6 +89,52 @@ export default function InvestmentsPage() {
         },
         onError: () => {
           toast.error('Ошибка при добавлении инвестиции');
+        },
+      }
+    );
+  };
+
+  const handleTransactionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const investment = investments.find((i) => i.id === selectedInvestment);
+
+    if (!investment || !selectedInvestment) return;
+
+    const quantity = Number(formData.get('quantity'));
+    const price = Number(formData.get('price'));
+    const total = quantity * price;
+
+    createInvestmentTransaction.mutate(
+      {
+        investment_id: selectedInvestment,
+        type: transactionType,
+        date: Date.now(),
+        quantity,
+        price,
+        total: transactionType === 'buy' ? -total : total,
+        currency: investment.currency,
+        user_id: 'current-user',
+      },
+      {
+        onSuccess: () => {
+          // Обновляем позицию при покупке/продаже
+          if (transactionType === 'buy' || transactionType === 'sell') {
+            const newQuantity = transactionType === 'buy'
+              ? investment.quantity + quantity
+              : investment.quantity - quantity;
+
+            updateInvestment.mutate({
+              id: selectedInvestment,
+              data: { quantity: newQuantity },
+            });
+          }
+
+          toast.success('Операция добавлена');
+          setTransactionDialogOpen(false);
+        },
+        onError: () => {
+          toast.error('Ошибка при добавлении операции');
         },
       }
     );
@@ -94,67 +168,73 @@ export default function InvestmentsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Инвестиции</h1>
           <p className="text-muted-foreground">Учёт активов и портфель</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить актив
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>Новая инвестиция</DialogTitle>
-                <DialogDescription>Добавьте актив в портфель</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Название</Label>
-                  <Input name="name" placeholder="Например: Apple Inc." required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="type">Тип</Label>
-                  <select
-                    name="type"
-                    defaultValue="stock"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="stock">Акции</option>
-                    <option value="bond">Облигации</option>
-                    <option value="etf">ETF</option>
-                    <option value="crypto">Криптовалюта</option>
-                    <option value="real_estate">Недвижимость</option>
-                    <option value="other">Другое</option>
-                  </select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="ticker">Тикер (опционально)</Label>
-                  <Input name="ticker" placeholder="AAPL" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setTransactionDialogOpen(true)}>
+            <History className="h-4 w-4 mr-2" />
+            Операция
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Добавить актив
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <DialogHeader>
+                  <DialogTitle>Новая инвестиция</DialogTitle>
+                  <DialogDescription>Добавьте актив в портфель</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="quantity">Количество</Label>
-                    <Input name="quantity" type="number" step="0.01" required />
+                    <Label htmlFor="name">Название</Label>
+                    <Input name="name" placeholder="Например: Apple Inc." required />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="purchase_price">Цена покупки</Label>
-                    <Input name="purchase_price" type="number" step="0.01" required />
+                    <Label htmlFor="type">Тип</Label>
+                    <select
+                      name="type"
+                      defaultValue="stock"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="stock">Акции</option>
+                      <option value="bond">Облигации</option>
+                      <option value="etf">ETF</option>
+                      <option value="crypto">Криптовалюта</option>
+                      <option value="real_estate">Недвижимость</option>
+                      <option value="other">Другое</option>
+                    </select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="ticker">Тикер (опционально)</Label>
+                    <Input name="ticker" placeholder="AAPL" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="quantity">Количество</Label>
+                      <Input name="quantity" type="number" step="0.01" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="purchase_price">Цена покупки</Label>
+                      <Input name="purchase_price" type="number" step="0.01" required />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="current_price">Текущая цена (опционально)</Label>
+                    <Input name="current_price" type="number" step="0.01" />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="current_price">Текущая цена (опционально)</Label>
-                  <Input name="current_price" type="number" step="0.01" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Отмена
-                </Button>
-                <Button type="submit">Добавить</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                    Отмена
+                  </Button>
+                  <Button type="submit">Добавить</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -283,6 +363,68 @@ export default function InvestmentsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Transaction Dialog */}
+      <Dialog open={transactionDialogOpen} onOpenChange={setTransactionDialogOpen}>
+        <DialogContent>
+          <form onSubmit={handleTransactionSubmit}>
+            <DialogHeader>
+              <DialogTitle>Операция с инвестицией</DialogTitle>
+              <DialogDescription>Добавьте операцию покупки, продажи или дивиденда</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="investment_id">Актив</Label>
+                <select
+                  name="investment_id"
+                  value={selectedInvestment || ''}
+                  onChange={(e) => setSelectedInvestment(e.target.value || null)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">Выберите актив</option>
+                  {investments.map((inv) => (
+                    <option key={inv.id} value={inv.id}>
+                      {inv.name} ({inv.ticker || inv.type})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="type">Тип операции</Label>
+                <select
+                  value={transactionType}
+                  onChange={(e) => setTransactionType(e.target.value as InvestmentTransactionType['type'])}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="buy">Покупка</option>
+                  <option value="sell">Продажа</option>
+                  <option value="dividend">Дивиденд</option>
+                  <option value="fee">Комиссия</option>
+                  <option value="split">Сплит</option>
+                  <option value="interest">Процент</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="quantity">Количество</Label>
+                  <Input name="quantity" type="number" step="0.01" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Цена за единицу</Label>
+                  <Input name="price" type="number" step="0.01" required />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setTransactionDialogOpen(false)}>
+                Отмена
+              </Button>
+              <Button type="submit">Добавить</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

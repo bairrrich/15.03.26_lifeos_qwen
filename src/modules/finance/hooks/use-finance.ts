@@ -8,8 +8,9 @@ import {
   BudgetService,
   SubscriptionService,
   InvestmentService,
+  InvestmentTransactionService,
 } from '../services';
-import type { Account, Transaction, Category, Budget, Subscription, Investment } from '../entities';
+import type { Account, Transaction, Category, Budget, Subscription, Investment, InvestmentTransaction } from '../entities';
 
 const accountService = new AccountService();
 const transactionService = new TransactionService();
@@ -17,6 +18,7 @@ const categoryService = new CategoryService();
 const budgetService = new BudgetService();
 const subscriptionService = new SubscriptionService();
 const investmentService = new InvestmentService();
+const investmentTransactionService = new InvestmentTransactionService();
 
 // Accounts
 export function useAccounts() {
@@ -227,6 +229,65 @@ export function useCreateInvestment() {
       >
     ) => investmentService.create({ ...data, user_id: 'current-user' }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['investments'] });
+    },
+  });
+}
+
+export function useUpdateInvestment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Investment> }) =>
+      investmentService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['investments'] });
+    },
+  });
+}
+
+export function useDeleteInvestment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => investmentService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['investments'] });
+    },
+  });
+}
+
+// Investment Transactions
+export function useInvestmentTransactions(investmentId?: string) {
+  return useQuery({
+    queryKey: ['investment-transactions', investmentId],
+    queryFn: () => investmentId ? investmentTransactionService.getByInvestment(investmentId) : Promise.resolve([]),
+    enabled: !!investmentId,
+  });
+}
+
+export function useAllInvestmentTransactions() {
+  return useQuery({
+    queryKey: ['investment-transactions'],
+    queryFn: () => investmentTransactionService.getAll(),
+  });
+}
+
+export function useCreateInvestmentTransaction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      data: Omit<
+        InvestmentTransaction,
+        | 'id'
+        | 'created_at'
+        | 'updated_at'
+        | 'deleted_at'
+        | 'version'
+        | 'sync_status'
+        | 'last_synced_at'
+      >
+    ) => investmentTransactionService.create({ ...data, user_id: 'current-user' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['investment-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['investments'] });
     },
   });

@@ -1,1 +1,9 @@
-export type { Account, Transaction, Category, Budget, Subscription, Investment } from './types';
+export type {
+    Account,
+    Transaction,
+    Category,
+    Budget,
+    Subscription,
+    Investment,
+    InvestmentTransaction,
+} from './types';

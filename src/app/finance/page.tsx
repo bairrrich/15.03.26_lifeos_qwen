@@ -50,12 +50,8 @@ export default function FinancePage() {
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
   const createTransaction = useCreateTransaction();
-  const createAccount = useCreateAccount();
-  const createCategory = useCreateCategory();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
-  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
 
@@ -87,45 +83,6 @@ export default function FinancePage() {
         },
         onError: () => {
           toast.error('Ошибка при добавлении транзакции');
-        },
-      }
-    );
-  };
-
-  const handleCreateAccount = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    createAccount.mutate(
-      {
-        name: formData.get('name') as string,
-        type: 'bank',
-        balance: Number(formData.get('balance')),
-        currency: formData.get('currency') as string || 'RUB',
-        user_id: 'current-user',
-      },
-      {
-        onSuccess: () => {
-          toast.success('Счёт создан');
-          setAccountDialogOpen(false);
-        },
-      }
-    );
-  };
-
-  const handleCreateCategory = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    createCategory.mutate(
-      {
-        name: formData.get('name') as string,
-        type: formData.get('type') as 'income' | 'expense',
-        color: formData.get('color') as string || '#6366f1',
-        user_id: 'current-user',
-      },
-      {
-        onSuccess: () => {
-          toast.success('Категория создана');
-          setCategoryDialogOpen(false);
         },
       }
     );
@@ -187,6 +144,10 @@ export default function FinancePage() {
           <p className="text-muted-foreground">Управляйте своими финансами</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/accounts'}>
+            <Wallet className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Счета</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/budgets'}>
             <PieChart className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Бюджеты</span>
@@ -198,14 +159,6 @@ export default function FinancePage() {
           <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/investments'}>
             <TrendingUp className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Инвестиции</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setAccountDialogOpen(true)}>
-            <Wallet className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Счёт</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setCategoryDialogOpen(true)}>
-            <Tags className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Категория</span>
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -463,85 +416,6 @@ export default function FinancePage() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Account Dialog */}
-      <Dialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
-        <DialogContent>
-          <form onSubmit={handleCreateAccount}>
-            <DialogHeader>
-              <DialogTitle>Новый счёт</DialogTitle>
-              <DialogDescription>Добавьте новый финансовый счёт</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="account-name">Название</Label>
-                <Input name="name" placeholder="Например: Основной счёт" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="account-balance">Баланс</Label>
-                <Input name="balance" type="number" step="0.01" defaultValue="0" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="account-currency">Валюта</Label>
-                <select
-                  name="currency"
-                  defaultValue="RUB"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="RUB">RUB</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                </select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setAccountDialogOpen(false)}>
-                Отмена
-              </Button>
-              <Button type="submit">Создать</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Category Dialog */}
-      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent>
-          <form onSubmit={handleCreateCategory}>
-            <DialogHeader>
-              <DialogTitle>Новая категория</DialogTitle>
-              <DialogDescription>Добавьте новую категорию для транзакций</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="category-name">Название</Label>
-                <Input name="name" placeholder="Например: Продукты" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category-type">Тип</Label>
-                <select
-                  name="type"
-                  defaultValue="expense"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="expense">Расход</option>
-                  <option value="income">Доход</option>
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category-color">Цвет</Label>
-                <Input name="color" type="color" defaultValue="#6366f1" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCategoryDialogOpen(false)}>
-                Отмена
-              </Button>
-              <Button type="submit">Создать</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
