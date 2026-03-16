@@ -23,7 +23,7 @@ import {
   useFoods,
   useNutritionGoal,
 } from '@/modules/nutrition/hooks';
-import { Plus, Utensils, Flame, TrendingUp } from 'lucide-react';
+import { Plus, Utensils, Flame, TrendingUp, Apple, ChefHat } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -110,160 +110,170 @@ export default function NutritionPage() {
           <h1 className="text-3xl font-bold tracking-tight">Питание</h1>
           <p className="text-muted-foreground">Дневник питания и подсчёт КБЖУ</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить продукт
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>Добавить продукт</DialogTitle>
-                <DialogDescription>Выберите продукт и укажите количество</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="meal_type">Приём пищи</Label>
-                  <select
-                    value={selectedMeal}
-                    onChange={(e) => setSelectedMeal(e.target.value as any)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">Выберите приём пищи</option>
-                    <option value="breakfast">Завтрак</option>
-                    <option value="lunch">Обед</option>
-                    <option value="dinner">Ужин</option>
-                    <option value="snack">Перекус</option>
-                  </select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="food_id">Продукт</Label>
-                  <select
-                    name="food_id"
-
-
-
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">Выберите продукт</option>
-
-                  </select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="quantity">
-                    Количество ({foods.find((f) => f.id === logs[0]?.food_id)?.serving_unit || 'г'})
-                  </Label>
-                  <Input name="quantity" type="number" min="1" defaultValue="100" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Отмена
-                </Button>
-                <Button type="submit">Добавить</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Калории</CardTitle>
-            <Flame className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dailyNutrition?.calories || 0} / {caloriesLimit}
-            </div>
-            <Progress value={caloriesPercent} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Белки</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dailyNutrition?.protein || 0} / {proteinLimit}г
-            </div>
-            <Progress value={proteinPercent} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Жиры</CardTitle>
-            <TrendingUp className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dailyNutrition?.fat || 0} / {fatLimit}г
-            </div>
-            <Progress value={fatPercent} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Углеводы</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dailyNutrition?.carbs || 0} / {carbsLimit}г
-            </div>
-            <Progress value={carbsPercent} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Дневник питания</CardTitle>
-          <CardDescription>{format(today, 'dd MMMM yyyy', { locale: ru })}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v as any)}>
-            <TabsList className="grid grid-cols-4 gap-2">
-              <TabsTrigger value="breakfast">Завтрак</TabsTrigger>
-              <TabsTrigger value="lunch">Обед</TabsTrigger>
-              <TabsTrigger value="dinner">Ужин</TabsTrigger>
-              <TabsTrigger value="snack">Перекус</TabsTrigger>
-            </TabsList>
-            <TabsContent value={selectedMeal} className="mt-4">
-              {mealLogs.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  <Utensils className="mx-auto h-8 w-8 mb-2 opacity-50" />
-                  <p>Нет записей за сегодня</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {mealLogs.map((log) => (
-                    <div
-                      key={log.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/foods'}>
+            <Apple className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Продукты</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/recipes'}>
+            <ChefHat className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Рецепты</span>
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Продукт</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <DialogHeader>
+                  <DialogTitle>Добавить продукт</DialogTitle>
+                  <DialogDescription>Выберите продукт и укажите количество</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="meal_type">Приём пищи</Label>
+                    <select
+                      value={selectedMeal}
+                      onChange={(e) => setSelectedMeal(e.target.value as any)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
-                      <div>
-                        <p className="font-medium">{log.meal_name || 'Продукт'}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {log.quantity}г • {log.calories} ккал
-                        </p>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Б: {log.protein}г | Ж: {log.fat}г | У: {log.carbs}г
-                      </div>
-                    </div>
-                  ))}
+                      <option value="">Выберите приём пищи</option>
+                      <option value="breakfast">Завтрак</option>
+                      <option value="lunch">Обед</option>
+                      <option value="dinner">Ужин</option>
+                      <option value="snack">Перекус</option>
+                    </select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="food_id">Продукт</Label>
+                    <select
+                      name="food_id"
+
+
+
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Выберите продукт</option>
+
+                    </select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="quantity">
+                      Количество ({foods.find((f) => f.id === logs[0]?.food_id)?.serving_unit || 'г'})
+                    </Label>
+                    <Input name="quantity" type="number" min="1" defaultValue="100" />
+                  </div>
                 </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                    Отмена
+                  </Button>
+                  <Button type="submit">Добавить</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Калории</CardTitle>
+              <Flame className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {dailyNutrition?.calories || 0} / {caloriesLimit}
+              </div>
+              <Progress value={caloriesPercent} className="mt-2 h-2" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Белки</CardTitle>
+              <TrendingUp className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {dailyNutrition?.protein || 0} / {proteinLimit}г
+              </div>
+              <Progress value={proteinPercent} className="mt-2 h-2" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Жиры</CardTitle>
+              <TrendingUp className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {dailyNutrition?.fat || 0} / {fatLimit}г
+              </div>
+              <Progress value={fatPercent} className="mt-2 h-2" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Углеводы</CardTitle>
+              <TrendingUp className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {dailyNutrition?.carbs || 0} / {carbsLimit}г
+              </div>
+              <Progress value={carbsPercent} className="mt-2 h-2" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Дневник питания</CardTitle>
+            <CardDescription>{format(today, 'dd MMMM yyyy', { locale: ru })}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v as any)}>
+              <TabsList className="grid grid-cols-4 gap-2">
+                <TabsTrigger value="breakfast">Завтрак</TabsTrigger>
+                <TabsTrigger value="lunch">Обед</TabsTrigger>
+                <TabsTrigger value="dinner">Ужин</TabsTrigger>
+                <TabsTrigger value="snack">Перекус</TabsTrigger>
+              </TabsList>
+              <TabsContent value={selectedMeal} className="mt-4">
+                {mealLogs.length === 0 ? (
+                  <div className="py-8 text-center text-muted-foreground">
+                    <Utensils className="mx-auto h-8 w-8 mb-2 opacity-50" />
+                    <p>Нет записей за сегодня</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {mealLogs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                      >
+                        <div>
+                          <p className="font-medium">{log.meal_name || 'Продукт'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {log.quantity}г • {log.calories} ккал
+                          </p>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Б: {log.protein}г | Ж: {log.fat}г | У: {log.carbs}г
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
