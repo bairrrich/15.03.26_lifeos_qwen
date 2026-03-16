@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { getLocalUser, signInLocally, signOutLocally, onAuthStateChange, type LocalUser } from '@/core/auth';
+import { getLocalUser, signInLocally, signOutLocally, onAuthStateChange } from '@/core/auth';
 import type { User } from '@supabase/supabase-js';
 
 interface AuthUser {

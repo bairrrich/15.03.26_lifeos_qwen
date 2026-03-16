@@ -2,10 +2,11 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
-import { AutomationService } from '../services'
+import { AutomationService, AutomationLogService } from '../services'
 import type { AutomationRule } from '../entities'
 
 const automationService = new AutomationService()
+const automationLogService = new AutomationLogService()
 
 export function useAutomations() {
   return useQuery({

@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 import { useActiveWorkout, useCreateWorkoutLog, useUpdatePR, useExercisePRs } from '@/modules/workouts/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { RestTimer, SetRow, ExerciseSearch, PRBadge } from '@/modules/workouts/components';
-import type { SetType as SetTypeEnum, WorkoutExercise } from '@/modules/workouts/entities';
+import type { SetType as SetTypeEnum, WorkoutExercise, Exercise } from '@/modules/workouts/entities';
 
 interface ActiveWorkoutScreenProps {
   workoutId: string;
@@ -199,7 +199,7 @@ export function ActiveWorkoutScreen({ workoutId, workoutName, onFinish }: Active
     console.log('Update set:', setIndex, updates);
   };
 
-  const handleAddExercise = (exercise: typeof exercises[0]) => {
+  const handleAddExercise = (exercise: Exercise) => {
     setWorkoutExercises([
       ...workoutExercises,
       {

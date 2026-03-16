@@ -1,5 +1,5 @@
 import { TransactionService, SubscriptionService } from './finance-services';
-import type { Subscription } from '../entities';
+import type { Transaction, Subscription } from '../entities';
 
 const transactionService = new TransactionService();
 const subscriptionService = new SubscriptionService();
@@ -125,7 +125,7 @@ export async function notifyUpcomingPayments(days: number = 7): Promise<void> {
  */
 export async function getSubscriptionPaymentHistory(
   subscriptionId: string
-): Promise<Record<string, unknown>[]> {
+): Promise<Transaction[]> {
   const [transactions, subscription] = await Promise.all([
     transactionService.getAll(),
     subscriptionService.getById(subscriptionId),

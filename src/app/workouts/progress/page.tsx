@@ -31,6 +31,7 @@ import {
 } from 'recharts';
 
 import { usePRs, useWeeklyWorkoutStats, useExercises } from '@/modules/workouts/hooks';
+import { PRBadge } from '@/modules/workouts/components/pr-badge';
 
 export default function ProgressPage() {
   const { data: prs = [] } = usePRs();
@@ -106,7 +107,7 @@ export default function ProgressPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
-        <Select value={timeRange} onValueChange={(v) => setTimeRange(v)}>
+        <Select value={timeRange} onValueChange={(v) => { if (v) setTimeRange(v); }}>
           <SelectTrigger className="w-[140px]" style={{ height: '32px' }}>
             <SelectValue />
           </SelectTrigger>

@@ -25,6 +25,7 @@ export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     // Проверяем, не нажимал ли пользователь "Позже" недавно
@@ -33,6 +34,7 @@ export function PWAInstallPrompt() {
       const dismissedTime = parseInt(dismissed, 10);
       const now = Date.now();
       if (now - dismissedTime < PWA_DISMISSED_EXPIRY) {
+        setIsDismissed(true);
         return; // Не показываем диалог
       }
       // Истекло время, удаляем запись
@@ -40,6 +42,20 @@ export function PWAInstallPrompt() {
     }
 
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      // Проверяем ещё раз перед показом - не нажимал ли пользователь "Позже" недавно
+      if (isDismissed) {
+        return; // Не показываем диалог
+      }
+      
+      const dismissed = localStorage.getItem(PWA_DISMISSED_KEY);
+      if (dismissed) {
+        const dismissedTime = parseInt(dismissed, 10);
+        const now = Date.now();
+        if (now - dismissedTime < PWA_DISMISSED_EXPIRY) {
+          return; // Не показываем диалог
+        }
+      }
+      
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstall(true);
@@ -66,7 +82,7 @@ export function PWAInstallPrompt() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
     };
-  }, []);
+  }, [isDismissed]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;

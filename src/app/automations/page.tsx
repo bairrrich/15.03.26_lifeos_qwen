@@ -21,7 +21,7 @@ import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Zap, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
-import type { TriggerType, ActionType } from '@/modules/automations/entities'
+import type { TriggerType, ActionType, AutomationLog } from '@/modules/automations/entities'
 
 const triggerLabels: Record<string, string> = {
   habit_completed: 'Привычка выполнена',
@@ -211,7 +211,7 @@ export default function AutomationsPage() {
               <p className="text-muted-foreground text-center py-8">Нет срабатываний</p>
             ) : (
               <div className="space-y-3">
-                {recentLogs.map((log: any) => (
+                {recentLogs.map((log: AutomationLog) => (
                   <div key={log.id} className="p-3 rounded-lg border">
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{log.rule_name}</p>
@@ -220,7 +220,7 @@ export default function AutomationsPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {log.actions_executed.every((a: any) => a.success) ? (
+                      {log.actions_executed.every((a) => a.success) ? (
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
                       ) : (
                         <XCircle className="h-4 w-4 text-red-500" />

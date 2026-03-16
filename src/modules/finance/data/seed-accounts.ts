@@ -1,4 +1,5 @@
 import type { Account } from '../entities';
+import type { AccountService } from '../services';
 
 // Предустановленные счета по умолчанию
 export const defaultAccounts: Omit<Account, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'version' | 'sync_status' | 'last_synced_at'>[] = [
@@ -26,7 +27,7 @@ export const defaultAccounts: Omit<Account, 'id' | 'created_at' | 'updated_at' |
 ];
 
 // Функция для инициализации seed-счетов
-export async function initializeSeedAccounts(accountService: Record<string, unknown>): Promise<void> {
+export async function initializeSeedAccounts(accountService: AccountService): Promise<void> {
   const SEEDED_KEY = 'finance_accounts_seeded_v1';
 
   // Проверяем, были ли уже добавлены счета
@@ -52,14 +53,7 @@ export async function initializeSeedAccounts(accountService: Record<string, unkn
 
     // Создаём все счета по умолчанию
     for (const account of defaultAccounts) {
-      await accountService.create({
-        ...account,
-        id: crypto.randomUUID(),
-        created_at: Date.now(),
-        updated_at: Date.now(),
-        version: 1,
-        sync_status: 'synced',
-      });
+      await accountService.create(account);
     }
 
     if (typeof localStorage !== 'undefined') {

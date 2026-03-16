@@ -1,4 +1,5 @@
 import type { Category } from '../entities';
+import { CategoryService } from '../services';
 
 // Предустановленные категории расходов
 export const expenseCategories: Array<
@@ -84,7 +85,7 @@ export const incomeCategories: Array<
   ];
 
 // Функция для инициализации seed-категорий
-export async function initializeSeedCategories(categoryService: Record<string, unknown>): Promise<void> {
+export async function initializeSeedCategories(categoryService: CategoryService): Promise<void> {
   const SEEDED_KEY = 'finance_categories_seeded_v1';
 
   // Проверяем, были ли уже добавлены категории
@@ -113,14 +114,10 @@ export async function initializeSeedCategories(categoryService: Record<string, u
     const createdParents: Record<string, string> = {}; // name -> id mapping
 
     for (const category of parentCategories) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const created = await categoryService.create({
         ...category,
-        id: crypto.randomUUID(),
-        created_at: Date.now(),
-        updated_at: Date.now(),
-        version: 1,
-        sync_status: 'synced',
-      });
+      } as any);
       createdParents[category.name] = created.id;
     }
 
@@ -131,15 +128,11 @@ export async function initializeSeedCategories(categoryService: Record<string, u
       // Находим ID родительской категории по имени
       const parentId = createdParents[category.parentName!];
       if (parentId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await categoryService.create({
           ...category,
           parent_id: parentId,
-          id: crypto.randomUUID(),
-          created_at: Date.now(),
-          updated_at: Date.now(),
-          version: 1,
-          sync_status: 'synced',
-        });
+        } as any);
       }
     }
 

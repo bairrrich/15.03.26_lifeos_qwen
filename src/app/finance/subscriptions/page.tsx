@@ -24,7 +24,6 @@ import {
   useProcessSubscriptionPayments,
   useSubscriptionPaymentHistory,
 } from '@/modules/finance/hooks';
-import type { Transaction } from '@/modules/finance/entities';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell } from 'lucide-react';
 import { format, addMonths, addWeeks, addYears } from 'date-fns';

@@ -19,7 +19,7 @@ export class CrudService<T extends BaseEntity> {
   protected syncService = syncService;
 
   constructor(tableName: string) {
-    this.table = (db as Record<string, Table<T>>)[tableName];
+    this.table = (db as any)[tableName];
   }
 
   /**
@@ -116,12 +116,13 @@ export class CrudService<T extends BaseEntity> {
     const existing = await this.getById(id);
     if (!existing) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await this.table.update(id, {
       ...updates,
       updated_at: Date.now(),
       version: existing.version + 1,
       sync_status: 'local',
-    } as unknown);
+    } as any);
 
     // Запускаем синхронизацию после обновления
     this.triggerSync();
@@ -148,7 +149,7 @@ export class CrudService<T extends BaseEntity> {
   async findByField<K extends keyof T>(field: K, value: T[K]): Promise<T[]> {
     return await this.table
       .where(field as string)
-      .equals(value as unknown)
+      .equals(value as any)
       .toArray();
   }
 
@@ -163,6 +164,7 @@ export class CrudService<T extends BaseEntity> {
    * Отметить сущность как синхронизированную
    */
   async markAsSynced(id: string): Promise<void> {
-    await this.table.update(id, { sync_status: 'synced', last_synced_at: Date.now() } as unknown);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await this.table.update(id, { sync_status: 'synced', last_synced_at: Date.now() } as any);
   }
 }

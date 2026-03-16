@@ -135,7 +135,7 @@ export default function NutritionPage() {
                   <Label htmlFor="meal_type">Приём пищи</Label>
                   <select
                     value={selectedMeal}
-                    onChange={(e) => setSelectedMeal(e.target.value)}
+                    onChange={(e) => setSelectedMeal(e.target.value as 'breakfast' | 'lunch' | 'dinner' | 'snack')}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="">Выберите приём пищи</option>
@@ -229,21 +229,21 @@ export default function NutritionPage() {
         </Card>
       </div>
 
-      {/* Food Diary */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Дневник питания</CardTitle>
-          <CardDescription>{format(today, 'dd MMMM yyyy', { locale: ru })}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v)}>
-            <TabsList className="grid grid-cols-4 gap-2">
-              <TabsTrigger value="breakfast">Завтрак</TabsTrigger>
-              <TabsTrigger value="lunch">Обед</TabsTrigger>
-              <TabsTrigger value="dinner">Ужин</TabsTrigger>
-              <TabsTrigger value="snack">Перекус</TabsTrigger>
-            </TabsList>
-            <TabsContent value={selectedMeal} className="mt-4">
+      {/* Food Diary - Tabs outside Card for consistency with other pages */}
+      <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v)}>
+        <TabsList className="grid grid-cols-4 gap-2">
+          <TabsTrigger value="breakfast">Завтрак</TabsTrigger>
+          <TabsTrigger value="lunch">Обед</TabsTrigger>
+          <TabsTrigger value="dinner">Ужин</TabsTrigger>
+          <TabsTrigger value="snack">Перекус</TabsTrigger>
+        </TabsList>
+        <TabsContent value={selectedMeal} className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Дневник питания</CardTitle>
+              <CardDescription>{format(today, 'dd MMMM yyyy', { locale: ru })}</CardDescription>
+            </CardHeader>
+            <CardContent>
               {mealLogs.length === 0 ? (
                 <div className="py-8 text-center text-muted-foreground">
                   <Utensils className="mx-auto h-8 w-8 mb-2 opacity-50" />
@@ -269,10 +269,10 @@ export default function NutritionPage() {
                   ))}
                 </div>
               )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div >
   );
 }
