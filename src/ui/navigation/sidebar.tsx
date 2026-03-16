@@ -14,6 +14,7 @@ import {
   Sparkles,
   Settings,
   LogOut,
+  LogIn,
   ChevronLeft,
   ChevronRight,
   Zap,
@@ -25,8 +26,10 @@ import {
   Tags,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button';
-import { signOut } from '@/core/auth';
+import { SyncStatus } from '@/components/ui/sync-status';
+import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
 import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
 
 const navigation = [
   { name: 'Дашборд', href: '/', icon: LayoutDashboard },
@@ -58,6 +61,26 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const isFinanceSection = pathname.startsWith('/finance');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Проверяем статус авторизации при монтировании и при изменении
+    const checkAuth = () => {
+      const local = isLocalMode();
+      const localUser = getLocalUser();
+      // Проверяем локальный режим или cookie сессии
+      const hasSession = local || document.cookie.includes('supabase-auth-token');
+      setIsLoggedIn(hasSession || !!localUser);
+    };
+
+    checkAuth();
+
+    // Слушаем изменения storage (для выхода из других вкладок)
+    const handleStorageChange = () => checkAuth();
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   return (
     <aside
@@ -128,17 +151,32 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
       )}
 
-      <div className="absolute bottom-4 left-0 right-0 p-2">
+      <div className="absolute bottom-4 left-0 right-0 p-2 space-y-2">
+        {!collapsed && <SyncStatus />}
         <Button
           variant="ghost"
           className={cn('w-full justify-start gap-3', collapsed && 'justify-center')}
           onClick={async () => {
-            await signOut();
-            toast.success('Вы успешно вышли');
+            if (isLoggedIn) {
+              try {
+                await signOut();
+              } catch (error) {
+                toast.error('Ошибка при выходе');
+              }
+            } else {
+              // Если не авторизован - переход на страницу логина
+              window.location.href = '/login';
+            }
           }}
         >
-          <LogOut className="h-5 w-5" />
-          {!collapsed && <span>Выйти</span>}
+          {isLoggedIn ? (
+            <LogOut className="h-5 w-5" />
+          ) : (
+            <LogIn className="h-5 w-5" />
+          )}
+          {!collapsed && (
+            <span>{isLoggedIn ? 'Выйти' : 'Войти'}</span>
+          )}
         </Button>
       </div>
     </aside>

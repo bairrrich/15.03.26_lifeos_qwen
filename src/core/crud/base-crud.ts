@@ -1,17 +1,46 @@
 import type { BaseEntity } from '@/core/entity';
 import type { Table } from 'dexie';
 import { db } from '@/core/database';
+import { syncService } from '@/core/sync';
+import { getLocalUser } from '@/core/auth';
 
 /**
  * Базовый CRUD сервис для работы с сущностями
+ *
+ * Все операции create/update/delete помечают записи как 'local'
+ * и автоматически отправляются в очередь на синхронизацию с Supabase
+ *
+ * В локальном режиме user_id берётся из локального пользователя
  */
 export class CrudService<T extends BaseEntity> {
   protected table: Table<T>;
   protected db = db;
+  protected syncService = syncService;
 
   constructor(tableName: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.table = (db as any)[tableName];
+  }
+
+  /**
+   * Получить текущего пользователя (локальный или 'demo-user')
+   */
+  protected getUserId(): string {
+    const localUser = getLocalUser();
+    if (localUser) {
+      return localUser.id;
+    }
+    return 'demo-user';
+  }
+
+  /**
+   * Триггерит фоновую синхронизацию после изменения данных
+   */
+  protected triggerSync(): void {
+    // Запускаем синхронизацию в фоне (не ждем завершения)
+    this.syncService.sync().catch((err) => {
+      console.warn('Background sync failed:', err);
+    });
   }
 
   /**
@@ -39,6 +68,10 @@ export class CrudService<T extends BaseEntity> {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const id = await this.table.add(newEntity as any);
+
+    // Запускаем синхронизацию после создания
+    this.triggerSync();
+
     return { ...newEntity, id } as T;
   }
 
@@ -71,6 +104,9 @@ export class CrudService<T extends BaseEntity> {
       version: existing.version + 1,
       sync_status: 'local',
     } as any);
+
+    // Запускаем синхронизацию после обновления
+    this.triggerSync();
   }
 
   /**
@@ -78,6 +114,7 @@ export class CrudService<T extends BaseEntity> {
    */
   async delete(id: string): Promise<void> {
     await this.update(id, { deleted_at: Date.now() } as Partial<T>);
+    // triggerSync вызывается внутри update
   }
 
   /**

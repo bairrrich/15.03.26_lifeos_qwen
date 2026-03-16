@@ -11,6 +11,7 @@ import {
   InvestmentTransactionService,
 } from '../services';
 import type { Account, Transaction, Category, Budget, Subscription, Investment, InvestmentTransaction } from '../entities';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 
 const accountService = new AccountService();
 const transactionService = new TransactionService();
@@ -42,7 +43,7 @@ export function useCreateAccount() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => accountService.create({ ...data, user_id: 'current-user' }),
+    ) => accountService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
     },
@@ -92,7 +93,7 @@ export function useCreateTransaction() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => transactionService.create({ ...data, user_id: 'current-user' }),
+    ) => transactionService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
@@ -140,7 +141,7 @@ export function useCreateCategory() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => categoryService.create({ ...data, user_id: 'current-user' }),
+    ) => categoryService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
@@ -179,7 +180,7 @@ export function useCreateBudget() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => budgetService.create({ ...data, user_id: 'current-user' }),
+    ) => budgetService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
     },
@@ -208,7 +209,7 @@ export function useCreateSubscription() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => subscriptionService.create({ ...data, user_id: 'current-user' }),
+    ) => subscriptionService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
     },
@@ -260,7 +261,7 @@ export function useCreateInvestment() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => investmentService.create({ ...data, user_id: 'current-user' }),
+    ) => investmentService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['investments'] });
     },
@@ -318,7 +319,7 @@ export function useCreateInvestmentTransaction() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => investmentTransactionService.create({ ...data, user_id: 'current-user' }),
+    ) => investmentTransactionService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['investment-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['investments'] });

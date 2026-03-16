@@ -2,6 +2,10 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseInstance: SupabaseClient | null = null;
 
+/**
+ * Получить Supabase клиент для браузера
+ * Используем стандартный клиент с localStorage для сессии
+ */
 export function getSupabaseClient(): SupabaseClient | null {
   if (supabaseInstance) {
     return supabaseInstance;
@@ -14,7 +18,16 @@ export function getSupabaseClient(): SupabaseClient | null {
     return null;
   }
 
-  supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  // Стандартный клиент сохраняет сессию в localStorage
+  // Для работы middleware нам нужно проверять localStorage на клиенте
+  supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
+
   return supabaseInstance;
 }
 

@@ -23,9 +23,11 @@ export default function SettingsPage() {
   const [isImporting, setIsImporting] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut();
-    toast.success('Вы успешно вышли');
-    router.push('/login');
+    try {
+      await signOut();
+    } catch (error) {
+      toast.error('Ошибка при выходе');
+    }
   };
 
   const handleExport = async () => {

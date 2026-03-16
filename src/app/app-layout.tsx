@@ -8,9 +8,9 @@ import { Sidebar } from '@/ui/navigation/sidebar';
 import { CommandPalette } from '@/ui/navigation/command-palette';
 import { QuickAdd } from '@/ui/navigation/quick-add';
 import { Button } from '@/components/ui/button';
-import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck, Tags, BarChart3 } from 'lucide-react';
+import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, LogIn, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck, Tags, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { signOut } from '@/core/auth';
+import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
 import { toast } from 'sonner';
 
 interface AppLayoutProps {
@@ -159,6 +159,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   // Страницы без layout (login и т.д.)
   const isAuthPage = pathname === '/login';
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -171,6 +172,23 @@ export default function AppLayout({ children }: AppLayoutProps) {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Проверяем статус авторизации
+    const checkAuth = () => {
+      const local = isLocalMode();
+      const localUser = getLocalUser();
+      const hasSession = local || document.cookie.includes('supabase-auth-token');
+      setIsLoggedIn(hasSession || !!localUser);
+    };
+
+    checkAuth();
+
+    const handleStorageChange = () => checkAuth();
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Закрывать мобильное меню при навигации
@@ -331,13 +349,23 @@ export default function AppLayout({ children }: AppLayoutProps) {
               variant="ghost"
               className="w-full justify-start gap-3"
               onClick={async () => {
-                await signOut();
-                toast.success('Вы успешно вышли');
-                handleCloseMobile();
+                if (isLoggedIn) {
+                  try {
+                    await signOut();
+                  } catch (error) {
+                    toast.error('Ошибка при выходе');
+                  }
+                } else {
+                  window.location.href = '/login';
+                }
               }}
             >
-              <LogOut className="h-5 w-5" />
-              <span>Выйти</span>
+              {isLoggedIn ? (
+                <LogOut className="h-5 w-5" />
+              ) : (
+                <LogIn className="h-5 w-5" />
+              )}
+              <span>{isLoggedIn ? 'Выйти' : 'Войти'}</span>
             </Button>
           </div>
         </div>
