@@ -125,7 +125,7 @@ export async function notifyUpcomingPayments(days: number = 7): Promise<void> {
  */
 export async function getSubscriptionPaymentHistory(
   subscriptionId: string
-): Promise<any[]> {
+): Promise<Record<string, unknown>[]> {
   const [transactions, subscription] = await Promise.all([
     transactionService.getAll(),
     subscriptionService.getById(subscriptionId),

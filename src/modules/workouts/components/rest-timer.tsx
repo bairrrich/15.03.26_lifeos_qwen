@@ -15,7 +15,6 @@ export function RestTimer({ initialSeconds = 90, onComplete, className }: RestTi
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

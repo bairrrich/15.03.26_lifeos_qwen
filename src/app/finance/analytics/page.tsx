@@ -14,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useTransactions,
   useCategories,
-  useAccounts,
 } from '@/modules/finance/hooks';
 import {
   TrendingUp,
@@ -25,11 +24,9 @@ import {
   Calendar,
   Download,
 } from 'lucide-react';
-import { format, subMonths, subWeeks, subYears } from 'date-fns';
+import { format, subMonths, subYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   PieChart,
@@ -50,14 +47,12 @@ const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6'
 export default function FinanceAnalyticsPage() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
-  const { data: accounts = [] } = useAccounts();
 
   const [timeRange, setTimeRange] = useState<'month' | 'quarter' | 'year' | 'all'>('quarter');
   const [categoryChartType, setCategoryChartType] = useState<'pie' | 'bar'>('pie');
 
   // Фильтрация транзакций по периоду
   const getFilteredTransactions = () => {
-    const now = Date.now();
     let startDate: number;
 
     switch (timeRange) {
@@ -192,7 +187,9 @@ export default function FinanceAnalyticsPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
-        <Select value={timeRange} onValueChange={(v: any) => setTimeRange(v)}>
+        <Select value={timeRange} onValueChange={(v) => {
+          if (v) setTimeRange(v);
+        }}>
           <SelectTrigger className="w-[150px]">
             <SelectValue />
           </SelectTrigger>

@@ -287,7 +287,7 @@ export default function MindPage() {
         </Card>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)}>
         <TabsList className="grid grid-cols-3 gap-2">
           <TabsTrigger value="books">
             <BookOpen className="h-4 w-4 mr-2" />

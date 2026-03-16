@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAppStore } from '@/shared/hooks/use-app-store';
-import { User, Mail, Camera, Save, X, Target, Calendar, Award } from 'lucide-react';
+import { User, Mail, Camera, Save, X, Target, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ProfilePage() {

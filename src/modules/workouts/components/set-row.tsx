@@ -2,9 +2,9 @@
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Set as SetEntity, SetType } from '../entities';
+import type { SetType } from '../entities';
 
 interface SetRowProps {
   setNumber: number;
@@ -18,7 +18,6 @@ interface SetRowProps {
   onWeightChange: (value: number) => void;
   onRPEChange?: (value: number) => void;
   onComplete: () => void;
-  onDelete?: () => void;
   className?: string;
 }
 
@@ -34,7 +33,6 @@ export function SetRow({
   onWeightChange,
   onRPEChange,
   onComplete,
-  onDelete,
   className,
 }: SetRowProps) {
   const getTypeColor = () => {

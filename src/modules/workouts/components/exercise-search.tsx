@@ -7,11 +7,10 @@ import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Search, Filter, Star } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useExercises, useFavoriteExercises } from '../hooks';

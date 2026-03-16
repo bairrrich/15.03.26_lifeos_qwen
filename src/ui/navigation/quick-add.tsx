@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 
 export function QuickAdd() {
   const [open, setOpen] = useState(false);
-  const { quickAddOpen, setQuickAddOpen } = useAppStore();
+  const { setQuickAddOpen } = useAppStore();
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);

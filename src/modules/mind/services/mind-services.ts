@@ -21,12 +21,11 @@ export class BookService extends CrudService<Book> {
     const progress = Math.round((pagesRead / book.pages_total) * 100);
     const status: Book['status'] = progress >= 100 ? 'completed' : 'reading';
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await this.update(bookId, {
       pages_read: pagesRead,
       status,
       finished_at: status === 'completed' ? Date.now() : book.finished_at,
-    } as any);
+    } as unknown);
   }
 }
 

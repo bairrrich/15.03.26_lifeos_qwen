@@ -19,7 +19,6 @@ import {
 import {
   useRecipes,
   useCreateRecipe,
-  useFoods,
 } from '@/modules/nutrition/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, ChefHat, Clock, Users, Trash2 } from 'lucide-react';
@@ -27,7 +26,6 @@ import { toast } from 'sonner';
 
 export default function RecipesPage() {
   const { data: recipes = [] } = useRecipes();
-  const { data: foods = [] } = useFoods();
   const createRecipe = useCreateRecipe();
 
   const [dialogOpen, setDialogOpen] = useState(false);

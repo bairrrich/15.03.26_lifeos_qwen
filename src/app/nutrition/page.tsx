@@ -135,7 +135,7 @@ export default function NutritionPage() {
                   <Label htmlFor="meal_type">Приём пищи</Label>
                   <select
                     value={selectedMeal}
-                    onChange={(e) => setSelectedMeal(e.target.value as any)}
+                    onChange={(e) => setSelectedMeal(e.target.value)}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="">Выберите приём пищи</option>
@@ -236,7 +236,7 @@ export default function NutritionPage() {
           <CardDescription>{format(today, 'dd MMMM yyyy', { locale: ru })}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v as any)}>
+          <Tabs value={selectedMeal} onValueChange={(v) => setSelectedMeal(v)}>
             <TabsList className="grid grid-cols-4 gap-2">
               <TabsTrigger value="breakfast">Завтрак</TabsTrigger>
               <TabsTrigger value="lunch">Обед</TabsTrigger>

@@ -185,8 +185,8 @@ export default function BeautyPage() {
       <Tabs
         value={activeTab}
         onValueChange={(v) =>
-          setActiveTab(v as any)
-        } /* eslint-disable-line @typescript-eslint/no-explicit-any */
+          setActiveTab(v)
+        }
       >
         <TabsList className="grid grid-cols-3 gap-2">
           <TabsTrigger value="products">Продукты</TabsTrigger>

@@ -8,12 +8,8 @@ import {
   TrendingUp,
   Target,
   Dumbbell,
-  BookOpen,
-  Heart,
-  Sparkles,
   Utensils,
   Zap,
-  Activity,
   Moon,
   Award,
 } from 'lucide-react';
@@ -34,12 +30,11 @@ import {
 import { useDashboardStats, useFinanceChartData, useHabitsChartData } from '@/core/analytics/use-analytics';
 import { useWeeklyWorkoutStats } from '@/modules/workouts/hooks';
 import { useAccounts, useInvestments } from '@/modules/finance/hooks';
-import { WorkoutSummaryCard } from '@/modules/workouts/components';
 
 const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4'];
 
 export default function DashboardPage() {
-  const { data: stats, isLoading: statsLoading } = useDashboardStats(30);
+  const { data: stats } = useDashboardStats(30);
   const { data: financeData, isLoading: financeLoading } = useFinanceChartData(6);
   const { data: habitsData, isLoading: habitsLoading } = useHabitsChartData();
   const { data: weeklyWorkoutStats } = useWeeklyWorkoutStats(Date.now());

@@ -14,7 +14,7 @@ export class FamilyService extends CrudService<Family> {
 
   async getMemberCount(familyId: string): Promise<number> {
     const members = await db.table('family_members').toArray()
-    return members.filter((m: any) => m.family_id === familyId && m.is_active).length
+    return members.filter((m: Record<string, unknown>) => (m.family_id as string) === familyId && (m.is_active as boolean)).length
   }
 }
 

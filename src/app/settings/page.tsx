@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
 import { NotificationSettingsCard } from '@/shared/components/notification-settings';
 import { Moon, Sun, Monitor, User as UserIcon, Database, LogOut, Download, Upload, Trash2, LayoutGrid, Users, LogIn } from 'lucide-react';
-import { signOut, getCurrentUserOrLocal, isLocalMode, getLocalUser } from '@/core/auth';
+import { signOut, getCurrentUserOrLocal } from '@/core/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { dataExportImportService } from '@/core/database/export-import';
@@ -47,11 +47,7 @@ export default function SettingsPage() {
   }, []);
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      toast.error('Ошибка при выходе');
-    }
+    await signOut();
   };
 
   const handleExport = async () => {

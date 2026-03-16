@@ -26,7 +26,7 @@ export const defaultAccounts: Omit<Account, 'id' | 'created_at' | 'updated_at' |
 ];
 
 // Функция для инициализации seed-счетов
-export async function initializeSeedAccounts(accountService: any): Promise<void> {
+export async function initializeSeedAccounts(accountService: Record<string, unknown>): Promise<void> {
   const SEEDED_KEY = 'finance_accounts_seeded_v1';
 
   // Проверяем, были ли уже добавлены счета

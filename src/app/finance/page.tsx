@@ -27,8 +27,6 @@ import {
   useCategories,
   useAccounts,
   useCreateTransaction,
-  useCreateAccount,
-  useCreateCategory,
   useUpdateTransaction,
   useDeleteTransaction,
 } from '@/modules/finance/hooks';
@@ -40,7 +38,6 @@ import { useEffect } from 'react';
 import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,15 +86,15 @@ export default function FinancePage() {
   const [selectedAccount, setSelectedAccount] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
-  const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Record<string, unknown> | null>(null);
   const [deleteTransactionId, setDeleteTransactionId] = useState<string | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
   // Автозаполнение полей при редактировании
   useEffect(() => {
     if (editingTransaction) {
-      setSelectedType(editingTransaction.type);
-      setSelectedAccountId(editingTransaction.account_id || '');
+      setSelectedType(editingTransaction.type as 'income' | 'expense' | 'transfer');
+      setSelectedAccountId(editingTransaction.account_id as string || '');
     } else {
       // Сбрасываем тип на расход при открытии новой транзакции
       setSelectedType('expense');
@@ -105,7 +102,7 @@ export default function FinancePage() {
     }
   }, [editingTransaction]);
 
-  const handleEdit = (transaction: any) => {
+  const handleEdit = (transaction: Record<string, unknown>) => {
     setEditingTransaction(transaction);
     setDialogOpen(true);
   };
@@ -384,7 +381,7 @@ export default function FinancePage() {
                         name="category_id"
                         defaultValue={editingTransaction?.category_id}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        required={selectedType !== ('transfer' as any)}
+                        required={selectedType !== 'transfer'}
                       >
                         <option value="">Выберите категорию</option>
                         {categories
@@ -410,7 +407,7 @@ export default function FinancePage() {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="description">Описание</Label>
-                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== ('transfer' as any)} />
+                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== 'transfer'} />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="merchant">Мерчант (опционально)</Label>

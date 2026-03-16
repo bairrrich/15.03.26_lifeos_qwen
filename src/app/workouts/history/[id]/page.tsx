@@ -10,15 +10,12 @@ import {
   Clock,
   Dumbbell,
   Star,
-  Calendar,
   TrendingUp,
-  Award,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { useWorkoutLogs, useExercises } from '@/modules/workouts/hooks';
-import { PRBadge } from '@/modules/workouts/components';
 
 export default function WorkoutHistoryDetailPage() {
   const params = useParams();
@@ -195,11 +192,10 @@ export default function WorkoutHistoryDetailPage() {
                   {exercise.sets.map((set, setIndex) => (
                     <div
                       key={setIndex}
-                      className={`grid grid-cols-[60px_1fr_1fr_80px] gap-2 items-center p-2 rounded-lg ${
-                        set.completed
-                          ? 'bg-green-500/10 border border-green-500/30'
-                          : 'bg-muted/50'
-                      }`}
+                      className={`grid grid-cols-[60px_1fr_1fr_80px] gap-2 items-center p-2 rounded-lg ${set.completed
+                        ? 'bg-green-500/10 border border-green-500/30'
+                        : 'bg-muted/50'
+                        }`}
                     >
                       <span className="text-sm font-medium">#{setIndex + 1}</span>
                       <span className="text-sm font-semibold">{set.weight}</span>

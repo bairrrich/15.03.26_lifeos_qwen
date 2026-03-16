@@ -69,7 +69,7 @@ export function useCreateCourse() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => courseService.create({ ...data, user_id: 'current-user' }),
+    ) => courseService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
     },
@@ -98,7 +98,7 @@ export function useCreateMovie() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => movieService.create({ ...data, user_id: 'current-user' }),
+    ) => movieService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] });
     },
@@ -134,7 +134,7 @@ export function useCreateArticle() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => articleService.create({ ...data, user_id: 'current-user' }),
+    ) => articleService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['articles'] });
     },
@@ -170,7 +170,7 @@ export function useCreateNote() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => noteService.create({ ...data, user_id: 'current-user' }),
+    ) => noteService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },

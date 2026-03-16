@@ -23,12 +23,10 @@ import {
   Repeat,
   TrendingUp,
   Wallet,
-  Tags,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { SyncStatus } from '@/components/ui/sync-status';
 import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
-import { toast } from 'sonner';
 import { useState, useEffect, useCallback } from 'react';
 
 const navigation = [
@@ -163,11 +161,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           className={cn('w-full justify-start gap-3', collapsed && 'justify-center')}
           onClick={async () => {
             if (isLoggedIn) {
-              try {
-                await signOut();
-              } catch (error) {
-                toast.error('Ошибка при выходе');
-              }
+              await signOut();
             } else {
               // Если не авторизован - переход на страницу логина
               window.location.href = '/login';

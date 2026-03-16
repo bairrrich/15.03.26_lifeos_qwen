@@ -49,11 +49,11 @@ export default function BudgetsPage() {
   const deleteBudget = useDeleteBudget();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingBudget, setEditingBudget] = useState<any>(null);
+  const [editingBudget, setEditingBudget] = useState<Record<string, unknown> | null>(null);
   const [statsPeriod, setStatsPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [deleteBudgetId, setDeleteBudgetId] = useState<string | null>(null);
 
-  const handleEdit = (budget: any) => {
+  const handleEdit = (budget: Record<string, unknown>) => {
     setEditingBudget(budget);
     setDialogOpen(true);
   };
@@ -142,13 +142,13 @@ export default function BudgetsPage() {
   };
 
   // Подсчёт расходов по категории и всем её подкатегориям за период бюджета
-  const getBudgetExpenses = (budget: any) => {
+  const getBudgetExpenses = (budget: Record<string, unknown>) => {
     const now = Date.now();
     let periodStart: number;
     let periodEnd: number = now;
 
     // Получаем все ID категорий (родительская + все подкатегории)
-    const categoryIds = getCategoryIdsWithSubcategories(budget.category_id);
+    const categoryIds = getCategoryIdsWithSubcategories(budget.category_id as string);
 
     // Определяем начало и конец периода
     switch (budget.period) {
@@ -203,7 +203,6 @@ export default function BudgetsPage() {
 
   // Подсчёт статистики за выбранный период
   const getStatsForPeriod = (period: 'week' | 'month' | 'year') => {
-    const now = Date.now();
     let periodStart: number;
 
     switch (period) {

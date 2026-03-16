@@ -76,7 +76,7 @@ export function useCreateMeal() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => mealService.create({ ...data, user_id: 'current-user' }),
+    ) => mealService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['meals'] });
     },
@@ -105,7 +105,7 @@ export function useCreateRecipe() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => recipeService.create({ ...data, user_id: 'current-user' }),
+    ) => recipeService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
     },
@@ -152,7 +152,7 @@ export function useCreateNutritionLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => nutritionLogService.create({ ...data, user_id: 'current-user' }),
+    ) => nutritionLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['nutrition-logs'] });
       queryClient.invalidateQueries({ queryKey: ['nutrition-daily'] });
@@ -182,7 +182,7 @@ export function useCreateNutritionGoal() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => nutritionGoalService.create({ ...data, user_id: 'current-user' }),
+    ) => nutritionGoalService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['nutrition-goal'] });
     },

@@ -84,7 +84,7 @@ export const incomeCategories: Array<
   ];
 
 // Функция для инициализации seed-категорий
-export async function initializeSeedCategories(categoryService: any): Promise<void> {
+export async function initializeSeedCategories(categoryService: Record<string, unknown>): Promise<void> {
   const SEEDED_KEY = 'finance_categories_seeded_v1';
 
   // Проверяем, были ли уже добавлены категории

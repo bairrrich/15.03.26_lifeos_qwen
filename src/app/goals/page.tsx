@@ -36,16 +36,6 @@ const categoryColors: Record<string, string> = {
   other: 'bg-gray-500',
 };
 
-const categoryLabels: Record<string, string> = {
-  fitness: 'Фитнес',
-  health: 'Здоровье',
-  finance: 'Финансы',
-  learning: 'Обучение',
-  career: 'Карьера',
-  personal: 'Личное',
-  other: 'Другое',
-};
-
 export default function GoalsPage() {
   const { data: goals = [] } = useGoals();
   const { data: activeGoals = [] } = useActiveGoals();

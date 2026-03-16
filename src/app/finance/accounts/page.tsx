@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +20,7 @@ import {
   useUpdateAccount,
   useDeleteAccount,
 } from '@/modules/finance/hooks';
+import type { Account } from '@/modules/finance/entities';
 import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
@@ -37,7 +36,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-const typeIcons: Record<string, any> = {
+const typeIcons: Record<string, React.ElementType> = {
   cash: Wallet,
   bank: DollarSign,
   card: CreditCard,
@@ -114,7 +113,7 @@ export default function AccountsPage() {
 
     const accountData = {
       name: formData.get('name') as string,
-      type: formData.get('type') as any,
+      type: formData.get('type') as 'cash' | 'bank' | 'card' | 'investment' | 'crypto' | 'savings' | 'other',
       balance: Number(formData.get('balance')),
       currency: formData.get('currency') as string || 'RUB',
       user_id: userId,
@@ -147,20 +146,20 @@ export default function AccountsPage() {
     }
   };
 
-  const handleEdit = (account: any) => {
+  const handleEdit = (account: Account) => {
     setEditingAccount({
-      id: account.id,
-      name: account.name,
-      balance: account.balance,
-      type: account.type,
-      currency: account.currency,
+      id: account.id as string,
+      name: account.name as string,
+      balance: account.balance as number,
+      type: account.type as string,
+      currency: account.currency as string,
     });
     setDialogOpen(true);
   };
 
-  const handleArchive = (account: any) => {
+  const handleArchive = (account: Account) => {
     updateAccount.mutate(
-      { id: account.id, data: { ...account, is_archived: !account.is_archived } },
+      { id: account.id as string, data: { ...account, is_archived: !account.is_archived } },
       {
         onSuccess: () => {
           toast.success(account.is_archived ? 'Счёт активирован' : 'Счёт архивирован');

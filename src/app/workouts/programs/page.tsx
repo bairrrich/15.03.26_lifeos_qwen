@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import {
   Dialog,
   DialogContent,
@@ -15,34 +14,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Plus, Dumbbell, Play, CheckCircle2, Calendar, TrendingUp } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { Plus, Dumbbell, Play, CheckCircle2, Calendar, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner';
 
 import {
   useWorkoutPlans,
   useCreateWorkoutPlan,
   useSetActiveWorkoutPlan,
-  useWorkouts,
 } from '@/modules/workouts/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import type { WorkoutPlan, WorkoutGoal } from '@/modules/workouts/entities';
 
 export default function ProgramsPage() {
-  const { data: plans = [], isLoading } = useWorkoutPlans();
-  const { data: workouts = [] } = useWorkouts();
+  const { data: plans = [] } = useWorkoutPlans();
   const createPlan = useCreateWorkoutPlan();
   const setActivePlan = useSetActiveWorkoutPlan();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<WorkoutPlan | null>(null);
 
   const [newPlan, setNewPlan] = useState<{
     name: string;

@@ -10,7 +10,7 @@ import {
   WorkoutPlanService,
   PRService,
 } from '../services';
-import type { Exercise, Workout, WorkoutLog, WorkoutPlan, Set, PRRecord } from '../entities';
+import type { Exercise, Workout, WorkoutLog, WorkoutPlan, Set } from '../entities';
 
 const exerciseService = new ExerciseService();
 const setService = new SetService();

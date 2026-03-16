@@ -9,7 +9,7 @@ interface PRBadgeProps {
   className?: string;
 }
 
-export function PRBadge({ type = 'weight', value, className }: PRBadgeProps) {
+export function PRBadge({ value, className }: PRBadgeProps) {
   return (
     <div
       className={cn(

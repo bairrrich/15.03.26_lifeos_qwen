@@ -27,13 +27,11 @@ import {
   Award,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 
-import { useActiveWorkout, useCreateWorkoutLog, useExercises, useCreateSet, useSets, useUpdatePR, useExercisePRs } from '@/modules/workouts/hooks';
+import { useActiveWorkout, useCreateWorkoutLog, useUpdatePR, useExercisePRs } from '@/modules/workouts/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { RestTimer, SetRow, ExerciseSearch, PRBadge } from '@/modules/workouts/components';
-import type { Set as SetType, SetType as SetTypeEnum, WorkoutExercise } from '@/modules/workouts/entities';
+import type { SetType as SetTypeEnum, WorkoutExercise } from '@/modules/workouts/entities';
 
 interface ActiveWorkoutScreenProps {
   workoutId: string;
@@ -101,10 +99,8 @@ export function ActiveWorkoutScreen({ workoutId, workoutName, onFinish }: Active
 
   const currentExercise = workoutExercises[selectedExerciseIndex];
 
-  const { data: exercises = [] } = useExercises();
   const { sets, addSet } = useActiveWorkout(workoutId);
   const createWorkoutLog = useCreateWorkoutLog();
-  const createSet = useCreateSet();
   const updatePR = useUpdatePR();
   const { data: exercisePRs = [] } = useExercisePRs(
     currentExercise?.exercise_id || ''

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const files = [
   'src/app/habits/page.tsx',
@@ -17,10 +17,10 @@ const files = [
 files.forEach(file => {
   const filePath = path.join(__dirname, '..', file);
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Remove Select imports
   content = content.replace(/import\s*\{\s*Select,\s*SelectContent,\s*SelectItem,\s*SelectTrigger,\s*SelectValue,?\s*\}\s*from\s*['"]@\/components\/ui\/select['"];\s*/g, '');
-  
+
   // Replace Select components with native select
   content = content.replace(
     /<Select\s+name="([^"]+)"\s*(?:defaultValue="([^"]*)")?\s*(?:value=\{([^}]+)\})?\s*(?:onValueChange=\{([^}]+)\})?>\s*<SelectTrigger>\s*<SelectValue\s+placeholder="([^"]*)"\s*\/?>\s*<\/SelectTrigger>\s*<SelectContent>([\s\S]*?)<\/SelectContent>\s*<\/Select>/g,
@@ -30,7 +30,7 @@ files.forEach(file => {
         const [, val, label] = opt.match(/<SelectItem\s+value="([^"]+)">([^<]+)<\/SelectItem>/);
         return `                      <option value="${val}">${label}</option>`;
       }).join('\n');
-      
+
       return `<select
                     name="${name}"
                     ${defaultValue ? `defaultValue="${defaultValue}"` : ''}
@@ -43,7 +43,7 @@ ${optionElements}
                   </select>`;
     }
   );
-  
+
   fs.writeFileSync(filePath, content, 'utf8');
   console.log(`Processed: ${file}`);
 });

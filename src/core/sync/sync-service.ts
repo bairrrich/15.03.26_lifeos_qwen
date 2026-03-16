@@ -1,4 +1,4 @@
-import { getSupabaseClient, isLocalMode } from '@/core/auth';
+import { getSupabaseClient, isLocalMode, getLocalUser } from '@/core/auth';
 import { db } from '@/core/database';
 import type { SyncResult, SyncConflict, SyncError, SyncConfig } from './types';
 import { DEFAULT_SYNC_CONFIG } from './types';
@@ -134,13 +134,14 @@ export class SyncService {
       const userId = await this.getCurrentUserId();
 
       if (!userId) {
-        // Если пользователь не найден, используем демо-режим
-        console.warn('No user found, using demo mode');
+        // Если пользователь не найден, пропускаем синхронизацию
+        console.warn('No user found, skipping sync');
+        return result;
       }
 
       // Синхронизируем каждую таблицу
       for (const table of TABLES) {
-        const tableResult = await this.syncTable(table, userId || 'demo-user');
+        const tableResult = await this.syncTable(table, userId);
         result.syncedCount += tableResult.syncedCount;
         result.failedCount += tableResult.failedCount;
         result.conflicts.push(...tableResult.conflicts);
@@ -362,9 +363,13 @@ export class SyncService {
    * Получение текущего пользователя
    */
   private async getCurrentUserId(): Promise<string | null> {
-    // Пока используем демо-пользователя
-    // В будущем можно получать из аутентификации
-    return 'demo-user';
+    // Получаем реальный user_id из локальной аутентификации
+    const localUser = getLocalUser();
+    if (localUser) {
+      return localUser.id;
+    }
+    // Если пользователь не найден, возвращаем null
+    return null;
   }
 
   /**

@@ -93,7 +93,7 @@ export function useCreateSleepLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => sleepLogService.create({ ...data, user_id: 'current-user' }),
+    ) => sleepLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sleep-logs'] });
       queryClient.invalidateQueries({ queryKey: ['sleep-stats'] });
@@ -130,7 +130,7 @@ export function useCreateSupplement() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => supplementService.create({ ...data, user_id: 'current-user' }),
+    ) => supplementService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['supplements'] });
     },
@@ -160,7 +160,7 @@ export function useCreateSupplementLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => supplementLogService.create({ ...data, user_id: 'current-user' }),
+    ) => supplementLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['supplement-logs'] });
     },

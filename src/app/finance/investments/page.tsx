@@ -14,28 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/dialog'
 import {
   useInvestments,
   useCreateInvestment,
-  useInvestmentTransactions,
-  useCreateInvestmentTransaction,
   useUpdateInvestment,
   useAccounts,
   useCreateTransaction,
-} from '@/modules/finance/hooks';
-import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+} from '@/modules/finance/hooks'
+import { getCurrentUserId } from '@/shared/hooks/use-user-id'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History } from 'lucide-react'
 import { toast } from 'sonner';
 import type { InvestmentTransaction as InvestmentTransactionType } from '@/modules/finance/entities';
 
@@ -78,7 +66,7 @@ export default function InvestmentsPage() {
     createInvestment.mutate(
       {
         name: formData.get('name') as string,
-        type: formData.get('type') as any,
+        type: formData.get('type') as string,
         ticker: (formData.get('ticker') as string) || undefined,
         quantity: Number(formData.get('quantity')),
         purchase_price: Number(formData.get('purchase_price')),

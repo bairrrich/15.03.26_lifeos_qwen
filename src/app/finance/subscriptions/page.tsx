@@ -45,7 +45,7 @@ export default function SubscriptionsPage() {
   useEffect(() => {
     if (subscriptions.length > 0) {
       processPayments.mutate(undefined, {
-        onSuccess: ({ processed, created }) => {
+        onSuccess: ({ created }) => {
           if (created > 0) {
             toast.success(`Создано ${created} транзакций для подписок`);
           }
@@ -396,9 +396,9 @@ export default function SubscriptionsPage() {
                 История платежей пуста
               </p>
             ) : (
-              paymentHistory.map((transaction: any) => (
+              paymentHistory.map((transaction: Record<string, unknown>) => (
                 <div
-                  key={transaction.id}
+                  key={(transaction.id as string)}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
                 >
                   <div>

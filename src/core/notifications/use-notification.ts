@@ -21,7 +21,6 @@ export function useNotification(options: UseNotificationOptions = {}) {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsSupported(NotificationService.isSupported());
 
     setPermission(NotificationService.getPermissionStatus());

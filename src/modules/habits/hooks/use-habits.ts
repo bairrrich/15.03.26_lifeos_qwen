@@ -97,7 +97,7 @@ export function useLogHabit() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => habitLogService.create({ ...data, user_id: 'current-user' }),
+    ) => habitLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habit-logs'] });
       queryClient.invalidateQueries({ queryKey: ['habits'] });

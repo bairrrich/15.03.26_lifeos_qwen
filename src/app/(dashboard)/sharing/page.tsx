@@ -16,8 +16,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Switch } from '@/components/ui/switch'
 import { useFamily, useFamilyMembers, useCreateFamily, useCreateInvitation, useRemoveMember } from '@/modules/sharing/hooks'
+import type { FamilyRole } from '@/modules/sharing/entities'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Users, Mail, Shield, UserX, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
@@ -98,7 +98,7 @@ export default function SharingPage() {
         email: formData.get('email') as string,
         invited_by: getCurrentUserId(),
         invited_by_name: 'Вы',
-        role: formData.get('role') as any,
+        role: formData.get('role') as FamilyRole,
         share_scope: ['all'],
       },
       {

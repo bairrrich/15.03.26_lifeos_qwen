@@ -19,19 +19,34 @@ export class CrudService<T extends BaseEntity> {
   protected syncService = syncService;
 
   constructor(tableName: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.table = (db as any)[tableName];
+    this.table = (db as Record<string, Table<T>>)[tableName];
   }
 
   /**
-   * Получить текущего пользователя (локальный или 'demo-user')
+   * Получить текущего пользователя (локальный или анонимный ID)
    */
   protected getUserId(): string {
     const localUser = getLocalUser();
     if (localUser) {
       return localUser.id;
     }
-    return 'demo-user';
+    // Генерируем уникальный анонимный ID для новых пользователей
+    return this.getAnonymousUserId();
+  }
+
+  /**
+   * Получить или создать анонимный ID пользователя
+   */
+  private getAnonymousUserId(): string {
+    const ANON_KEY = 'lifeos_anon_user_id';
+    if (typeof window === 'undefined') return 'anon-' + Date.now();
+
+    let anonId = localStorage.getItem(ANON_KEY);
+    if (!anonId) {
+      anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem(ANON_KEY, anonId);
+    }
+    return anonId;
   }
 
   /**
@@ -99,13 +114,12 @@ export class CrudService<T extends BaseEntity> {
     const existing = await this.getById(id);
     if (!existing) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await this.table.update(id, {
       ...updates,
       updated_at: Date.now(),
       version: existing.version + 1,
       sync_status: 'local',
-    } as any);
+    } as unknown);
 
     // Запускаем синхронизацию после обновления
     this.triggerSync();
@@ -130,10 +144,9 @@ export class CrudService<T extends BaseEntity> {
    * Поиск сущностей по полю
    */
   async findByField<K extends keyof T>(field: K, value: T[K]): Promise<T[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return await this.table
       .where(field as string)
-      .equals(value as any)
+      .equals(value as unknown)
       .toArray();
   }
 
@@ -148,7 +161,6 @@ export class CrudService<T extends BaseEntity> {
    * Отметить сущность как синхронизированную
    */
   async markAsSynced(id: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await this.table.update(id, { sync_status: 'synced', last_synced_at: Date.now() } as any);
+    await this.table.update(id, { sync_status: 'synced', last_synced_at: Date.now() } as unknown);
   }
 }

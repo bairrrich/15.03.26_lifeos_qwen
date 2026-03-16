@@ -4,14 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/shared/hooks/use-app-store';
-import { Sidebar } from '@/ui/navigation/sidebar';
 import { CommandPalette } from '@/ui/navigation/command-palette';
 import { QuickAdd } from '@/ui/navigation/quick-add';
 import { Button } from '@/components/ui/button';
 import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, LogIn, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck, Tags, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
-import { toast } from 'sonner';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -56,7 +54,7 @@ const workoutsSubItems = [
 ];
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  const { sidebarOpen, toggleSidebar } = useAppStore();
+  const { sidebarOpen } = useAppStore();
   const [isMobile, setIsMobile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -206,7 +204,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }
 
   const isOpen = isMobile ? mobileOpen : sidebarOpen;
-  const handleToggle = isMobile ? () => setMobileOpen(!mobileOpen) : toggleSidebar;
   const handleCloseMobile = () => setMobileOpen(false);
 
   return (
@@ -355,11 +352,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               className="w-full justify-start gap-3"
               onClick={async () => {
                 if (isLoggedIn) {
-                  try {
-                    await signOut();
-                  } catch (error) {
-                    toast.error('Ошибка при выходе');
-                  }
+                  await signOut();
                 } else {
                   window.location.href = '/login';
                 }

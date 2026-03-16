@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogContent,
@@ -20,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { useWidgetDefinitions, useVisibleWidgets, useCreateWidgetInstance, useCreateCustomWidget } from '@/modules/widgets/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
-import { Plus, LayoutGrid, Code, Settings, Trash2, Eye, EyeOff } from 'lucide-react'
+import { Plus, LayoutGrid, Code, Settings, Trash2, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 const typeLabels: Record<string, string> = {

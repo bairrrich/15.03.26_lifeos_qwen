@@ -7,7 +7,7 @@ import {
   FamilyInvitationService,
   SharedDataService,
 } from '../services'
-import type { Family, FamilyMember, FamilyInvitation, SharedData, FamilyRole, ShareScope } from '../entities'
+import type { Family, SharedData, FamilyRole, ShareScope } from '../entities'
 
 const familyService = new FamilyService()
 const familyMemberService = new FamilyMemberService()

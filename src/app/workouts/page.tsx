@@ -36,7 +36,7 @@ export default function WorkoutsPage() {
   today.setHours(0, 0, 0, 0);
   const todayTimestamp = today.getTime();
 
-  const { data: workouts = [], isLoading: workoutsLoading } = useWorkouts();
+  const { data: workouts = [] } = useWorkouts();
   const { data: logs = [] } = useWorkoutLogs(todayTimestamp);
   const { data: weeklyStats } = useWeeklyWorkoutStats(todayTimestamp);
   const { data: exercises = [], isLoading: exercisesLoading } = useExercises();

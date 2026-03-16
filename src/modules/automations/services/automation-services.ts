@@ -11,7 +11,7 @@ export class AutomationService extends CrudService<AutomationRule> {
     return all.filter((rule) => rule.is_active)
   }
 
-  async triggerRule(ruleId: string, triggerData?: Record<string, unknown>): Promise<void> {
+  async triggerRule(ruleId: string): Promise<void> {
     const rule = await this.getById(ruleId)
     if (!rule) return
 

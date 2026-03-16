@@ -120,7 +120,7 @@ export function useCreateBeautyRoutine() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => beautyRoutineService.create({ ...data, user_id: 'current-user' }),
+    ) => beautyRoutineService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['beauty-routines'] });
     },
@@ -165,7 +165,7 @@ export function useCreateBeautyUsageLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => beautyUsageLogService.create({ ...data, user_id: 'current-user' }),
+    ) => beautyUsageLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['beauty-usage-logs'] });
     },
@@ -201,7 +201,7 @@ export function useCreateSkinAnalysis() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => skinAnalysisService.create({ ...data, user_id: 'current-user' }),
+    ) => skinAnalysisService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skin-analyses'] });
     },

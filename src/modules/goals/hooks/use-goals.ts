@@ -98,7 +98,7 @@ export function useCreateGoalLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => goalLogService.create({ ...data, user_id: 'current-user' }),
+    ) => goalLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goal-logs'] });
     },

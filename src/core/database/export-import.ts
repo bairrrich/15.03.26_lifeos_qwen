@@ -87,7 +87,7 @@ export class DataExportImportService {
         try {
           const json = JSON.parse(event.target?.result as string);
           resolve(json);
-        } catch (error) {
+        } catch {
           reject(new Error('Неверный формат JSON'));
         }
       };

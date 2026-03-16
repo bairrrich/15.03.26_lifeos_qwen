@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -14,16 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Search, Filter, Star, StarOff, Dumbbell, Video, Trash2, Edit } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { Plus, Search, Dumbbell } from 'lucide-react'
 import { toast } from 'sonner';
 
 import {
@@ -34,10 +25,10 @@ import {
 } from '@/modules/workouts/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { ExerciseCard } from '@/modules/workouts/components';
-import type { Exercise, MuscleGroup, Equipment, Difficulty } from '@/modules/workouts/entities';
+import type { MuscleGroup, Equipment, Difficulty } from '@/modules/workouts/entities';
 
 export default function ExercisesPage() {
-  const { data: exercises = [], isLoading } = useExercises();
+  const { data: exercises = [] } = useExercises();
   const { data: favorites = [] } = useFavoriteExercises();
   const createExercise = useCreateExercise();
   const toggleFavorite = useToggleExerciseFavorite();
@@ -48,7 +39,6 @@ export default function ExercisesPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'all'>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
 
   // Форма нового упражнения
   const [newExercise, setNewExercise] = useState<{

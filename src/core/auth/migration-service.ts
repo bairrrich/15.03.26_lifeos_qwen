@@ -1,6 +1,5 @@
 import { db } from '@/core/database';
 import { getSupabaseClient } from '@/core/auth/supabase-client';
-import type { BaseEntity } from '@/core/entity';
 
 /**
  * Сервис миграции данных из локального режима в Supabase
@@ -84,7 +83,7 @@ export async function migrateLocalToSupabase(
       for (const record of localRecords) {
         try {
           // Создаём копию записи с новым user_id
-          const { id, ...data } = record;
+          const { ...data } = record;
           const newRecord = {
             ...data,
             user_id: supabaseUserId,
