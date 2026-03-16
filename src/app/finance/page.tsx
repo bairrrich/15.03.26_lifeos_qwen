@@ -82,14 +82,6 @@ export default function FinancePage() {
     );
   };
 
-  const totalIncome = transactions
-    .filter((t) => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpenses = transactions
-    .filter((t) => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
-
   const handleCreateAccount = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -129,8 +121,17 @@ export default function FinancePage() {
     );
   };
 
+  const totalIncome = transactions
+    .filter((t) => t.type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpenses = transactions
+    .filter((t) => t.type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0);
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Финансы</h1>
@@ -225,140 +226,142 @@ export default function FinancePage() {
             </DialogContent>
           </Dialog>
         </div>
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Доходы</CardTitle>
-              <ArrowUpRight className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">+{totalIncome.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Расходы</CardTitle>
-              <ArrowDownRight className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">-{totalExpenses.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Баланс</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{(totalIncome - totalExpenses).toFixed(2)}</div>
-            </CardContent>
-          </Card>
-        </div>
-
+      {/* Summary Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Транзакции</CardTitle>
-            <CardDescription>История всех ваших операций</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Доходы</CardTitle>
+            <ArrowUpRight className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="mb-4 flex gap-2">
-              <Button
-                variant={filter === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter('all')}
-              >
-                Все
-              </Button>
-              <Button
-                variant={filter === 'income' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter('income')}
-              >
-                Доходы
-              </Button>
-              <Button
-                variant={filter === 'expense' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter('expense')}
-              >
-                Расходы
-              </Button>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Дата</TableHead>
-                  <TableHead>Описание</TableHead>
-                  <TableHead>Категория</TableHead>
-                  <TableHead className="text-right">Сумма</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      Нет транзакций
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredTransactions.map((transaction) => {
-                    const category = categories.find((c) => c.id === transaction.category_id);
-                    return (
-                      <TableRow key={transaction.id}>
-                        <TableCell>
-                          {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{transaction.description}</div>
-                            {transaction.merchant && (
-                              <div className="text-xs text-muted-foreground">
-                                {transaction.merchant}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-                            style={{
-                              backgroundColor: `${category?.color || '#e5e7eb'}20`,
-                              color: category?.color || '#6b7280',
-                            }}
-                          >
-                            {category?.name || 'Без категории'}
-                          </span>
-                        </TableCell>
-                        <TableCell
-                          className={`text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                            }`}
-                        >
-                          {transaction.type === 'income' ? '+' : '-'}
-                          {transaction.amount.toFixed(2)} {transaction.currency}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              // TODO: implement delete
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+            <div className="text-2xl font-bold text-green-600">+{totalIncome.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Расходы</CardTitle>
+            <ArrowDownRight className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">-{totalExpenses.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Баланс</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(totalIncome - totalExpenses).toFixed(2)}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Dialog для создания счёта */}
+      {/* Transactions Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Транзакции</CardTitle>
+          <CardDescription>История всех ваших операций</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 flex gap-2">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('all')}
+            >
+              Все
+            </Button>
+            <Button
+              variant={filter === 'income' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('income')}
+            >
+              Доходы
+            </Button>
+            <Button
+              variant={filter === 'expense' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('expense')}
+            >
+              Расходы
+            </Button>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Дата</TableHead>
+                <TableHead>Описание</TableHead>
+                <TableHead>Категория</TableHead>
+                <TableHead className="text-right">Сумма</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTransactions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    Нет транзакций
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredTransactions.map((transaction) => {
+                  const category = categories.find((c) => c.id === transaction.category_id);
+                  return (
+                    <TableRow key={transaction.id}>
+                      <TableCell>
+                        {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{transaction.description}</div>
+                          {transaction.merchant && (
+                            <div className="text-xs text-muted-foreground">
+                              {transaction.merchant}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                          style={{
+                            backgroundColor: `${category?.color || '#e5e7eb'}20`,
+                            color: category?.color || '#6b7280',
+                          }}
+                        >
+                          {category?.name || 'Без категории'}
+                        </span>
+                      </TableCell>
+                      <TableCell
+                        className={`text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          }`}
+                      >
+                        {transaction.type === 'income' ? '+' : '-'}
+                        {transaction.amount.toFixed(2)} {transaction.currency}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            // TODO: implement delete
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Account Dialog */}
       <Dialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
         <DialogContent>
           <form onSubmit={handleCreateAccount}>
@@ -398,7 +401,7 @@ export default function FinancePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog для создания категории */}
+      {/* Category Dialog */}
       <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
         <DialogContent>
           <form onSubmit={handleCreateCategory}>
