@@ -53,28 +53,28 @@ export function QuickAdd() {
           </DialogHeader>
 
           <Tabs defaultValue="finance" className="mt-6">
-            <TabsList className="grid grid-cols-3 gap-2 h-auto">
-              <TabsTrigger value="finance" className="flex flex-col gap-1 h-auto py-3">
+            <TabsList className="grid w-full grid-cols-3 gap-2">
+              <TabsTrigger value="finance" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <DollarSign className="h-5 w-5" />
                 <span className="text-xs">Финансы</span>
               </TabsTrigger>
-              <TabsTrigger value="habit" className="flex flex-col gap-1 h-auto py-3">
+              <TabsTrigger value="habit" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <Target className="h-5 w-5" />
                 <span className="text-xs">Привычка</span>
               </TabsTrigger>
-              <TabsTrigger value="food" className="flex flex-col gap-1 h-auto py-3">
+              <TabsTrigger value="food" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <Utensils className="h-5 w-5" />
                 <span className="text-xs">Питание</span>
               </TabsTrigger>
-              <TabsTrigger value="workout" className="flex flex-col gap-1 h-auto py-3">
+              <TabsTrigger value="workout" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <Dumbbell className="h-5 w-5" />
                 <span className="text-xs">Тренировка</span>
               </TabsTrigger>
-              <TabsTrigger value="book" className="flex flex-col gap-1 h-auto py-3">
+              <TabsTrigger value="book" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <BookOpen className="h-5 w-5" />
                 <span className="text-xs">Книга</span>
               </TabsTrigger>
-              <TabsTrigger value="goal" className="flex flex-col gap-1 h-auto py-3">
+              <TabsTrigger value="goal" className="flex flex-col items-center gap-1 py-3 h-auto">
                 <Target className="h-5 w-5" />
                 <span className="text-xs">Цель</span>
               </TabsTrigger>
@@ -84,22 +84,19 @@ export function QuickAdd() {
             <TabsContent value="finance" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="fa-type">Тип</Label>
-                  <select
-                    id="fa-type"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
+                  <Label>Тип</Label>
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     <option value="expense">Расход</option>
                     <option value="income">Доход</option>
                   </select>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="fa-amount">Сумма</Label>
-                  <Input id="fa-amount" type="number" placeholder="0.00" />
+                  <Label>Сумма</Label>
+                  <Input type="number" placeholder="0.00" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="fa-description">Описание</Label>
-                  <Input id="fa-description" placeholder="Например: Продукты" />
+                  <Label>Описание</Label>
+                  <Input placeholder="Например: Продукты" />
                 </div>
                 <Button onClick={() => handleAdd('Транзакция')} className="w-full">
                   Добавить транзакцию
@@ -111,15 +108,12 @@ export function QuickAdd() {
             <TabsContent value="habit" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="h-name">Название привычки</Label>
-                  <Input id="h-name" placeholder="Например: Чтение книг" />
+                  <Label>Название</Label>
+                  <Input placeholder="Например: Чтение книг" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="h-frequency">Частота</Label>
-                  <select
-                    id="h-frequency"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
+                  <Label>Частота</Label>
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     <option value="daily">Ежедневно</option>
                     <option value="weekly">Еженедельно</option>
                     <option value="monthly">Ежемесячно</option>
@@ -135,27 +129,27 @@ export function QuickAdd() {
             <TabsContent value="food" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="f-name">Название продукта</Label>
-                  <Input id="f-name" placeholder="Например: Яблоко" />
+                  <Label>Название</Label>
+                  <Input placeholder="Например: Яблоко" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="f-calories">Ккал</Label>
-                    <Input id="f-calories" type="number" placeholder="0" />
+                    <Label>Ккал</Label>
+                    <Input type="number" placeholder="0" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="f-protein">Белки (г)</Label>
-                    <Input id="f-protein" type="number" placeholder="0" />
+                    <Label>Белки (г)</Label>
+                    <Input type="number" placeholder="0" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="f-fat">Жиры (г)</Label>
-                    <Input id="f-fat" type="number" placeholder="0" />
+                    <Label>Жиры (г)</Label>
+                    <Input type="number" placeholder="0" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="f-carbs">Углеводы (г)</Label>
-                    <Input id="f-carbs" type="number" placeholder="0" />
+                    <Label>Углеводы (г)</Label>
+                    <Input type="number" placeholder="0" />
                   </div>
                 </div>
                 <Button onClick={() => handleAdd('Продукт')} className="w-full">
@@ -168,12 +162,12 @@ export function QuickAdd() {
             <TabsContent value="workout" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="w-name">Название тренировки</Label>
-                  <Input id="w-name" placeholder="Например: День ног" />
+                  <Label>Название</Label>
+                  <Input placeholder="Например: День ног" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="w-duration">Длительность (мин)</Label>
-                  <Input id="w-duration" type="number" placeholder="60" />
+                  <Label>Длительность (мин)</Label>
+                  <Input type="number" placeholder="60" />
                 </div>
                 <Button onClick={() => handleAdd('Тренировка')} className="w-full">
                   Завершить тренировку
@@ -185,12 +179,12 @@ export function QuickAdd() {
             <TabsContent value="book" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="b-title">Название книги</Label>
-                  <Input id="b-title" placeholder="Например: Атомные привычки" />
+                  <Label>Название</Label>
+                  <Input placeholder="Например: Атомные привычки" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="b-author">Автор</Label>
-                  <Input id="b-author" placeholder="Джеймс Клир" />
+                  <Label>Автор</Label>
+                  <Input placeholder="Джеймс Клир" />
                 </div>
                 <Button onClick={() => handleAdd('Книга')} className="w-full">
                   Добавить книгу
@@ -202,12 +196,12 @@ export function QuickAdd() {
             <TabsContent value="goal" className="space-y-4 mt-6">
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="g-title">Название цели</Label>
-                  <Input id="g-title" placeholder="Например: Выучить английский" />
+                  <Label>Название</Label>
+                  <Input placeholder="Например: Выучить английский" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="g-description">Описание</Label>
-                  <Input id="g-description" placeholder="Достичь уровня B2" />
+                  <Label>Описание</Label>
+                  <Input placeholder="Достичь уровня B2" />
                 </div>
                 <Button onClick={() => handleAdd('Цель')} className="w-full">
                   Создать цель
