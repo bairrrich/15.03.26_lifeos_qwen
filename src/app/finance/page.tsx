@@ -30,7 +30,7 @@ import {
   useCreateAccount,
   useCreateCategory,
 } from '@/modules/finance/hooks';
-import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -121,6 +121,32 @@ export default function FinancePage() {
     );
   };
 
+  const handleExportCSV = () => {
+    const headers = ['Дата', 'Тип', 'Описание', 'Мерчант', 'Категория', 'Сумма', 'Валюта'];
+    const rows = filteredTransactions.map((t) => {
+      const category = categories.find((c) => c.id === t.category_id);
+      return [
+        format(t.date, 'yyyy-MM-dd'),
+        t.type === 'income' ? 'Доход' : 'Расход',
+        t.description,
+        t.merchant || '',
+        category?.name || '',
+        t.amount.toFixed(2),
+        t.currency,
+      ];
+    });
+
+    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `transactions_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Экспорт выполнен');
+  };
+
   const totalIncome = transactions
     .filter((t) => t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
@@ -138,6 +164,14 @@ export default function FinancePage() {
           <p className="text-muted-foreground">Управляйте своими финансами</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => window.location.href = '/finance/budgets'}>
+            <PieChart className="mr-2 h-4 w-4" />
+            Бюджеты
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = '/finance/subscriptions'}>
+            <Repeat className="mr-2 h-4 w-4" />
+            Подписки
+          </Button>
           <Button variant="outline" onClick={() => setAccountDialogOpen(true)}>
             <Wallet className="mr-2 h-4 w-4" />
             Счёт
@@ -261,8 +295,16 @@ export default function FinancePage() {
       {/* Transactions Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Транзакции</CardTitle>
-          <CardDescription>История всех ваших операций</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Транзакции</CardTitle>
+              <CardDescription>История всех ваших операций</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleExportCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Экспорт CSV
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex gap-2">
