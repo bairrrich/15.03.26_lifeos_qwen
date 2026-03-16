@@ -113,6 +113,10 @@ export default function WorkoutsPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/workouts/history'}>
+          <Clock className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">История</span>
+        </Button>
         <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/workouts/exercises'}>
           <List className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Упражнения</span>

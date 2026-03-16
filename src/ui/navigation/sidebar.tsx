@@ -105,8 +105,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Finance Sub-Items */}
       {!collapsed && isFinanceSection && (
-        <div className="border-t pt-2 mt-2">
-          <p className="px-3 py-2 text-xs font-medium text-muted-foreground">Разделы</p>
+        <div className="border-t border-border pt-2 mt-2 px-2">
+          <p className="px-3 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Разделы</p>
           {financeSubItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -114,7 +114,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ml-2',
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
