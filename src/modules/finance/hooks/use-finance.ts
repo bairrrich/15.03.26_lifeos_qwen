@@ -147,6 +147,16 @@ export function useCreateCategory() {
   });
 }
 
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => categoryService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
+}
+
 // Budgets
 export function useBudgets() {
   return useQuery({

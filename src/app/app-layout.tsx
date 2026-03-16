@@ -8,7 +8,7 @@ import { Sidebar } from '@/ui/navigation/sidebar';
 import { CommandPalette } from '@/ui/navigation/command-palette';
 import { QuickAdd } from '@/ui/navigation/quick-add';
 import { Button } from '@/components/ui/button';
-import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck } from 'lucide-react';
+import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck, Tags, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from '@/core/auth';
 import { toast } from 'sonner';
@@ -33,10 +33,12 @@ const navigation = [
 
 const financeSubItems = [
   { name: 'Транзакции', href: '/finance', icon: DollarSign },
+  { name: 'Категории', href: '/finance/categories', icon: Tags },
   { name: 'Счета', href: '/finance/accounts', icon: Wallet },
   { name: 'Бюджеты', href: '/finance/budgets', icon: PieChart },
   { name: 'Подписки', href: '/finance/subscriptions', icon: Repeat },
   { name: 'Инвестиции', href: '/finance/investments', icon: TrendingUp },
+  { name: 'Аналитика', href: '/finance/analytics', icon: BarChart3 },
 ];
 
 const nutritionSubItems = [
@@ -64,9 +66,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   // Определяем заголовок и подзаголовок для текущего раздела
   const getPageHeader = () => {
+    // Главная страница
+    if (pathname === '/') {
+      return { title: 'LifeOS', subtitle: 'Ваша персональная панель управления жизнью' };
+    }
     // Финансы
     if (pathname === '/finance') {
       return { title: 'Финансы', subtitle: 'Управляйте своими финансами' };
+    }
+    if (pathname === '/finance/categories') {
+      return { title: 'Категории', subtitle: 'Управление категориями транзакций' };
+    }
+    if (pathname === '/finance/analytics') {
+      return { title: 'Аналитика', subtitle: 'Детальный анализ финансов' };
     }
     if (pathname === '/finance/accounts') {
       return { title: 'Счета', subtitle: 'Управление финансовыми счетами' };

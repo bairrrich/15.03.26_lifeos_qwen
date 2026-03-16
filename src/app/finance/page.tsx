@@ -30,7 +30,7 @@ import {
   useCreateAccount,
   useCreateCategory,
 } from '@/modules/finance/hooks';
-import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -53,27 +53,55 @@ export default function FinancePage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
-  const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
+  const [selectedType, setSelectedType] = useState<'income' | 'expense' | 'transfer'>('expense');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedAccount, setSelectedAccount] = useState<string>('all');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
 
   const filteredTransactions = transactions.filter((t) => {
-    if (filter === 'all') return true;
-    return t.type === filter;
+    // Фильтр по типу
+    if (filter !== 'all' && t.type !== filter) return false;
+
+    // Поиск по описанию и мерчанту
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesDescription = t.description.toLowerCase().includes(query);
+      const matchesMerchant = t.merchant?.toLowerCase().includes(query);
+      if (!matchesDescription && !matchesMerchant) return false;
+    }
+
+    // Фильтр по категории
+    if (selectedCategory !== 'all' && t.category_id !== selectedCategory) return false;
+
+    // Фильтр по счёту
+    if (selectedAccount !== 'all' && t.account_id !== selectedAccount) return false;
+
+    // Фильтр по датам
+    if (dateFrom && t.date < new Date(dateFrom).getTime()) return false;
+    if (dateTo && t.date > new Date(dateTo).getTime()) return false;
+
+    return true;
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const type = formData.get('type') as 'income' | 'expense' | 'transfer';
 
     createTransaction.mutate(
       {
         account_id: formData.get('account_id') as string,
         amount: Number(formData.get('amount')),
         currency: 'USD',
-        category_id: formData.get('category_id') as string,
-        type: formData.get('type') as 'income' | 'expense',
-        description: formData.get('description') as string,
+        category_id: type !== 'transfer' ? (formData.get('category_id') as string) : undefined,
+        type: type,
+        description: type === 'transfer' ? 'Перевод между счетами' : (formData.get('description') as string),
         date: Date.now(),
         merchant: (formData.get('merchant') as string) || undefined,
+        transfer_to_account_id: type === 'transfer' ? (formData.get('transfer_to_account_id') as string) : undefined,
+        receipt_url: (formData.get('receipt_url') as string) || undefined,
         user_id: 'current-user',
       },
       {
@@ -89,7 +117,7 @@ export default function FinancePage() {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Дата', 'Тип', 'Описание', 'Мерчант', 'Категория', 'Сумма', 'Валюта'];
+    const headers = ['Дата', 'Тип', 'Описание', 'Мерчант', 'Категория', 'Сумма', 'Валюта', 'Чек'];
     const rows = filteredTransactions.map((t) => {
       const category = categories.find((c) => c.id === t.category_id);
       return [
@@ -100,6 +128,7 @@ export default function FinancePage() {
         category?.name || '',
         t.amount.toFixed(2),
         t.currency,
+        t.receipt_url || '',
       ];
     });
 
@@ -139,6 +168,14 @@ export default function FinancePage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/categories'}>
+          <Tags className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Категории</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/analytics'}>
+          <BarChart3 className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Аналитика</span>
+        </Button>
         <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/accounts'}>
           <Wallet className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Счета</span>
@@ -175,13 +212,14 @@ export default function FinancePage() {
                     name="type"
                     value={selectedType}
                     onChange={(e) => {
-                      if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense');
+                      if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense' | 'transfer');
                     }}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="">Выберите тип</option>
                     <option value="expense">Расход</option>
                     <option value="income">Доход</option>
+                    <option value="transfer">Перевод</option>
                   </select>
                 </div>
                 <div className="grid gap-2">
@@ -189,10 +227,11 @@ export default function FinancePage() {
                   <Input name="amount" type="number" step="0.01" required />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="account_id">Счёт</Label>
+                  <Label htmlFor="account_id">Счёт списания</Label>
                   <select
                     name="account_id"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    required
                   >
                     <option value="">Выберите счёт</option>
                     {accounts.map((account) => (
@@ -202,28 +241,66 @@ export default function FinancePage() {
                     ))}
                   </select>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category_id">Категория</Label>
-                  <select
-                    name="category_id"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">Выберите категорию</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Описание</Label>
-                  <Input name="description" placeholder="Например: Продукты" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="merchant">Мерчант (опционально)</Label>
-                  <Input name="merchant" placeholder="Например: Пятёрочка" />
-                </div>
+
+                {selectedType === 'transfer' ? (
+                  <div className="grid gap-2">
+                    <Label htmlFor="transfer_to_account_id">Счёт зачисления</Label>
+                    <select
+                      name="transfer_to_account_id"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      required
+                    >
+                      <option value="">Выберите счёт</option>
+                      {accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.name} ({account.balance} {account.currency})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid gap-2">
+                      <Label htmlFor="category_id">Категория</Label>
+                      <select
+                        name="category_id"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        required={selectedType !== ('transfer' as any)}
+                      >
+                        <option value="">Выберите категорию</option>
+                        {categories
+                          .filter((c) => !c.parent_id)
+                          .map((rootCategory) => (
+                            <optgroup key={rootCategory.id} label={rootCategory.name}>
+                              <option value={rootCategory.id}>{rootCategory.name}</option>
+                              {categories
+                                .filter((c) => c.parent_id === rootCategory.id)
+                                .map((child) => (
+                                  <option key={child.id} value={child.id}>
+                                    └─ {child.name}
+                                  </option>
+                                ))}
+                            </optgroup>
+                          ))}
+                      </select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Описание</Label>
+                      <Input name="description" placeholder="Например: Продукты" required={selectedType !== ('transfer' as any)} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="merchant">Мерчант (опционально)</Label>
+                      <Input name="merchant" placeholder="Например: Пятёрочка" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="receipt_url">Чек (URL или ссылка на фото)</Label>
+                      <Input name="receipt_url" type="url" placeholder="https://..." />
+                      <p className="text-xs text-muted-foreground">
+                        Ссылка на фото чека или скан (Google Drive, Dropbox и т.д.)
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
@@ -305,7 +382,7 @@ export default function FinancePage() {
       {/* Transactions Table */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <CardTitle>Транзакции</CardTitle>
               <CardDescription>История всех ваших операций</CardDescription>
@@ -315,9 +392,68 @@ export default function FinancePage() {
               Экспорт CSV
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex gap-2">
+
+          {/* Filters */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {/* Search */}
+            <div className="lg:col-span-2">
+              <Input
+                placeholder="Поиск по описанию..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            {/* Category */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="all">Все категории</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Account */}
+            <select
+              value={selectedAccount}
+              onChange={(e) => setSelectedAccount(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="all">Все счета</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Date Range */}
+            <div className="flex gap-2">
+              <Input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                placeholder="От"
+                className="flex-1"
+              />
+              <Input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                placeholder="До"
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          {/* Type Filter Buttons */}
+          <div className="mt-4 flex gap-2">
             <Button
               variant={filter === 'all' ? 'default' : 'outline'}
               size="sm"
@@ -339,7 +475,24 @@ export default function FinancePage() {
             >
               Расходы
             </Button>
+            {(searchQuery || selectedCategory !== 'all' || selectedAccount !== 'all' || dateFrom || dateTo) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  setSelectedAccount('all');
+                  setDateFrom('');
+                  setDateTo('');
+                }}
+              >
+                Сбросить фильтры
+              </Button>
+            )}
           </div>
+        </CardHeader>
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -367,7 +520,20 @@ export default function FinancePage() {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{transaction.description}</div>
+                          <div className="flex items-center gap-2">
+                            <div className="font-medium">{transaction.description}</div>
+                            {transaction.receipt_url && (
+                              <a
+                                href={transaction.receipt_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary"
+                                title="Открыть чек"
+                              >
+                                <Paperclip className="h-4 w-4" />
+                              </a>
+                            )}
+                          </div>
                           {transaction.merchant && (
                             <div className="text-xs text-muted-foreground">
                               {transaction.merchant}
@@ -410,8 +576,8 @@ export default function FinancePage() {
               )}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </CardContent >
+      </Card >
     </div >
   );
 }

@@ -60,19 +60,41 @@ export default function BudgetsPage() {
     );
   };
 
-  // Подсчёт расходов по категориям за текущий месяц
-  const getCurrentMonthExpenses = (categoryId: string) => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).getTime();
+  // Подсчёт расходов по категории за период бюджета
+  const getBudgetExpenses = (budget: any) => {
+    const now = Date.now();
+    let periodStart: number;
+    let periodEnd: number = now;
+
+    // Определяем начало и конец периода
+    switch (budget.period) {
+      case 'week':
+        const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+        periodStart = weekAgo;
+        break;
+      case 'month':
+        const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+        const monthEnd = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getTime();
+        periodStart = monthStart;
+        periodEnd = monthEnd;
+        break;
+      case 'year':
+        const yearStart = new Date(new Date().getFullYear(), 0, 1).getTime();
+        const yearEnd = new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999).getTime();
+        periodStart = yearStart;
+        periodEnd = yearEnd;
+        break;
+      default:
+        periodStart = budget.start_date || now;
+    }
 
     return transactions
       .filter(
         (t) =>
-          t.category_id === categoryId &&
+          t.category_id === budget.category_id &&
           t.type === 'expense' &&
-          t.date >= monthStart &&
-          t.date <= monthEnd
+          t.date >= periodStart &&
+          t.date <= periodEnd
       )
       .reduce((sum, t) => sum + t.amount, 0);
   };
@@ -149,10 +171,12 @@ export default function BudgetsPage() {
         ) : (
           budgets.map((budget) => {
             const category = categories.find((c) => c.id === budget.category_id);
-            const spent = getCurrentMonthExpenses(budget.category_id);
+            const spent = getBudgetExpenses(budget);
             const percentage = Math.min(100, Math.round((spent / budget.amount) * 100));
             const remaining = budget.amount - spent;
             const isOverBudget = spent > budget.amount;
+            const alertThreshold = budget.alert_threshold || 80;
+            const isNearLimit = percentage >= alertThreshold && !isOverBudget;
 
             return (
               <Card key={budget.id}>
@@ -164,8 +188,10 @@ export default function BudgetsPage() {
                         Лимит: {budget.amount.toLocaleString()} ₽ / {budget.period === 'month' ? 'месяц' : budget.period === 'week' ? 'неделя' : 'год'}
                       </CardDescription>
                     </div>
-                    <Badge variant={isOverBudget ? 'destructive' : 'secondary'}>
+                    <Badge variant={isOverBudget ? 'destructive' : isNearLimit ? 'default' : 'secondary'}>
                       {isOverBudget ? (
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                      ) : isNearLimit ? (
                         <AlertCircle className="h-3 w-3 mr-1" />
                       ) : (
                         <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -176,7 +202,7 @@ export default function BudgetsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Progress value={percentage} className="h-2" />
+                    <Progress value={percentage} className={`h-2 ${isOverBudget ? '[&>div]:bg-red-600' : isNearLimit ? '[&>div]:bg-yellow-600' : ''}`} />
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
                         Потрачено: {spent.toLocaleString()} ₽
@@ -185,6 +211,11 @@ export default function BudgetsPage() {
                         {isOverBudget ? 'Превышен!' : `Остаток: ${remaining.toLocaleString()} ₽`}
                       </span>
                     </div>
+                    {isNearLimit && (
+                      <p className="text-xs text-yellow-600 font-medium">
+                        ⚠️ Внимание: израсходовано {percentage}% бюджета
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -214,7 +245,7 @@ export default function BudgetsPage() {
             <div>
               <p className="text-sm text-muted-foreground">В пределах бюджета</p>
               <p className="text-2xl font-bold">
-                {budgets.filter((b) => getCurrentMonthExpenses(b.category_id) <= b.amount).length}
+                {budgets.filter((b) => getBudgetExpenses(b) <= b.amount).length}
               </p>
             </div>
           </div>

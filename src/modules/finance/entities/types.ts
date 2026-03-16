@@ -21,6 +21,7 @@ export interface Transaction extends BaseEntity {
   merchant?: string;
   tags?: string[];
   transfer_to_account_id?: string;
+  receipt_url?: string;
 }
 
 export interface Category extends BaseEntity {
