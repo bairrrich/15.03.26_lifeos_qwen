@@ -81,8 +81,8 @@ export default function RecipesPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" style={{ height: '32px' }}>
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Добавить рецепт</span>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Добавить рецепт</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">

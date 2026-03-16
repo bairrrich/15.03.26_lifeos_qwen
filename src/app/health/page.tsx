@@ -84,8 +84,8 @@ export default function HealthPage() {
         <Dialog open={sleepDialogOpen} onOpenChange={setSleepDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" style={{ height: '32px' }}>
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Добавить сон</span>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Добавить сон</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

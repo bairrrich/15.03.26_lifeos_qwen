@@ -137,7 +137,7 @@ export default function AccountsPage() {
           <DialogTrigger asChild>
             <Button onClick={() => setEditingAccount(null)} style={{ height: '32px' }}>
               <Plus className="mr-2 h-4 w-4" />
-              Добавить счёт
+              <span>Добавить счёт</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

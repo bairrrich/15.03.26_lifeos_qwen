@@ -94,8 +94,8 @@ export default function BeautyPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" style={{ height: '32px' }}>
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Добавить продукт</span>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Добавить продукт</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

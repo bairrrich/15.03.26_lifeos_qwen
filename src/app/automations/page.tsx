@@ -101,8 +101,8 @@ export default function AutomationsPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" style={{ height: '32px' }}>
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Создать правило</span>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Создать правило</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

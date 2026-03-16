@@ -117,7 +117,7 @@ export default function SubscriptionsPage() {
             <DialogTrigger asChild>
               <Button style={{ height: '32px' }}>
                 <Plus className="mr-2 h-4 w-4" />
-                Добавить
+                <span>Добавить</span>
               </Button>
             </DialogTrigger>
             <DialogContent>

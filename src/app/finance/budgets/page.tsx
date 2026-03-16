@@ -86,7 +86,7 @@ export default function BudgetsPage() {
           <DialogTrigger asChild>
             <Button style={{ height: '32px' }}>
               <Plus className="mr-2 h-4 w-4" />
-              Создать бюджет
+              <span>Создать бюджет</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

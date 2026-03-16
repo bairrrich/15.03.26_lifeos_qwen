@@ -115,8 +115,143 @@ export default function MindPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Actions - пустой блок для единообразия */}
-      <div className="flex flex-wrap gap-2 justify-end"></div>
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Dialog open={bookDialogOpen} onOpenChange={setBookDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Книгу</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleCreateBook}>
+              <DialogHeader>
+                <DialogTitle>Новая книга</DialogTitle>
+                <DialogDescription>Добавьте книгу для отслеживания</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Название</Label>
+                  <Input name="title" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Автор</Label>
+                  <Input name="author" />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Статус</Label>
+                  <select
+                    name="status"
+                    defaultValue="want_to_read"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите статус</option>
+                    <option value="want_to_read">Хочу прочитать</option>
+                    <option value="reading">Читаю</option>
+                    <option value="completed">Прочитано</option>
+                  </select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Всего страниц</Label>
+                  <Input name="pages_total" type="number" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setBookDialogOpen(false)}
+                >
+                  Отмена
+                </Button>
+                <Button type="submit">Добавить</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={courseDialogOpen} onOpenChange={setCourseDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Курс</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleCreateCourse}>
+              <DialogHeader>
+                <DialogTitle>Новый курс</DialogTitle>
+                <DialogDescription>Добавьте курс для обучения</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Название</Label>
+                  <Input name="title" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Платформа</Label>
+                  <Input name="provider" placeholder="Coursera, Udemy, etc." />
+                </div>
+                <div className="grid gap-2">
+                  <Label>URL</Label>
+                  <Input name="url" type="url" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCourseDialogOpen(false)}
+                >
+                  Отмена
+                </Button>
+                <Button type="submit">Добавить</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={noteDialogOpen} onOpenChange={setNoteDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Заметку</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleCreateNote}>
+              <DialogHeader>
+                <DialogTitle>Новая заметка</DialogTitle>
+                <DialogDescription>Создайте заметку</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Заголовок</Label>
+                  <Input name="title" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Содержание</Label>
+                  <textarea
+                    name="content"
+                    className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setNoteDialogOpen(false)}
+                >
+                  Отмена
+                </Button>
+                <Button type="submit">Создать</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -148,12 +283,7 @@ export default function MindPage() {
         </Card>
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) =>
-          setActiveTab(v as any)
-        } /* eslint-disable-line @typescript-eslint/no-explicit-any */
-      >
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
         <TabsList className="grid grid-cols-3 gap-2">
           <TabsTrigger value="books">
             <BookOpen className="h-4 w-4 mr-2" />
@@ -168,63 +298,8 @@ export default function MindPage() {
             Заметки
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="books" className="space-y-4 mt-4">
-          <div className="flex justify-end">
-            <Dialog open={bookDialogOpen} onOpenChange={setBookDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Добавить книгу
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <form onSubmit={handleCreateBook}>
-                  <DialogHeader>
-                    <DialogTitle>Новая книга</DialogTitle>
-                    <DialogDescription>Добавьте книгу для отслеживания</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label>Название</Label>
-                      <Input name="title" required />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Автор</Label>
-                      <Input name="author" />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Статус</Label>
-                      <select
-                        name="status"
-                        defaultValue="want_to_read"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      >
-                        <option value="">Выберите статус</option>
-                        <option value="want_to_read">Хочу прочитать</option>
-                        <option value="reading">Читаю</option>
-                        <option value="completed">Прочитано</option>
-                      </select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Всего страниц</Label>
-                      <Input name="pages_total" type="number" />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setBookDialogOpen(false)}
-                    >
-                      Отмена
-                    </Button>
-                    <Button type="submit">Добавить</Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
 
+        <TabsContent value="books" className="space-y-4 mt-4">
           <div className="grid gap-4 md:grid-cols-2">
             {books.length === 0 ? (
               <Card className="col-span-full">
@@ -260,50 +335,8 @@ export default function MindPage() {
             )}
           </div>
         </TabsContent>
-        <TabsContent value="courses" className="space-y-4 mt-4">
-          <div className="flex justify-end">
-            <Dialog open={courseDialogOpen} onOpenChange={setCourseDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Добавить курс
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <form onSubmit={handleCreateCourse}>
-                  <DialogHeader>
-                    <DialogTitle>Новый курс</DialogTitle>
-                    <DialogDescription>Добавьте курс для обучения</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label>Название</Label>
-                      <Input name="title" required />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Платформа</Label>
-                      <Input name="provider" placeholder="Coursera, Udemy, etc." />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>URL</Label>
-                      <Input name="url" type="url" />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setCourseDialogOpen(false)}
-                    >
-                      Отмена
-                    </Button>
-                    <Button type="submit">Добавить</Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
 
+        <TabsContent value="courses" className="space-y-4 mt-4">
           <div className="grid gap-4 md:grid-cols-2">
             {courses.length === 0 ? (
               <Card className="col-span-full">
@@ -335,50 +368,8 @@ export default function MindPage() {
             )}
           </div>
         </TabsContent>
-        <TabsContent value="notes" className="space-y-4 mt-4">
-          <div className="flex justify-end">
-            <Dialog open={noteDialogOpen} onOpenChange={setNoteDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Новая заметка
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <form onSubmit={handleCreateNote}>
-                  <DialogHeader>
-                    <DialogTitle>Новая заметка</DialogTitle>
-                    <DialogDescription>Создайте заметку</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label>Заголовок</Label>
-                      <Input name="title" required />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Содержание</Label>
-                      { }
-                      <textarea
-                        name="content"
-                        className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setNoteDialogOpen(false)}
-                    >
-                      Отмена
-                    </Button>
-                    <Button type="submit">Создать</Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
 
+        <TabsContent value="notes" className="space-y-4 mt-4">
           <div className="grid gap-4 md:grid-cols-3">
             {notes.length === 0 ? (
               <Card className="col-span-full">
