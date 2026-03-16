@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/shared/hooks/use-app-store';
@@ -161,6 +161,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const isAuthPage = pathname === '/login';
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const checkAuth = useCallback(() => {
+    const local = isLocalMode();
+    const localUser = getLocalUser();
+    const hasSession = local || document.cookie.includes('supabase-auth-token');
+    setIsLoggedIn(hasSession || !!localUser);
+  }, []);
+
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
@@ -175,21 +182,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }, []);
 
   useEffect(() => {
-    // Проверяем статус авторизации
-    const checkAuth = () => {
-      const local = isLocalMode();
-      const localUser = getLocalUser();
-      const hasSession = local || document.cookie.includes('supabase-auth-token');
-      setIsLoggedIn(hasSession || !!localUser);
-    };
-
     checkAuth();
 
     const handleStorageChange = () => checkAuth();
     window.addEventListener('storage', handleStorageChange);
 
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    // Проверяем cookie каждую секунду
+    const cookieCheckInterval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(cookieCheckInterval);
+    };
+  }, [checkAuth]);
 
   // Закрывать мобильное меню при навигации
   useEffect(() => {

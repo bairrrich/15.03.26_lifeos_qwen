@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button';
 import { SyncStatus } from '@/components/ui/sync-status';
 import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const navigation = [
   { name: 'Дашборд', href: '/', icon: LayoutDashboard },
@@ -63,24 +63,29 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const isFinanceSection = pathname.startsWith('/finance');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    // Проверяем статус авторизации при монтировании и при изменении
-    const checkAuth = () => {
-      const local = isLocalMode();
-      const localUser = getLocalUser();
-      // Проверяем локальный режим или cookie сессии
-      const hasSession = local || document.cookie.includes('supabase-auth-token');
-      setIsLoggedIn(hasSession || !!localUser);
-    };
+  const checkAuth = useCallback(() => {
+    const local = isLocalMode();
+    const localUser = getLocalUser();
+    // Проверяем локальный режим или cookie сессии
+    const hasSession = local || document.cookie.includes('supabase-auth-token');
+    setIsLoggedIn(hasSession || !!localUser);
+  }, []);
 
+  useEffect(() => {
     checkAuth();
 
     // Слушаем изменения storage (для выхода из других вкладок)
     const handleStorageChange = () => checkAuth();
     window.addEventListener('storage', handleStorageChange);
 
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    // Также проверяем при изменении cookie (через интервал)
+    const cookieCheckInterval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(cookieCheckInterval);
+    };
+  }, [checkAuth]);
 
   return (
     <aside

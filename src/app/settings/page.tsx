@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -8,11 +8,13 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
 import { NotificationSettingsCard } from '@/shared/components/notification-settings';
-import { Moon, Sun, Monitor, User, Database, LogOut, Download, Upload, Trash2, LayoutGrid, Users } from 'lucide-react';
-import { signOut } from '@/core/auth';
+import { Moon, Sun, Monitor, User as UserIcon, Database, LogOut, Download, Upload, Trash2, LayoutGrid, Users, LogIn } from 'lucide-react';
+import { signOut, getCurrentUserOrLocal, isLocalMode, getLocalUser } from '@/core/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { dataExportImportService } from '@/core/database/export-import';
+import type { User } from '@supabase/supabase-js';
+import type { LocalUser } from '@/core/auth';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -21,6 +23,17 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | LocalUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await getCurrentUserOrLocal();
+      setCurrentUser(user);
+      setIsLoading(false);
+    };
+    loadUser();
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -143,7 +156,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
+            <UserIcon className="h-5 w-5" />
             Интерфейс
           </CardTitle>
           <CardDescription>Настройки отображения</CardDescription>
@@ -256,15 +269,55 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <LogOut className="h-5 w-5" />
+            <UserIcon className="h-5 w-5" />
             Аккаунт
           </CardTitle>
           <CardDescription>Управление аккаунтом</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button variant="outline" onClick={handleSignOut}>
-            Выйти из аккаунта
-          </Button>
+        <CardContent className="space-y-4">
+          {isLoading ? (
+            <div className="text-sm text-muted-foreground">Загрузка...</div>
+          ) : currentUser ? (
+            <div className="space-y-4">
+              <div className="rounded-lg border p-4 space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                    {currentUser.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{currentUser.email || 'Пользователь'}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {'isLocal' in currentUser && currentUser.isLocal
+                        ? 'Локальный аккаунт'
+                        : 'Зарегистрированный аккаунт'}
+                    </p>
+                  </div>
+                </div>
+                {'created_at' in currentUser && currentUser.created_at && (
+                  <div className="pt-2 border-t">
+                    <p className="text-xs text-muted-foreground">
+                      Зарегистрирован: {new Date(currentUser.created_at).toLocaleDateString('ru-RU')}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <Separator />
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Выйти из аккаунта
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Вы не авторизованы. Войдите в аккаунт для управления настройками.
+              </p>
+              <Button onClick={() => router.push('/login')}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Войти
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
