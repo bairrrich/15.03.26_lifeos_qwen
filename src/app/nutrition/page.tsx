@@ -105,80 +105,74 @@ export default function NutritionPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Питание</h1>
-          <p className="text-muted-foreground">Дневник питания и подсчёт КБЖУ</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/foods'}>
-            <Apple className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Продукты</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/recipes'}>
-            <ChefHat className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Рецепты</span>
-          </Button>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Продукт</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleSubmit}>
-                <DialogHeader>
-                  <DialogTitle>Добавить продукт</DialogTitle>
-                  <DialogDescription>Выберите продукт и укажите количество</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="meal_type">Приём пищи</Label>
-                    <select
-                      value={selectedMeal}
-                      onChange={(e) => setSelectedMeal(e.target.value as any)}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите приём пищи</option>
-                      <option value="breakfast">Завтрак</option>
-                      <option value="lunch">Обед</option>
-                      <option value="dinner">Ужин</option>
-                      <option value="snack">Перекус</option>
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="food_id">Продукт</Label>
-                    <select
-                      name="food_id"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите продукт</option>
-                      {foods.map((food) => (
-                        <option key={food.id} value={food.id}>
-                          {food.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="quantity">
-                      Количество ({foods.find((f) => f.id === logs[0]?.food_id)?.serving_unit || 'г'})
-                    </Label>
-                    <Input name="quantity" type="number" min="1" defaultValue="100" />
-                  </div>
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/nutrition/foods'}>
+          <Apple className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Продукты</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/nutrition/recipes'}>
+          <ChefHat className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Рецепты</span>
+        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Продукт</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>Добавить продукт</DialogTitle>
+                <DialogDescription>Выберите продукт и укажите количество</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="meal_type">Приём пищи</Label>
+                  <select
+                    value={selectedMeal}
+                    onChange={(e) => setSelectedMeal(e.target.value as any)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите приём пищи</option>
+                    <option value="breakfast">Завтрак</option>
+                    <option value="lunch">Обед</option>
+                    <option value="dinner">Ужин</option>
+                    <option value="snack">Перекус</option>
+                  </select>
                 </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Отмена
-                  </Button>
-                  <Button type="submit">Добавить</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="food_id">Продукт</Label>
+                  <select
+                    name="food_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите продукт</option>
+                    {foods.map((food) => (
+                      <option key={food.id} value={food.id}>
+                        {food.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="quantity">
+                    Количество ({foods.find((f) => f.id === logs[0]?.food_id)?.serving_unit || 'г'})
+                  </Label>
+                  <Input name="quantity" type="number" min="1" defaultValue="100" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  Отмена
+                </Button>
+                <Button type="submit">Добавить</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* KBJU Cards */}
@@ -277,6 +271,6 @@ export default function NutritionPage() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

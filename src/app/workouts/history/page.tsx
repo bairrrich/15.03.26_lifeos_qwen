@@ -76,16 +76,12 @@ export default function WorkoutHistoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => window.history.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Назад
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="ghost" size="sm" style={{ height: '32px' }} onClick={() => window.history.back()}>
+          <ArrowLeft className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Назад</span>
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">История тренировок</h1>
-          <p className="text-muted-foreground">Все ваши тренировки</p>
-        </div>
       </div>
 
       {/* Filters */}

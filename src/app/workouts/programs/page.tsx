@@ -223,18 +223,13 @@ export default function ProgramsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Программы тренировок</h1>
-          <p className="text-muted-foreground">Планы и программы тренировок</p>
-        </div>
-
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Создать программу
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Создать программу</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">

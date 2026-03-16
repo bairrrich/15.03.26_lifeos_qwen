@@ -137,109 +137,103 @@ export default function FinancePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Финансы</h1>
-          <p className="text-muted-foreground">Управляйте своими финансами</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/accounts'}>
-            <Wallet className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Счета</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/budgets'}>
-            <PieChart className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Бюджеты</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/subscriptions'}>
-            <Repeat className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Подписки</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/investments'}>
-            <TrendingUp className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Инвестиции</span>
-          </Button>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Транзакцию</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleSubmit}>
-                <DialogHeader>
-                  <DialogTitle>Новая транзакция</DialogTitle>
-                  <DialogDescription>Добавьте новую транзакцию в систему</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="type">Тип</Label>
-                    <select
-                      name="type"
-                      value={selectedType}
-                      onChange={(e) => {
-                        if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense');
-                      }}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите тип</option>
-                      <option value="expense">Расход</option>
-                      <option value="income">Доход</option>
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="amount">Сумма</Label>
-                    <Input name="amount" type="number" step="0.01" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="account_id">Счёт</Label>
-                    <select
-                      name="account_id"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите счёт</option>
-                      {accounts.map((account) => (
-                        <option key={account.id} value={account.id}>
-                          {account.name} ({account.balance} {account.currency})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="category_id">Категория</Label>
-                    <select
-                      name="category_id"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите категорию</option>
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Описание</Label>
-                    <Input name="description" placeholder="Например: Продукты" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="merchant">Мерчант (опционально)</Label>
-                    <Input name="merchant" placeholder="Например: Пятёрочка" />
-                  </div>
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/accounts'}>
+          <Wallet className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Счета</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/budgets'}>
+          <PieChart className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Бюджеты</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/subscriptions'}>
+          <Repeat className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Подписки</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/investments'}>
+          <TrendingUp className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Инвестиции</span>
+        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Транзакцию</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>Новая транзакция</DialogTitle>
+                <DialogDescription>Добавьте новую транзакцию в систему</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="type">Тип</Label>
+                  <select
+                    name="type"
+                    value={selectedType}
+                    onChange={(e) => {
+                      if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense');
+                    }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите тип</option>
+                    <option value="expense">Расход</option>
+                    <option value="income">Доход</option>
+                  </select>
                 </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Отмена
-                  </Button>
-                  <Button type="submit">Добавить</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="amount">Сумма</Label>
+                  <Input name="amount" type="number" step="0.01" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="account_id">Счёт</Label>
+                  <select
+                    name="account_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите счёт</option>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name} ({account.balance} {account.currency})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="category_id">Категория</Label>
+                  <select
+                    name="category_id"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Описание</Label>
+                  <Input name="description" placeholder="Например: Продукты" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="merchant">Мерчант (опционально)</Label>
+                  <Input name="merchant" placeholder="Например: Пятёрочка" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  Отмена
+                </Button>
+                <Button type="submit">Добавить</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Summary Cards */}
@@ -273,38 +267,40 @@ export default function FinancePage() {
       </div>
 
       {/* График расходов по категориям */}
-      {expensesByCategory.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Расходы по категориям</CardTitle>
-            <CardDescription>Текущий месяц</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={expensesByCategory} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                  <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
-                  <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={12} width={100} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1F2937',
-                      border: '1px solid #374151',
-                      borderRadius: '8px',
-                    }}
-                    formatter={(value) => [`${Number(value).toLocaleString()} ₽`, 'Расходы']}
-                  />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                    {expensesByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {
+        expensesByCategory.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Расходы по категориям</CardTitle>
+              <CardDescription>Текущий месяц</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={expensesByCategory} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
+                    <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={12} width={100} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1F2937',
+                        border: '1px solid #374151',
+                        borderRadius: '8px',
+                      }}
+                      formatter={(value) => [`${Number(value).toLocaleString()} ₽`, 'Расходы']}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                      {expensesByCategory.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
       {/* Transactions Table */}
       <Card>
@@ -416,6 +412,6 @@ export default function FinancePage() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

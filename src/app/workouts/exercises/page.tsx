@@ -144,18 +144,13 @@ export default function ExercisesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Упражнения</h1>
-          <p className="text-muted-foreground">Библиотека упражнений</p>
-        </div>
-
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Добавить</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">

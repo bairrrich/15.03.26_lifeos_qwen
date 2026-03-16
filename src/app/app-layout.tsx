@@ -23,6 +23,89 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
+  // Определяем заголовок и подзаголовок для текущего раздела
+  const getPageHeader = () => {
+    // Финансы
+    if (pathname === '/finance') {
+      return { title: 'Финансы', subtitle: 'Управляйте своими финансами' };
+    }
+    if (pathname === '/finance/accounts') {
+      return { title: 'Счета', subtitle: 'Управление финансовыми счетами' };
+    }
+    if (pathname === '/finance/budgets') {
+      return { title: 'Бюджеты', subtitle: 'Контроль расходов по категориям' };
+    }
+    if (pathname === '/finance/subscriptions') {
+      return { title: 'Подписки', subtitle: 'Учёт периодических платежей' };
+    }
+    if (pathname === '/finance/investments') {
+      return { title: 'Инвестиции', subtitle: 'Учёт активов и портфель' };
+    }
+
+    // Питание
+    if (pathname === '/nutrition') {
+      return { title: 'Питание', subtitle: 'Дневник питания и подсчёт КБЖУ' };
+    }
+    if (pathname === '/nutrition/foods') {
+      return { title: 'Продукты', subtitle: 'База продуктов' };
+    }
+    if (pathname === '/nutrition/recipes') {
+      return { title: 'Рецепты', subtitle: 'Кулинарные рецепты' };
+    }
+
+    // Тренировки
+    if (pathname === '/workouts') {
+      return { title: 'Тренировки', subtitle: 'Планы, журнал и прогресс' };
+    }
+    if (pathname === '/workouts/exercises') {
+      return { title: 'Упражнения', subtitle: 'Библиотека упражнений' };
+    }
+    if (pathname === '/workouts/programs') {
+      return { title: 'Программы', subtitle: 'Планы тренировок' };
+    }
+    if (pathname === '/workouts/progress') {
+      return { title: 'Прогресс', subtitle: 'Аналитика и достижения' };
+    }
+    if (pathname === '/workouts/history') {
+      return { title: 'История', subtitle: 'Все тренировки' };
+    }
+
+    // Остальные модули
+    if (pathname === '/habits') {
+      return { title: 'Привычки', subtitle: 'Трекер привычек' };
+    }
+    if (pathname === '/goals') {
+      return { title: 'Цели', subtitle: 'Долгосрочные цели и задачи' };
+    }
+    if (pathname === '/health') {
+      return { title: 'Здоровье', subtitle: 'Метрики и самочувствие' };
+    }
+    if (pathname === '/mind') {
+      return { title: 'Ум', subtitle: 'Книги, курсы, заметки' };
+    }
+    if (pathname === '/beauty') {
+      return { title: 'Красота', subtitle: 'Уход и косметика' };
+    }
+    if (pathname === '/automations') {
+      return { title: 'Автоматизации', subtitle: 'Правила и триггеры' };
+    }
+    if (pathname === '/settings/profile') {
+      return { title: 'Профиль', subtitle: 'Настройки профиля' };
+    }
+    if (pathname === '/settings') {
+      return { title: 'Настройки', subtitle: 'Параметры приложения' };
+    }
+    if (pathname === '/widgets') {
+      return { title: 'Виджеты', subtitle: 'Настройка дашборда' };
+    }
+    if (pathname === '/sharing') {
+      return { title: 'Семейный доступ', subtitle: 'Общий доступ к данным' };
+    }
+    return null;
+  };
+
+  const pageHeader = getPageHeader();
+
   // Страницы без layout (login и т.д.)
   const isAuthPage = pathname === '/login';
 
@@ -150,6 +233,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
               <Menu className="h-5 w-5" />
             </Button>
           )}
+
+          {pageHeader && (
+            <div className="flex flex-col justify-center">
+              <h1 className="text-base font-semibold">{pageHeader.title}</h1>
+              <p className="text-xs text-muted-foreground">{pageHeader.subtitle}</p>
+            </div>
+          )}
+
           <div className="flex-1" />
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />

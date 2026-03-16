@@ -80,16 +80,12 @@ export default function HealthPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Здоровье</h1>
-          <p className="text-muted-foreground">Метрики здоровья и отслеживание сна</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={sleepDialogOpen} onOpenChange={setSleepDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить сон
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Добавить сон</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -112,16 +108,16 @@ export default function HealthPage() {
                   <select
                     name="quality"
                     defaultValue="3"
-                    
-                    
+
+
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="">Выберите качество</option>
-                      <option value="1">1 - Очень плохо 😴</option>
-                      <option value="2">2 - Плохо 😕</option>
-                      <option value="3">3 - Нормально 😐</option>
-                      <option value="4">4 - Хорошо 😊</option>
-                      <option value="5">5 - Отлично 😁</option>
+                    <option value="1">1 - Очень плохо 😴</option>
+                    <option value="2">2 - Плохо 😕</option>
+                    <option value="3">3 - Нормально 😐</option>
+                    <option value="4">4 - Хорошо 😊</option>
+                    <option value="5">5 - Отлично 😁</option>
                   </select>
                 </div>
               </div>

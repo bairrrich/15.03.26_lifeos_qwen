@@ -96,16 +96,12 @@ export default function GoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Цели</h1>
-          <p className="text-muted-foreground">Управление целями и прогрессом</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Новая цель
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Новая цель</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -128,8 +124,8 @@ export default function GoalsPage() {
                   <select
                     name="category"
                     defaultValue="other"
-                    
-                    
+
+
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="">Выберите категорию</option>

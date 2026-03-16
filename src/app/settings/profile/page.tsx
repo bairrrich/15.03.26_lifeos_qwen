@@ -65,10 +65,8 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Профиль</h1>
-        <p className="text-muted-foreground">Управление личной информацией</p>
-      </div>
+      {/* Header Actions - пустой блок для единообразия */}
+      <div className="flex flex-wrap gap-2 justify-end"></div>
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Левая колонка - Аватар и основная информация */}

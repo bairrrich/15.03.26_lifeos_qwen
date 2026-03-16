@@ -111,75 +111,68 @@ export default function WorkoutsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Тренировки</h1>
-          <p className="text-muted-foreground">Планы, журнал и прогресс</p>
-        </div>
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/workouts/exercises'}>
+          <List className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Упражнения</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/workouts/programs'}>
+          <Calendar className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Программы</span>
+        </Button>
+        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/workouts/progress'}>
+          <BarChart3 className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Прогресс</span>
+        </Button>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/workouts/exercises'}>
-            <List className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Упражнения</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/workouts/programs'}>
-            <Calendar className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Программы</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/workouts/progress'}>
-            <BarChart3 className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Прогресс</span>
-          </Button>
-
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Тренировка
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleCreateWorkout}>
-                <DialogHeader>
-                  <DialogTitle>Новая тренировка</DialogTitle>
-                  <DialogDescription>
-                    Создайте тренировку и начните выполнять
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Название</Label>
-                    <Input
-                      id="name"
-                      value={newWorkoutName}
-                      onChange={(e) => setNewWorkoutName(e.target.value)}
-                      placeholder="Например: День ног"
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Описание</Label>
-                    <Input
-                      id="description"
-                      value={newWorkoutDescription}
-                      onChange={(e) => setNewWorkoutDescription(e.target.value)}
-                      placeholder="Краткое описание"
-                    />
-                  </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Тренировка</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <form onSubmit={handleCreateWorkout}>
+              <DialogHeader>
+                <DialogTitle>Новая тренировка</DialogTitle>
+                <DialogDescription>
+                  Создайте тренировку и начните выполнять
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Название</Label>
+                  <Input
+                    id="name"
+                    value={newWorkoutName}
+                    onChange={(e) => setNewWorkoutName(e.target.value)}
+                    placeholder="Например: День ног"
+                    required
+                  />
                 </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Отмена
-                  </Button>
-                  <Button type="submit" disabled={createWorkout.isPending}>
-                    {createWorkout.isPending ? 'Создание...' : 'Создать и начать'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Описание</Label>
+                  <Input
+                    id="description"
+                    value={newWorkoutDescription}
+                    onChange={(e) => setNewWorkoutDescription(e.target.value)}
+                    placeholder="Краткое описание"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  Отмена
+                </Button>
+                <Button type="submit" disabled={createWorkout.isPending}>
+                  {createWorkout.isPending ? 'Создание...' : 'Создать и начать'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Weekly Stats */}
@@ -219,31 +212,33 @@ export default function WorkoutsPage() {
       </div>
 
       {/* Active Plan */}
-      {activePlan && (
-        <Card className="border-primary/50">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Активная программа</CardTitle>
-                <CardDescription>{activePlan.name}</CardDescription>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => window.location.href = '/workouts/programs'}>
-                Управление
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {activePlan.workouts.slice(0, 3).map((w, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
-                  <Dumbbell className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{w.workout_name || `День ${w.day}`}</span>
+      {
+        activePlan && (
+          <Card className="border-primary/50">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Активная программа</CardTitle>
+                  <CardDescription>{activePlan.name}</CardDescription>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                <Button size="sm" variant="outline" onClick={() => window.location.href = '/workouts/programs'}>
+                  Управление
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {activePlan.workouts.slice(0, 3).map((w, i) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
+                    <Dumbbell className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">{w.workout_name || `День ${w.day}`}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
       {/* Quick Start */}
       <Card>
@@ -378,6 +373,6 @@ export default function WorkoutsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   );
 }

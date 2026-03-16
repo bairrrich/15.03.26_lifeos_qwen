@@ -163,19 +163,15 @@ export default function InvestmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Инвестиции</h1>
-          <p className="text-muted-foreground">Учёт активов и портфель</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setTransactionDialogOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setTransactionDialogOpen(true)} style={{ height: '32px' }}>
             <History className="h-4 w-4 mr-2" />
             Операция
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button style={{ height: '32px' }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Добавить актив
               </Button>

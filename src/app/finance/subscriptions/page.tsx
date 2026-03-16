@@ -103,11 +103,7 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Подписки</h1>
-          <p className="text-muted-foreground">Учёт периодических платежей</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Switch
@@ -119,7 +115,7 @@ export default function SubscriptionsPage() {
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button style={{ height: '32px' }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Добавить
               </Button>

@@ -82,10 +82,8 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Настройки</h1>
-        <p className="text-muted-foreground">Управление приложением и профилем</p>
-      </div>
+      {/* Header Actions - пустой блок для единообразия */}
+      <div className="flex flex-wrap gap-2 justify-end"></div>
 
       <Card>
         <CardHeader>

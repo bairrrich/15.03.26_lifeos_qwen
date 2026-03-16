@@ -132,14 +132,10 @@ export default function AccountsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Счета</h1>
-          <p className="text-muted-foreground">Управление финансовыми счетами</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingAccount(null)}>
+            <Button onClick={() => setEditingAccount(null)} style={{ height: '32px' }}>
               <Plus className="mr-2 h-4 w-4" />
               Добавить счёт
             </Button>

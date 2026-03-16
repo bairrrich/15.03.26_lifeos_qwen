@@ -108,39 +108,32 @@ export default function ProgressPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Прогресс</h1>
-          <p className="text-muted-foreground">Аналитика и достижения</p>
-        </div>
+      {/* Header Actions */}
+      <div className="flex flex-wrap gap-2 justify-end">
+        <Select value={timeRange} onValueChange={(v: any) => setTimeRange(v)}>
+          <SelectTrigger className="w-[140px]" style={{ height: '32px' }}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="week">Неделя</SelectItem>
+            <SelectItem value="month">Месяц</SelectItem>
+            <SelectItem value="year">Год</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <div className="flex items-center gap-2">
-          <Select value={timeRange} onValueChange={(v: any) => setTimeRange(v)}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Неделя</SelectItem>
-              <SelectItem value="month">Месяц</SelectItem>
-              <SelectItem value="year">Год</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedExercise} onValueChange={(value) => setSelectedExercise(value as string)}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Все упражнения" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Все упражнения</SelectItem>
-              {exercises.map((ex) => (
-                <SelectItem key={ex.id} value={ex.id}>
-                  {ex.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={selectedExercise} onValueChange={(value) => setSelectedExercise(value as string)}>
+          <SelectTrigger className="w-[200px]" style={{ height: '32px' }}>
+            <SelectValue placeholder="Все упражнения" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Все упражнения</SelectItem>
+            {exercises.map((ex) => (
+              <SelectItem key={ex.id} value={ex.id}>
+                {ex.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Summary Cards */}

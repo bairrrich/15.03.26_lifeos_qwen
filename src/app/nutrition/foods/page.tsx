@@ -73,16 +73,12 @@ export default function FoodsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Продукты</h1>
-          <p className="text-muted-foreground">База продуктов для расчёта КБЖУ</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить продукт
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Добавить продукт</span>
             </Button>
           </DialogTrigger>
           <DialogContent>

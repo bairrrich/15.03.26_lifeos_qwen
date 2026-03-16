@@ -90,16 +90,12 @@ export default function BeautyPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Красота</h1>
-          <p className="text-muted-foreground">Косметика, уход и рутины</p>
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить продукт
+            <Button size="sm" style={{ height: '32px' }}>
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Добавить продукт</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -309,8 +305,8 @@ export default function BeautyPage() {
                           <div
                             key={level}
                             className={`h-2 w-4 rounded ${level <= (latestAnalysis.hydration_level || 0)
-                                ? 'bg-blue-500'
-                                : 'bg-muted'
+                              ? 'bg-blue-500'
+                              : 'bg-muted'
                               }`}
                           />
                         ))}
@@ -323,8 +319,8 @@ export default function BeautyPage() {
                           <div
                             key={level}
                             className={`h-2 w-4 rounded ${level <= (latestAnalysis.sensitivity_level || 0)
-                                ? 'bg-red-500'
-                                : 'bg-muted'
+                              ? 'bg-red-500'
+                              : 'bg-muted'
                               }`}
                           />
                         ))}
