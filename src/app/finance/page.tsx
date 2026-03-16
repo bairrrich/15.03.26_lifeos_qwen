@@ -181,37 +181,37 @@ export default function FinancePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Финансы</h1>
           <p className="text-muted-foreground">Управляйте своими финансами</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => window.location.href = '/finance/budgets'}>
-            <PieChart className="mr-2 h-4 w-4" />
-            Бюджеты
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/budgets'}>
+            <PieChart className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Бюджеты</span>
           </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/finance/subscriptions'}>
-            <Repeat className="mr-2 h-4 w-4" />
-            Подписки
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/subscriptions'}>
+            <Repeat className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Подписки</span>
           </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/finance/investments'}>
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Инвестиции
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/investments'}>
+            <TrendingUp className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Инвестиции</span>
           </Button>
-          <Button variant="outline" onClick={() => setAccountDialogOpen(true)}>
-            <Wallet className="mr-2 h-4 w-4" />
-            Счёт
+          <Button variant="outline" size="sm" onClick={() => setAccountDialogOpen(true)}>
+            <Wallet className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Счёт</span>
           </Button>
-          <Button variant="outline" onClick={() => setCategoryDialogOpen(true)}>
-            <Tags className="mr-2 h-4 w-4" />
-            Категория
+          <Button variant="outline" size="sm" onClick={() => setCategoryDialogOpen(true)}>
+            <Tags className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Категория</span>
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Транзакцию
+              <Button size="sm">
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Транзакцию</span>
               </Button>
             </DialogTrigger>
             <DialogContent>
