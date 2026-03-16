@@ -19,6 +19,7 @@ import {
   useFoods,
   useCreateFood,
 } from '@/modules/nutrition/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -41,6 +42,7 @@ export default function FoodsPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createFood.mutate(
       {
@@ -53,7 +55,7 @@ export default function FoodsPage() {
         serving_size: Number(formData.get('serving_size')) || 100,
         serving_unit: formData.get('serving_unit') as string || 'г',
         category: formData.get('category') as any || 'other',
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

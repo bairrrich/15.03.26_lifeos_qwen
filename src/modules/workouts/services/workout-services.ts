@@ -1,4 +1,5 @@
 import { CrudService } from '@/core/crud';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import type { Exercise, Workout, WorkoutLog, WorkoutPlan, Set, PRRecord } from '../entities';
 
 export class ExerciseService extends CrudService<Exercise> {
@@ -233,7 +234,7 @@ export class PRService extends CrudService<PRRecord> {
     }
 
     const pr: Omit<PRRecord, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'version' | 'sync_status'> = {
-      user_id: 'current-user',
+      user_id: getCurrentUserId(),
       exercise_id: exerciseId,
       exercise_name: exerciseName,
       one_rep_max: oneRepMax,

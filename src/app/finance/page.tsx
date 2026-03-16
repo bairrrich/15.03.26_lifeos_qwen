@@ -29,29 +29,48 @@ import {
   useCreateTransaction,
   useCreateAccount,
   useCreateCategory,
+  useUpdateTransaction,
+  useDeleteTransaction,
 } from '@/modules/finance/hooks';
-import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
 import { useEffect } from 'react';
 import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+function ColoredTabsTrigger({ value, children }: { value: string; children: React.ReactNode }) {
+  return (
+    <TabsTrigger
+      value={value}
+      className="transition-all duration-200"
+      data-tab-type={value}
+    >
+      {children}
+    </TabsTrigger>
+  );
+}
 
 export default function FinancePage() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
   const createTransaction = useCreateTransaction();
+  const updateTransaction = useUpdateTransaction();
+  const deleteTransaction = useDeleteTransaction();
 
   // Инициализация seed-категорий (только один раз)
   useEffect(() => {
@@ -70,6 +89,48 @@ export default function FinancePage() {
   const [selectedAccount, setSelectedAccount] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
+  const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  const [deleteTransactionId, setDeleteTransactionId] = useState<string | null>(null);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+
+  // Автозаполнение полей при редактировании
+  useEffect(() => {
+    if (editingTransaction) {
+      setSelectedType(editingTransaction.type);
+      setSelectedAccountId(editingTransaction.account_id || '');
+    } else {
+      // Сбрасываем тип на расход при открытии новой транзакции
+      setSelectedType('expense');
+      setSelectedAccountId('');
+    }
+  }, [editingTransaction]);
+
+  const handleEdit = (transaction: any) => {
+    setEditingTransaction(transaction);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (transactionId: string) => {
+    setDeleteTransactionId(transactionId);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTransactionId) {
+      deleteTransaction.mutate(deleteTransactionId, {
+        onSuccess: () => {
+          toast.success('Транзакция удалена');
+        },
+        onError: () => {
+          toast.error('Ошибка при удалении транзакции');
+        },
+      });
+      setDeleteTransactionId(null);
+    }
+  };
+
+  // Получаем валюту выбранного счёта для отображения в форме
+  const selectedAccountForCurrency = accounts.find(a => a.id === selectedAccountId);
+  const accountCurrency = selectedAccountForCurrency?.currency || 'RUB';
 
   const filteredTransactions = transactions.filter((t) => {
     // Фильтр по типу
@@ -99,32 +160,52 @@ export default function FinancePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const type = formData.get('type') as 'income' | 'expense' | 'transfer';
+    const userId = getCurrentUserId();
+    const accountId = formData.get('account_id') as string;
+    const account = accounts.find(a => a.id === accountId);
 
-    createTransaction.mutate(
-      {
-        account_id: formData.get('account_id') as string,
-        amount: Number(formData.get('amount')),
-        currency: 'USD',
-        category_id: type !== 'transfer' ? (formData.get('category_id') as string) : undefined,
-        type: type,
-        description: type === 'transfer' ? 'Перевод между счетами' : (formData.get('description') as string),
-        date: Date.now(),
-        merchant: (formData.get('merchant') as string) || undefined,
-        transfer_to_account_id: type === 'transfer' ? (formData.get('transfer_to_account_id') as string) : undefined,
-        receipt_url: (formData.get('receipt_url') as string) || undefined,
-        user_id: 'current-user',
-      },
-      {
-        onSuccess: () => {
-          toast.success('Транзакция добавлена');
-          setDialogOpen(false);
-        },
-        onError: () => {
-          toast.error('Ошибка при добавлении транзакции');
-        },
-      }
-    );
+    const transactionData = {
+      account_id: accountId,
+      amount: Number(formData.get('amount')),
+      currency: account?.currency || 'RUB',
+      category_id: selectedType !== 'transfer' ? (formData.get('category_id') as string) : undefined,
+      type: selectedType,
+      description: selectedType === 'transfer' ? 'Перевод между счетами' : (formData.get('description') as string),
+      date: Date.now(),
+      merchant: (formData.get('merchant') as string) || undefined,
+      transfer_to_account_id: selectedType === 'transfer' ? (formData.get('transfer_to_account_id') as string) : undefined,
+      receipt_url: (formData.get('receipt_url') as string) || undefined,
+      user_id: userId,
+    };
+
+    if (editingTransaction) {
+      updateTransaction.mutate(
+        { id: editingTransaction.id, data: transactionData },
+        {
+          onSuccess: () => {
+            toast.success('Транзакция обновлена');
+            setDialogOpen(false);
+            setEditingTransaction(null);
+          },
+          onError: () => {
+            toast.error('Ошибка при обновлении транзакции');
+          },
+        }
+      );
+    } else {
+      createTransaction.mutate(
+        transactionData,
+        {
+          onSuccess: () => {
+            toast.success('Транзакция добавлена');
+            setDialogOpen(false);
+          },
+          onError: () => {
+            toast.error('Ошибка при добавлении транзакции');
+          },
+        }
+      );
+    }
   };
 
   const handleExportCSV = () => {
@@ -162,19 +243,6 @@ export default function FinancePage() {
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  // Данные для графика расходов по категориям
-  const expensesByCategory = categories
-    .filter((c) => c.type === 'expense')
-    .map((category) => ({
-      name: category.name,
-      value: transactions
-        .filter((t) => t.category_id === category.id && t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: category.color || '#6366f1',
-    }))
-    .filter((item) => item.value > 0)
-    .sort((a, b) => b.value - a.value);
-
   return (
     <div className="space-y-6">
       {/* Header Actions */}
@@ -203,9 +271,9 @@ export default function FinancePage() {
           <TrendingUp className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Инвестиции</span>
         </Button>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingTransaction(null); }}>
           <DialogTrigger asChild>
-            <Button size="sm" style={{ height: '32px' }}>
+            <Button size="sm" style={{ height: '32px' }} onClick={() => setEditingTransaction(null)}>
               <Plus className="h-4 w-4 mr-2" />
               <span>Транзакцию</span>
             </Button>
@@ -213,34 +281,72 @@ export default function FinancePage() {
           <DialogContent>
             <form onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle>Новая транзакция</DialogTitle>
-                <DialogDescription>Добавьте новую транзакцию в систему</DialogDescription>
+                <DialogTitle>{editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}</DialogTitle>
+                <DialogDescription>
+                  {editingTransaction ? 'Внесите изменения в транзакцию' : 'Добавьте новую транзакцию в систему'}
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="type">Тип</Label>
-                  <select
-                    name="type"
-                    value={selectedType}
-                    onChange={(e) => {
-                      if (e.target.value) setSelectedType(e.target.value as 'income' | 'expense' | 'transfer');
-                    }}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">Выберите тип</option>
-                    <option value="expense">Расход</option>
-                    <option value="income">Доход</option>
-                    <option value="transfer">Перевод</option>
-                  </select>
+                  <Label>Тип транзакции</Label>
+                  <Tabs value={selectedType} onValueChange={(v) => setSelectedType(v as 'income' | 'expense' | 'transfer')}>
+                    <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+                      <ColoredTabsTrigger value="income">
+                        <ArrowUpRight className="h-4 w-4 mr-2" />
+                        Доход
+                      </ColoredTabsTrigger>
+                      <ColoredTabsTrigger value="expense">
+                        <ArrowDownRight className="h-4 w-4 mr-2" />
+                        Расход
+                      </ColoredTabsTrigger>
+                      <ColoredTabsTrigger value="transfer">
+                        <Repeat className="h-4 w-4 mr-2" />
+                        Перевод
+                      </ColoredTabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <style>{`
+                    [data-slot="tabs-trigger"][data-tab-type="income"][data-active] {
+                      background-color: rgb(22 163 74) !important;
+                      color: white !important;
+                      border-color: rgb(22 163 74) !important;
+                    }
+                    [data-slot="tabs-trigger"][data-tab-type="expense"][data-active] {
+                      background-color: rgb(220 38 38) !important;
+                      color: white !important;
+                      border-color: rgb(220 38 38) !important;
+                    }
+                    [data-slot="tabs-trigger"][data-tab-type="transfer"][data-active] {
+                      background-color: rgb(37 99 235) !important;
+                      color: white !important;
+                      border-color: rgb(37 99 235) !important;
+                    }
+                  `}</style>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="amount">Сумма</Label>
-                  <Input name="amount" type="number" step="0.01" required />
+                  <div className="relative">
+                    <Input
+                      name="amount"
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingTransaction?.amount}
+                      required
+                      className="pr-12 text-center text-lg font-semibold"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                      {accountCurrency}
+                    </span>
+                  </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="account_id">Счёт списания</Label>
+                  <Label htmlFor="account_id">
+                    {selectedType === 'income' ? 'Счёт пополнения' : 'Счёт списания'}
+                  </Label>
                   <select
                     name="account_id"
+                    defaultValue={editingTransaction?.account_id}
+                    onChange={(e) => setSelectedAccountId(e.target.value)}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     required
                   >
@@ -258,6 +364,7 @@ export default function FinancePage() {
                     <Label htmlFor="transfer_to_account_id">Счёт зачисления</Label>
                     <select
                       name="transfer_to_account_id"
+                      defaultValue={editingTransaction?.transfer_to_account_id}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       required
                     >
@@ -275,6 +382,7 @@ export default function FinancePage() {
                       <Label htmlFor="category_id">Категория</Label>
                       <select
                         name="category_id"
+                        defaultValue={editingTransaction?.category_id}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         required={selectedType !== ('transfer' as any)}
                       >
@@ -302,15 +410,15 @@ export default function FinancePage() {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="description">Описание</Label>
-                      <Input name="description" placeholder="Например: Продукты" required={selectedType !== ('transfer' as any)} />
+                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== ('transfer' as any)} />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="merchant">Мерчант (опционально)</Label>
-                      <Input name="merchant" placeholder="Например: Пятёрочка" />
+                      <Input name="merchant" defaultValue={editingTransaction?.merchant} placeholder="Например: Пятёрочка" />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="receipt_url">Чек (URL или ссылка на фото)</Label>
-                      <Input name="receipt_url" type="url" placeholder="https://..." />
+                      <Input name="receipt_url" type="url" defaultValue={editingTransaction?.receipt_url} placeholder="https://..." />
                       <p className="text-xs text-muted-foreground">
                         Ссылка на фото чека или скан (Google Drive, Dropbox и т.д.)
                       </p>
@@ -358,42 +466,6 @@ export default function FinancePage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* График расходов по категориям */}
-      {
-        expensesByCategory.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Расходы по категориям</CardTitle>
-              <CardDescription>Текущий месяц</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={expensesByCategory} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                    <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
-                    <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={12} width={100} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#1F2937',
-                        border: '1px solid #374151',
-                        borderRadius: '8px',
-                      }}
-                      formatter={(value) => [`${Number(value).toLocaleString()} ₽`, 'Расходы']}
-                    />
-                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                      {expensesByCategory.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      }
 
       {/* Transactions Table */}
       <Card>
@@ -576,15 +648,24 @@ export default function FinancePage() {
                         {transaction.amount.toFixed(2)} {transaction.currency}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            // TODO: implement delete
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleEdit(transaction)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:text-red-700"
+                            onClick={() => handleDelete(transaction.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -592,8 +673,24 @@ export default function FinancePage() {
               )}
             </TableBody>
           </Table>
-        </CardContent >
-      </Card >
-    </div >
+        </CardContent>
+      </Card>
+
+      {/* Диалог подтверждения удаления транзакции */}
+      <AlertDialog open={!!deleteTransactionId} onOpenChange={() => setDeleteTransactionId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удаление транзакции</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить эту транзакцию? Это действие нельзя отменить.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

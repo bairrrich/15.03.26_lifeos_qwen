@@ -21,6 +21,7 @@ import {
   useCreateRecipe,
   useFoods,
 } from '@/modules/nutrition/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, ChefHat, Clock, Users, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -47,6 +48,7 @@ export default function RecipesPage() {
     const instructions = (formData.get('instructions') as string)
       .split('\n')
       .filter((line) => line.trim());
+    const userId = getCurrentUserId();
 
     createRecipe.mutate(
       {
@@ -61,7 +63,7 @@ export default function RecipesPage() {
         cook_time_minutes: (formData.get('cook_time') as string)
           ? Number(formData.get('cook_time'))
           : undefined,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

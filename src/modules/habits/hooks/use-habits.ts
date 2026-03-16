@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { HabitService, HabitLogService } from '../services';
 import type { Habit, HabitLog } from '../entities';
 
@@ -35,7 +36,7 @@ export function useCreateHabit() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => habitService.create({ ...data, user_id: 'current-user' }),
+    ) => habitService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habits'] });
     },
@@ -117,7 +118,7 @@ export function useCompleteHabit() {
           date,
           count: 1,
           completed: true,
-          user_id: 'current-user',
+          user_id: getCurrentUserId(),
         });
       }
       await habitService.incrementStreak(habitId);

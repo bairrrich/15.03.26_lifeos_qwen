@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { useWidgetDefinitions, useVisibleWidgets, useCreateWidgetInstance, useCreateCustomWidget } from '@/modules/widgets/hooks'
+import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, LayoutGrid, Code, Settings, Trash2, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -43,7 +44,7 @@ const categoryLabels: Record<string, string> = {
 
 export default function WidgetsPage() {
   const { data: definitions = [] } = useWidgetDefinitions()
-  const { data: visibleWidgets = [] } = useVisibleWidgets('current-user')
+  const { data: visibleWidgets = [] } = useVisibleWidgets(getCurrentUserId())
   const createWidget = useCreateWidgetInstance()
   const createCustomWidget = useCreateCustomWidget()
 
@@ -59,7 +60,7 @@ export default function WidgetsPage() {
     createWidget.mutate(
       {
         widget_id: widget.id,
-        user_id: 'current-user',
+        user_id: getCurrentUserId(),
         title: widget.name,
         config: {},
         position: { row: 0, col: 0, width: 1, height: 1 },
@@ -77,6 +78,7 @@ export default function WidgetsPage() {
   const handleCreateCustom = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const userId = getCurrentUserId()
 
     createCustomWidget.mutate(
       {
@@ -84,7 +86,7 @@ export default function WidgetsPage() {
         code: formData.get('code') as string,
         config: {},
         is_active: true,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

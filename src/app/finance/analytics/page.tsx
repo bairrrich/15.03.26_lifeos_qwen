@@ -53,6 +53,7 @@ export default function FinanceAnalyticsPage() {
   const { data: accounts = [] } = useAccounts();
 
   const [timeRange, setTimeRange] = useState<'month' | 'quarter' | 'year' | 'all'>('quarter');
+  const [categoryChartType, setCategoryChartType] = useState<'pie' | 'bar'>('pie');
 
   // Фильтрация транзакций по периоду
   const getFilteredTransactions = () => {
@@ -306,40 +307,84 @@ export default function FinanceAnalyticsPage() {
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={categoryChartType === 'pie' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCategoryChartType('pie')}
+              >
+                <PieChartIcon className="h-4 w-4 mr-2" />
+                Круг
+              </Button>
+              <Button
+                variant={categoryChartType === 'bar' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCategoryChartType('bar')}
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Столбцы
+              </Button>
+            </div>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Структура расходов</CardTitle>
-                <CardDescription>По категориям</CardDescription>
+                <CardDescription>
+                  {categoryChartType === 'pie' ? 'Круговая диаграмма' : 'Столбчатая диаграмма'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={expensesByCategory}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={5}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                        labelLine={false}
-                      >
-                        {expensesByCategory.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#1F2937',
-                          border: '1px solid #374151',
-                          borderRadius: '8px',
-                        }}
-                        formatter={(value) => [`${(value ?? 0).toLocaleString()} ₽`, '']}
-                      />
-                    </PieChart>
+                    {categoryChartType === 'pie' ? (
+                      <PieChart>
+                        <Pie
+                          data={expensesByCategory}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={5}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                          labelLine={false}
+                        >
+                          {expensesByCategory.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1F2937',
+                            border: '1px solid #374151',
+                            borderRadius: '8px',
+                          }}
+                          formatter={(value) => [`${(value ?? 0).toLocaleString()} ₽`, '']}
+                        />
+                      </PieChart>
+                    ) : (
+                      <BarChart data={expensesByCategory}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                        <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#9CA3AF" fontSize={12} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1F2937',
+                            border: '1px solid #374151',
+                            borderRadius: '8px',
+                          }}
+                          formatter={(value) => [`${(value ?? 0).toLocaleString()} ₽`, '']}
+                        />
+                        <Bar dataKey="value" name="Расходы">
+                          {expensesByCategory.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    )}
                   </ResponsiveContainer>
                 </div>
               </CardContent>

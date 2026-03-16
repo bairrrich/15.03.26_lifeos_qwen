@@ -24,6 +24,7 @@ import {
   useProcessSubscriptionPayments,
   useSubscriptionPaymentHistory,
 } from '@/modules/finance/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell } from 'lucide-react';
 import { format, addMonths, addWeeks, addYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -91,6 +92,7 @@ export default function SubscriptionsPage() {
     } else {
       nextBillingDate = addYears(nextBillingDate, 1);
     }
+    const userId = getCurrentUserId();
 
     createSubscription.mutate(
       {
@@ -103,7 +105,7 @@ export default function SubscriptionsPage() {
         category_id: formData.get('category_id') as string,
         description: (formData.get('description') as string) || undefined,
         url: (formData.get('url') as string) || undefined,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

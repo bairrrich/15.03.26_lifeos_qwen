@@ -20,11 +20,22 @@ import {
   useCreateCategory,
   useDeleteCategory,
 } from '@/modules/finance/hooks';
-import { Plus, Folder, FolderOpen, Trash2, ChevronRight, ChevronDown, RotateCcw } from 'lucide-react';
+import { Plus, Folder, FolderOpen, Trash2, ChevronRight, ChevronDown, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Category } from '@/modules/finance/entities';
 import { resetFinanceCategories } from '@/modules/finance/data/seed-init';
 import { cn } from '@/lib/utils';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function FinanceCategoriesPage() {
   const { data: categories = [] } = useCategories();
@@ -37,6 +48,9 @@ export default function FinanceCategoriesPage() {
   const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
   const [selectedIcon, setSelectedIcon] = useState<string>('🍔');
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
+  const [deleteCategoryName, setDeleteCategoryName] = useState('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Предустановленные emoji для категорий
   const expenseIcons = [
@@ -69,6 +83,7 @@ export default function FinanceCategoriesPage() {
 
     // Добавляем выбранную иконку к названию
     const nameWithIcon = `${selectedIcon} ${formData.get('name')}`;
+    const userId = getCurrentUserId();
 
     createCategory.mutate(
       {
@@ -76,7 +91,7 @@ export default function FinanceCategoriesPage() {
         type: formData.get('type') as 'income' | 'expense',
         color: formData.get('color') as string || '#6366f1',
         parent_id: selectedParent || undefined,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
@@ -104,8 +119,13 @@ export default function FinanceCategoriesPage() {
   }, [iconPickerOpen]);
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Вы уверены, что хотите удалить категорию "${name}"? Подкатегории также будут удалены.`)) {
-      deleteCategory.mutate(id, {
+    setDeleteCategoryId(id);
+    setDeleteCategoryName(name);
+  };
+
+  const confirmDelete = () => {
+    if (deleteCategoryId) {
+      deleteCategory.mutate(deleteCategoryId, {
         onSuccess: () => {
           toast.success('Категория удалена');
         },
@@ -113,15 +133,20 @@ export default function FinanceCategoriesPage() {
           toast.error('Ошибка при удалении категории');
         },
       });
+      setDeleteCategoryId(null);
+      setDeleteCategoryName('');
     }
   };
 
-  const handleResetSeed = async () => {
-    if (confirm('Это УДАЛИТ ВСЕ категории и создаст их заново с правильной иерархией. Продолжить?')) {
-      await resetFinanceCategories();
-      toast.success('Категории сброшены и пересозданы');
-      window.location.reload(); // Перезагружаем для обновления списка
-    }
+  const handleResetSeed = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmResetSeed = async () => {
+    await resetFinanceCategories();
+    toast.success('Категории сброшены и пересозданы');
+    setShowResetConfirm(false);
+    window.location.reload();
   };
 
   const toggleExpand = (id: string) => {
@@ -402,18 +427,38 @@ export default function FinanceCategoriesPage() {
         </CardContent>
       </Card>
 
-      {/* Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Как использовать иерархию</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>• <strong>Корневые категории</strong> — основные группы (например, "Еда", "Транспорт")</p>
-          <p>• <strong>Подкатегории</strong> — детализация (например, "Продукты", "Рестораны" внутри "Еда")</p>
-          <p>• При выборе категории для транзакции можно выбрать как корневую, так и подкатегорию</p>
-          <p>• При удалении родительской категории все подкатегории также будут удалены</p>
-        </CardContent>
-      </Card>
+      <AlertDialog open={!!deleteCategoryId} onOpenChange={() => setDeleteCategoryId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удаление категории</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить категорию "{deleteCategoryName}"? Подкатегории также будут удалены.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Сброс категорий
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Это УДАЛИТ ВСЕ категории и создаст их заново с правильной иерархией. Продолжить?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmResetSeed}>Продолжить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

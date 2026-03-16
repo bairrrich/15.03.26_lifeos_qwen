@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useActiveAutomations, useCreateAutomation, useToggleAutomation, useRecentAutomationLogs } from '@/modules/automations/hooks'
+import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Zap, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
@@ -51,6 +52,7 @@ export default function AutomationsPage() {
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const userId = getCurrentUserId()
 
     createAutomation.mutate(
       {
@@ -70,7 +72,7 @@ export default function AutomationsPage() {
         ],
         is_active: true,
         trigger_count: 0,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

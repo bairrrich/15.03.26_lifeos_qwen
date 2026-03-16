@@ -31,6 +31,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { useActiveWorkout, useCreateWorkoutLog, useExercises, useCreateSet, useSets, useUpdatePR, useExercisePRs } from '@/modules/workouts/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { RestTimer, SetRow, ExerciseSearch, PRBadge } from '@/modules/workouts/components';
 import type { Set as SetType, SetType as SetTypeEnum, WorkoutExercise } from '@/modules/workouts/entities';
 
@@ -228,6 +229,7 @@ export function ActiveWorkoutScreen({ workoutId, workoutName, onFinish }: Active
 
   const handleFinishWorkout = async () => {
     const duration = Math.floor((Date.now() - startTime) / 1000);
+    const userId = getCurrentUserId();
 
     // Группировка сетов по упражнениям для лога
     const exercisesLog = workoutExercises.map((ex) => ({
@@ -252,7 +254,7 @@ export function ActiveWorkoutScreen({ workoutId, workoutName, onFinish }: Active
       rating: rating as 1 | 2 | 3 | 4 | 5,
       feeling: feeling as 1 | 2 | 3 | 4 | 5,
       notes: notes || undefined,
-      user_id: 'current-user',
+      user_id: userId,
     });
 
     toast.success('Тренировка сохранена!');

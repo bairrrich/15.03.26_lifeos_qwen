@@ -21,6 +21,7 @@ import {
   useCreateSleepLog,
   useLatestHealthMetric,
 } from '@/modules/health/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Moon, Heart, Activity, Thermometer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -45,6 +46,7 @@ export default function HealthPage() {
     const bedtime = new Date(formData.get('bedtime') as string);
     const wakeTime = new Date(formData.get('wake_time') as string);
     const durationHours = (wakeTime.getTime() - bedtime.getTime()) / (1000 * 60 * 60);
+    const userId = getCurrentUserId();
 
     createSleepLog.mutate(
       {
@@ -53,7 +55,7 @@ export default function HealthPage() {
         wake_time: wakeTime.getTime(),
         duration_hours: Math.round(durationHours * 10) / 10,
         quality: Number(formData.get('quality')) as 1 | 2 | 3 | 4 | 5,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

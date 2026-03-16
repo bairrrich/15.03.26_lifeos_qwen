@@ -15,6 +15,16 @@ import { useRouter } from 'next/navigation';
 import { dataExportImportService } from '@/core/database/export-import';
 import type { User } from '@supabase/supabase-js';
 import type { LocalUser } from '@/core/auth';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -23,6 +33,7 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | LocalUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -82,13 +93,15 @@ export default function SettingsPage() {
     }
   };
 
-  const handleClearAll = async () => {
-    const confirmed = confirm('Вы уверены? Все данные будут безвозвратно удалены.');
-    if (!confirmed) return;
+  const handleClearAll = () => {
+    setShowClearConfirm(true);
+  };
 
+  const confirmClearAll = async () => {
     try {
       await dataExportImportService.clearAllData();
       toast.success('Все данные удалены');
+      setShowClearConfirm(false);
       setTimeout(() => window.location.reload(), 1000);
     } catch {
       toast.error('Ошибка при удалении данных');
@@ -320,6 +333,22 @@ export default function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Диалог подтверждения очистки всех данных */}
+      <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Очистка всех данных</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены? Все данные будут безвозвратно удалены.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClearAll}>Удалить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

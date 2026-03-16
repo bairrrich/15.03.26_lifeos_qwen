@@ -27,6 +27,7 @@ import {
   useActiveWorkoutPlan,
   useExercises,
 } from '@/modules/workouts/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { ActiveWorkoutScreen } from '@/modules/workouts/components';
 import { initializeSeedExercises } from '@/modules/workouts/data/seed-init';
 
@@ -63,10 +64,11 @@ export default function WorkoutsPage() {
 
   const handleCreateWorkout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const userId = getCurrentUserId();
 
     await createWorkout.mutateAsync(
       {
-        user_id: 'current-user',
+        user_id: userId,
         name: newWorkoutName,
         description: newWorkoutDescription,
         exercises: [],

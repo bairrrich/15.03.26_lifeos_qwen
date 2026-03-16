@@ -22,6 +22,7 @@ import {
   useCreateGoal,
   useUpdateGoalProgress,
 } from '@/modules/goals/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Target, CheckCircle2, Circle, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -56,6 +57,7 @@ export default function GoalsPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createGoal.mutate(
       {
@@ -67,7 +69,7 @@ export default function GoalsPage() {
           : undefined,
         progress: 0,
         status: 'active',
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

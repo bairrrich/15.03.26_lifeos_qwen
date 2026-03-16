@@ -32,6 +32,7 @@ import {
   useSetActiveWorkoutPlan,
   useWorkouts,
 } from '@/modules/workouts/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import type { WorkoutPlan, WorkoutGoal } from '@/modules/workouts/entities';
 
 export default function ProgramsPage() {
@@ -65,8 +66,9 @@ export default function ProgramsPage() {
     e.preventDefault();
 
     // Создаём план с пустыми workout'ами (в реальности нужно создать workout'ы)
+    const userId = getCurrentUserId();
     const planData = {
-      user_id: 'current-user',
+      user_id: userId,
       name: newPlan.name,
       description: newPlan.description,
       goal: newPlan.goal,
@@ -192,8 +194,9 @@ export default function ProgramsPage() {
   ];
 
   const handleUsePreset = async (preset: typeof presetPrograms[0]) => {
+    const userId = getCurrentUserId();
     const planData: Omit<WorkoutPlan, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'version' | 'sync_status' | 'last_synced_at'> = {
-      user_id: 'current-user',
+      user_id: userId,
       name: preset.name,
       description: preset.description,
       goal: preset.goal,

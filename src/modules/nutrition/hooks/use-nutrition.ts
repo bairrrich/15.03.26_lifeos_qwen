@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import {
   FoodService,
   MealService,
@@ -38,7 +39,7 @@ export function useCreateFood() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => foodService.create({ ...data, user_id: 'current-user' }),
+    ) => foodService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['foods'] });
     },
@@ -127,12 +128,12 @@ export function useDailyNutrition(date?: number) {
       date
         ? nutritionLogService.getDailyTotals(date)
         : Promise.resolve({
-            calories: 0,
-            protein: 0,
-            fat: 0,
-            carbs: 0,
-            fiber: 0,
-          }),
+          calories: 0,
+          protein: 0,
+          fat: 0,
+          carbs: 0,
+          fiber: 0,
+        }),
     enabled: !!date,
   });
 }

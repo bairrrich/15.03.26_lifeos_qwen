@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { GoalService, GoalLogService } from '../services';
 import type { Goal, GoalLog } from '../entities';
 
@@ -35,7 +36,7 @@ export function useCreateGoal() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => goalService.create({ ...data, user_id: 'current-user' }),
+    ) => goalService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
     },

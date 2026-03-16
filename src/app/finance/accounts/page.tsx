@@ -25,6 +25,17 @@ import {
 import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const typeIcons: Record<string, any> = {
   cash: Wallet,
@@ -54,6 +65,9 @@ export default function AccountsPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<{ id: string; name: string; balance: number; type: string; currency?: string } | null>(null);
+  const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
+  const [deleteAccountName, setDeleteAccountName] = useState('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Инициализация счетов по умолчанию
   useEffect(() => {
@@ -62,24 +76,48 @@ export default function AccountsPage() {
     }
   }, [isLoading, accounts.length]);
 
-  const handleResetAccounts = async () => {
-    if (confirm('Это УДАЛИТ ВСЕ счета и создаст их заново со стандартными счетами по умолчанию. Продолжить?')) {
-      await resetFinanceAccounts();
-      toast.success('Счета сброшены и пересозданы');
-      window.location.reload();
+  const handleResetAccounts = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmResetAccounts = async () => {
+    await resetFinanceAccounts();
+    toast.success('Счета сброшены и пересозданы');
+    setShowResetConfirm(false);
+    window.location.reload();
+  };
+
+  const handleDeleteClick = (id: string, name: string) => {
+    setDeleteAccountId(id);
+    setDeleteAccountName(name);
+  };
+
+  const confirmDelete = () => {
+    if (deleteAccountId) {
+      deleteAccount.mutate(deleteAccountId, {
+        onSuccess: () => {
+          toast.success('Счёт удалён');
+        },
+        onError: () => {
+          toast.error('Ошибка при удалении счёта');
+        },
+      });
+      setDeleteAccountId(null);
+      setDeleteAccountName('');
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     const accountData = {
       name: formData.get('name') as string,
       type: formData.get('type') as any,
       balance: Number(formData.get('balance')),
       currency: formData.get('currency') as string || 'RUB',
-      user_id: 'current-user' as const,
+      user_id: userId,
     };
 
     if (editingAccount) {
@@ -118,19 +156,6 @@ export default function AccountsPage() {
       currency: account.currency,
     });
     setDialogOpen(true);
-  };
-
-  const handleDelete = (id: string, name: string) => {
-    if (confirm(`Вы уверены, что хотите удалить счёт "${name}"?`)) {
-      deleteAccount.mutate(id, {
-        onSuccess: () => {
-          toast.success('Счёт удалён');
-        },
-        onError: () => {
-          toast.error('Ошибка при удалении счёта');
-        },
-      });
-    }
   };
 
   const handleArchive = (account: any) => {
@@ -313,7 +338,7 @@ export default function AccountsPage() {
                           size="icon"
                           variant="ghost"
                           className="h-8 w-8 text-destructive"
-                          onClick={() => handleDelete(account.id, account.name)}
+                          onClick={() => handleDeleteClick(account.id, account.name)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -367,7 +392,7 @@ export default function AccountsPage() {
                           size="icon"
                           variant="ghost"
                           className="h-8 w-8 text-destructive"
-                          onClick={() => handleDelete(account.id, account.name)}
+                          onClick={() => handleDeleteClick(account.id, account.name)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -380,6 +405,38 @@ export default function AccountsPage() {
           </div>
         </div>
       )}
+
+      {/* Диалог подтверждения удаления счёта */}
+      <AlertDialog open={!!deleteAccountId} onOpenChange={() => setDeleteAccountId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удаление счёта</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить счёт "{deleteAccountName}"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Диалог подтверждения сброса счетов */}
+      <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Сброс счетов</AlertDialogTitle>
+            <AlertDialogDescription>
+              Это УДАЛИТ ВСЕ счета и создаст их заново со стандартными счетами по умолчанию. Продолжить?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmResetAccounts}>Продолжить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

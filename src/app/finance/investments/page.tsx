@@ -32,6 +32,7 @@ import {
   useAccounts,
   useCreateTransaction,
 } from '@/modules/finance/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -72,6 +73,7 @@ export default function InvestmentsPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createInvestment.mutate(
       {
@@ -84,7 +86,7 @@ export default function InvestmentsPage() {
           ? Number(formData.get('current_price'))
           : undefined,
         currency: 'RUB',
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
@@ -102,6 +104,7 @@ export default function InvestmentsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const investment = investments.find((i) => i.id === selectedInvestment);
+    const userId = getCurrentUserId();
 
     if (!investment || !selectedInvestment) return;
 
@@ -120,7 +123,7 @@ export default function InvestmentsPage() {
         price,
         total: transactionType === 'buy' ? -total : total,
         currency: investment.currency,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
@@ -148,7 +151,7 @@ export default function InvestmentsPage() {
               date: Date.now(),
               merchant: investment.name,
               tags: ['investment', transactionType],
-              user_id: 'current-user',
+              user_id: userId,
             });
           }
 

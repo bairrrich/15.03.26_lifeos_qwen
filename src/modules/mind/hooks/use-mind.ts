@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { BookService, CourseService, MovieService, ArticleService, NoteService } from '../services';
 import type { Book, Course, Movie, Article, Note } from '../entities';
 
@@ -39,7 +40,7 @@ export function useCreateBook() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => bookService.create({ ...data, user_id: 'current-user' }),
+    ) => bookService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
     },

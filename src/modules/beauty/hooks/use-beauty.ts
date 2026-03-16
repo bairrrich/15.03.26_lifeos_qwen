@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import {
   BeautyProductService,
   BeautyRoutineService,
@@ -58,7 +59,7 @@ export function useCreateBeautyProduct() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => beautyProductService.create({ ...data, user_id: 'current-user' }),
+    ) => beautyProductService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['beauty-products'] });
     },
@@ -142,10 +143,10 @@ export function useWeeklyBeautyStats(date?: number) {
       date
         ? beautyUsageLogService.getWeeklyStats(date)
         : Promise.resolve({
-            totalUses: 0,
-            avgRating: 0,
-            mostUsedProducts: [],
-          }),
+          totalUses: 0,
+          avgRating: 0,
+          mostUsedProducts: [],
+        }),
     enabled: !!date,
   });
 }

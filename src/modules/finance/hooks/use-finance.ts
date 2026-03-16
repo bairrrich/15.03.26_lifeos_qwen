@@ -94,9 +94,13 @@ export function useCreateTransaction() {
         | 'last_synced_at'
       >
     ) => transactionService.create({ ...data, user_id: getCurrentUserId() }),
-    onSuccess: () => {
+    onSuccess: (transaction) => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      // Обновляем баланс счёта
+      if (transaction.account_id) {
+        transactionService.updateAccountBalance(transaction.account_id);
+      }
     },
   });
 }
@@ -107,6 +111,32 @@ export function useDeleteTransaction() {
     mutationFn: (id: string) => transactionService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      // Пересчитываем балансы всех счетов
+      transactionService.getAll().then(transactions => {
+        const accountIds = [...new Set(transactions.map(t => t.account_id))];
+        accountIds.forEach(accountId => {
+          if (accountId) {
+            transactionService.updateAccountBalance(accountId);
+          }
+        });
+      });
+    },
+  });
+}
+
+export function useUpdateTransaction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Transaction> }) =>
+      transactionService.update(id, data),
+    onSuccess: (_, { data }) => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      // Обновляем баланс счёта
+      if (data.account_id) {
+        transactionService.updateAccountBalance(data.account_id);
+      }
     },
   });
 }
@@ -181,6 +211,27 @@ export function useCreateBudget() {
         | 'last_synced_at'
       >
     ) => budgetService.create({ ...data, user_id: getCurrentUserId() }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+    },
+  });
+}
+
+export function useUpdateBudget() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Budget> }) =>
+      budgetService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+    },
+  });
+}
+
+export function useDeleteBudget() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => budgetService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
     },

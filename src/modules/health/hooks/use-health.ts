@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import {
   HealthMetricService,
   SleepLogService,
@@ -47,7 +48,7 @@ export function useCreateHealthMetric() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => healthMetricService.create({ ...data, user_id: 'current-user' }),
+    ) => healthMetricService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['health-metrics'] });
     },

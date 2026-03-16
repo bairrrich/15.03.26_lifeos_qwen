@@ -21,6 +21,7 @@ import {
   useCompleteHabit,
   useTodayHabitsLog,
 } from '@/modules/habits/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Check, Flame, Calendar, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -58,6 +59,7 @@ export default function HabitsPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createHabit.mutate(
       {
@@ -68,7 +70,7 @@ export default function HabitsPage() {
         color: formData.get('color') as string || undefined,
         streak: 0,
         completed_total: 0,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

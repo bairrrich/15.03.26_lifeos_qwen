@@ -24,6 +24,7 @@ import {
   useCreateCourse,
   useCreateNote,
 } from '@/modules/mind/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, BookOpen, GraduationCap, FileText, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -48,6 +49,7 @@ export default function MindPage() {
   const handleCreateBook = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createBook.mutate(
       {
@@ -56,7 +58,7 @@ export default function MindPage() {
         status: formData.get('status') as Book['status'],
         pages_total: formData.get('pages_total') ? Number(formData.get('pages_total')) : undefined,
         pages_read: 0,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
@@ -71,6 +73,7 @@ export default function MindPage() {
   const handleCreateCourse = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createCourse.mutate(
       {
@@ -79,7 +82,7 @@ export default function MindPage() {
         url: (formData.get('url') as string) || undefined,
         status: 'enrolled',
         progress: 0,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
@@ -94,6 +97,7 @@ export default function MindPage() {
   const handleCreateNote = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createNote.mutate(
       {
@@ -101,7 +105,7 @@ export default function MindPage() {
         content: formData.get('content') as string,
         tags: [],
         is_favorite: false,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

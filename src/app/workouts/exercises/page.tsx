@@ -32,6 +32,7 @@ import {
   useFavoriteExercises,
   useToggleExerciseFavorite,
 } from '@/modules/workouts/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { ExerciseCard } from '@/modules/workouts/components';
 import type { Exercise, MuscleGroup, Equipment, Difficulty } from '@/modules/workouts/entities';
 
@@ -87,10 +88,11 @@ export default function ExercisesPage() {
 
   const handleCreateExercise = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const userId = getCurrentUserId();
 
     await createExercise.mutateAsync({
       ...newExercise,
-      user_id: 'current-user',
+      user_id: userId,
     }, {
       onSuccess: () => {
         toast.success('Упражнение создано');

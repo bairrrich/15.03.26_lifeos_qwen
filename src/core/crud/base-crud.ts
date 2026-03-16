@@ -3,6 +3,7 @@ import type { Table } from 'dexie';
 import { db } from '@/core/database';
 import { syncService } from '@/core/sync';
 import { getLocalUser } from '@/core/auth';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Базовый CRUD сервис для работы с сущностями
@@ -61,18 +62,19 @@ export class CrudService<T extends BaseEntity> {
     const now = Date.now();
     const newEntity = {
       ...entity,
+      id: uuidv4(), // Генерируем UUID для id
       created_at: now,
       updated_at: now,
       version: 1,
       sync_status: 'local' as const,
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const id = await this.table.add(newEntity as any);
+    await this.table.add(newEntity as any);
 
     // Запускаем синхронизацию после создания
     this.triggerSync();
 
-    return { ...newEntity, id } as T;
+    return newEntity as T;
   }
 
   /**

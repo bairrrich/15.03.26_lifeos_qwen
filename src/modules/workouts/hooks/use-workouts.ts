@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import {
   ExerciseService,
   SetService,
@@ -40,7 +41,7 @@ export function useCreateExercise() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => exerciseService.create({ ...data, user_id: 'current-user' }),
+    ) => exerciseService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },
@@ -119,7 +120,7 @@ export function useCreateSet() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => setService.create({ ...data, user_id: 'current-user' }),
+    ) => setService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['sets'] });
       queryClient.invalidateQueries({ queryKey: ['exercise-history', variables.exercise_id] });
@@ -150,7 +151,7 @@ export function useCreateWorkout() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => workoutService.create({ ...data, user_id: 'current-user' }),
+    ) => workoutService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
     },
@@ -204,7 +205,7 @@ export function useCreateWorkoutLog() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => workoutLogService.create({ ...data, user_id: 'current-user' }),
+    ) => workoutLogService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout-logs'] });
       queryClient.invalidateQueries({ queryKey: ['workout-stats'] });
@@ -242,7 +243,7 @@ export function useCreateWorkoutPlan() {
         | 'sync_status'
         | 'last_synced_at'
       >
-    ) => workoutPlanService.create({ ...data, user_id: 'current-user' }),
+    ) => workoutPlanService.create({ ...data, user_id: getCurrentUserId() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout-plans'] });
     },
@@ -336,7 +337,7 @@ export function useActiveWorkout(workoutId?: string) {
 
     await createSet.mutateAsync({
       ...setData,
-      user_id: 'current-user',
+      user_id: getCurrentUserId(),
       workout_id: workoutId,
       completed: false,
     });
@@ -349,7 +350,7 @@ export function useActiveWorkout(workoutId?: string) {
     // В реальной реализации здесь был бы update set
     await createSet.mutateAsync({
       ...set,
-      user_id: 'current-user',
+      user_id: getCurrentUserId(),
       completed: true,
     });
   };

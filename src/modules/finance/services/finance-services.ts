@@ -26,6 +26,32 @@ export class TransactionService extends CrudService<Transaction> {
     super('transactions');
   }
 
+  /**
+   * Обновить баланс счёта на основе транзакций
+   */
+  async updateAccountBalance(accountId: string): Promise<void> {
+    const accountService = new AccountService();
+    const account = await accountService.getById(accountId);
+    if (!account) return;
+
+    // Получаем все транзакции по счёту
+    const transactions = await this.getByAccount(accountId);
+
+    // Считаем баланс: доходы - расходы
+    const income = transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const expenses = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const newBalance = income - expenses;
+
+    // Обновляем баланс счёта
+    await accountService.update(accountId, { balance: newBalance });
+  }
+
   async getByAccount(accountId: string): Promise<Transaction[]> {
     return await this.findByField('account_id', accountId);
   }

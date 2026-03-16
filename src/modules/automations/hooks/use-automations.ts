@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { AutomationService, AutomationLogService } from '../services'
 import type { AutomationRule, AutomationLog } from '../entities'
 
@@ -25,7 +26,7 @@ export function useCreateAutomation() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: Omit<AutomationRule, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'version' | 'sync_status' | 'last_synced_at'>) =>
-      automationService.create({ ...data, user_id: 'current-user', trigger_count: 0 }),
+      automationService.create({ ...data, user_id: getCurrentUserId(), trigger_count: 0 }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['automations'] })
     },

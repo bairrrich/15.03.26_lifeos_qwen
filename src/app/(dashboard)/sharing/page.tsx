@@ -18,8 +18,19 @@ import {
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { useFamily, useFamilyMembers, useCreateFamily, useCreateInvitation, useRemoveMember } from '@/modules/sharing/hooks'
+import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Users, Mail, Shield, UserX, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 const roleLabels: Record<string, string> = {
   owner: 'Владелец',
@@ -45,17 +56,20 @@ export default function SharingPage() {
 
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [removeMemberId, setRemoveMemberId] = useState<string | null>(null)
+  const [removeMemberName, setRemoveMemberName] = useState('')
 
   const handleCreateFamily = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const userId = getCurrentUserId()
 
     createFamily.mutate(
       {
         name: formData.get('name') as string,
         description: formData.get('description') as string || undefined,
-        owner_id: 'current-user',
-        user_id: 'current-user',
+        owner_id: userId,
+        user_id: userId,
         settings: {
           require_approval: true,
           default_share_scope: 'all',
@@ -82,7 +96,7 @@ export default function SharingPage() {
       {
         family_id: currentFamily.id,
         email: formData.get('email') as string,
-        invited_by: 'current-user',
+        invited_by: getCurrentUserId(),
         invited_by_name: 'Вы',
         role: formData.get('role') as any,
         share_scope: ['all'],
@@ -100,12 +114,19 @@ export default function SharingPage() {
   }
 
   const handleRemove = (memberId: string, memberName: string) => {
-    if (confirm(`Удалить ${memberName} из семьи?`)) {
-      removeMember.mutate(memberId, {
+    setRemoveMemberId(memberId)
+    setRemoveMemberName(memberName)
+  }
+
+  const confirmRemove = () => {
+    if (removeMemberId) {
+      removeMember.mutate(removeMemberId, {
         onSuccess: () => {
           toast.success('Участник удалён')
         },
       })
+      setRemoveMemberId(null)
+      setRemoveMemberName('')
     }
   }
 
@@ -329,6 +350,21 @@ export default function SharingPage() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!removeMemberId} onOpenChange={() => setRemoveMemberId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удаление участника</AlertDialogTitle>
+            <AlertDialogDescription>
+              Удалить {removeMemberName} из семьи?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemove}>Удалить</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

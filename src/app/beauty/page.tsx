@@ -29,6 +29,7 @@ import {
   useCreateBeautyProduct,
   useLatestSkinAnalysis,
 } from '@/modules/beauty/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Sparkles, Droplets, Calendar, Star, Clock, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -64,6 +65,7 @@ export default function BeautyPage() {
   const handleCreateProduct = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const userId = getCurrentUserId();
 
     createProduct.mutate(
       {
@@ -74,7 +76,7 @@ export default function BeautyPage() {
         purchase_date: Date.now(),
         is_favorite: false,
         is_empty: false,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {

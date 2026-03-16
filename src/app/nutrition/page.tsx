@@ -23,6 +23,7 @@ import {
   useFoods,
   useNutritionGoal,
 } from '@/modules/nutrition/hooks';
+import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Utensils, Flame, TrendingUp, Apple, ChefHat } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -74,6 +75,7 @@ export default function NutritionPage() {
 
     const quantity = Number(formData.get('quantity'));
     const multiplier = quantity / food.serving_size;
+    const userId = getCurrentUserId();
 
     createLog.mutate(
       {
@@ -87,7 +89,7 @@ export default function NutritionPage() {
         fat: Math.round(food.fat * multiplier),
         carbs: Math.round(food.carbs * multiplier),
         fiber: food.fiber ? Math.round(food.fiber * multiplier) : undefined,
-        user_id: 'current-user',
+        user_id: userId,
       },
       {
         onSuccess: () => {
