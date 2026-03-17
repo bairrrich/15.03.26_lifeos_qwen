@@ -110,6 +110,54 @@ export class CrudService<T extends BaseEntity> {
   }
 
   /**
+   * Пагинация - получить сущности с limit и offset
+   */
+  async getPaginated(options: {
+    limit: number;
+    offset: number;
+    orderBy?: keyof T;
+    orderDirection?: 'asc' | 'desc';
+  }): Promise<{ data: T[]; total: number }> {
+    const { limit, offset, orderBy = 'created_at', orderDirection = 'desc' } = options;
+
+    // Получаем все неудалённые записи
+    const all = await this.table.toArray();
+    const filtered = all.filter((item) => !item.deleted_at);
+    const total = filtered.length;
+
+    // Сортируем
+    const sorted = filtered.sort((a, b) => {
+      const aVal = a[orderBy];
+      const bVal = b[orderBy];
+      if (aVal === undefined || bVal === undefined) return 0;
+
+      let comparison = 0;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        comparison = aVal - bVal;
+      } else if (typeof aVal === 'string' && typeof bVal === 'string') {
+        comparison = aVal.localeCompare(bVal);
+      } else {
+        comparison = String(aVal).localeCompare(String(bVal));
+      }
+
+      return orderDirection === 'desc' ? -comparison : comparison;
+    });
+
+    // Применяем пагинацию
+    const data = sorted.slice(offset, offset + limit);
+
+    return { data, total };
+  }
+
+  /**
+   * Получить количество записей
+   */
+  async getCount(): Promise<number> {
+    const all = await this.table.toArray();
+    return all.filter((item) => !item.deleted_at).length;
+  }
+
+  /**
    * Обновить сущность
    */
   async update(id: string, updates: Partial<T>): Promise<void> {

@@ -294,6 +294,7 @@ export class LifeOSDatabase extends Dexie {
 
 export const db = new LifeOSDatabase('LifeOS');
 
+// База данных версии 1 - базовые индексы
 db.version(1).stores({
   // Finance
   accounts: 'id, user_id, name, type, sync_status, created_at, updated_at',
@@ -355,4 +356,20 @@ db.version(1).stores({
 
   // Test (для тестов)
   test_entities: 'id, user_id, name, value, sync_status',
+});
+
+// База данных версии 2 - расширенные индексы для производительности
+db.version(2).stores({
+  // Дополнительные составные индексы для часто используемых запросов
+  transactions: '++id, user_id, account_id, category_id, type, date, sync_status, [type+date]',
+  habit_logs: '++id, user_id, habit_id, date, completed, [habit_id+date]',
+  workout_logs: '++id, user_id, workout_id, date, [workout_id+date]',
+  nutrition_logs: '++id, user_id, date, meal_type, [date+meal_type]',
+  sleep_logs: '++id, user_id, date, quality, [date+quality]',
+  health_metrics: '++id, user_id, type, recorded_at, [type+recorded_at]',
+  books: '++id, user_id, title, status, [status+user_id]',
+  notes: '++id, user_id, title, parent_note_id, [user_id+title]',
+}).upgrade(tx => {
+  // Миграция данных не требуется, просто добавляем новые индексы
+  console.log('Database upgraded to version 2 - added compound indexes');
 });

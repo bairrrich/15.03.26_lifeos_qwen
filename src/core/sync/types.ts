@@ -2,7 +2,30 @@
  * Типы для системы синхронизации
  */
 
+import type { Table } from 'dexie';
+
 export type SyncStatus = 'local' | 'synced' | 'conflict' | 'pending';
+
+/**
+ * Базовая сущность для синхронизации
+ */
+export interface SyncableEntity {
+  id: string;
+  user_id: string;
+  created_at: number;
+  updated_at: number;
+  deleted_at?: number;
+  version: number;
+  sync_status: SyncStatus;
+  last_synced_at?: number;
+  device_id?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Тип для таблицы базы данных
+ */
+export type DbTable<T> = Table<T, string>;
 
 export interface SyncResult {
   success: boolean;

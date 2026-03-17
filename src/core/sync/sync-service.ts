@@ -1,6 +1,6 @@
 import { getSupabaseClient, isLocalMode, getLocalUser } from '@/core/auth';
 import { db } from '@/core/database';
-import type { SyncResult, SyncConflict, SyncError, SyncConfig } from './types';
+import type { SyncResult, SyncConflict, SyncError, SyncConfig, SyncableEntity, DbTable } from './types';
 import { DEFAULT_SYNC_CONFIG } from './types';
 
 /**
@@ -178,8 +178,7 @@ export class SyncService {
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const table = (db as any)[tableName];
+      const table = db[tableName as keyof typeof db] as DbTable<SyncableEntity> | undefined;
       if (!table) {
         return result;
       }
@@ -234,8 +233,7 @@ export class SyncService {
   /**
    * Отправка записи в Supabase
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async pushToSupabase(tableName: string, record: any, userId: string): Promise<void> {
+  private async pushToSupabase(tableName: string, record: SyncableEntity, userId: string): Promise<void> {
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase not configured');
 
@@ -244,19 +242,21 @@ export class SyncService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       id,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      created_at,
+      user_id: _user_id,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      updated_at,
+      created_at: _created_at,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      deleted_at,
+      updated_at: _updated_at,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      version,
+      deleted_at: _deleted_at,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      sync_status,
+      version: _version,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      last_synced_at,
+      sync_status: _sync_status,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      device_id,
+      last_synced_at: _last_synced_at,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      device_id: _device_id,
       ...data
     } = record;
 
@@ -298,8 +298,7 @@ export class SyncService {
   /**
    * Получение записей из Supabase
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async pullFromSupabase(tableName: string, userId: string, table: any): Promise<void> {
+  private async pullFromSupabase(tableName: string, userId: string, table: DbTable<SyncableEntity>): Promise<void> {
     const supabase = getSupabaseClient();
     if (!supabase) return;
 

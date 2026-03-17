@@ -18,18 +18,28 @@ const protectedRoutes = [
 ];
 
 // Supabase project ref для имени cookie
-const SUPABASE_PROJECT_REF = 'lyxtpcyjgnrynpyvemyb';
+// Можно указать в переменной окружения NEXT_PUBLIC_SUPABASE_PROJECT_REF
+const SUPABASE_PROJECT_REF = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_REF || '';
 
 // Все возможные имена cookie Supabase
 function getSupabaseSessionCookie(request: NextRequest) {
-  // Проверяем все возможные форматы имён cookie
-  const possibleNames = [
-    `sb-${SUPABASE_PROJECT_REF}-auth-token`,
-    `sb-${SUPABASE_PROJECT_REF}-session`,
+  // Динамически формируем список имён cookie на основе SUPABASE_PROJECT_REF
+  const possibleNames: string[] = [];
+
+  // Добавляем формат с ref если он задан
+  if (SUPABASE_PROJECT_REF) {
+    possibleNames.push(
+      `sb-${SUPABASE_PROJECT_REF}-auth-token`,
+      `sb-${SUPABASE_PROJECT_REF}-session`
+    );
+  }
+
+  // Добавляем универсальные имена
+  possibleNames.push(
     'supabase-auth-token',
     'sb-auth-token',
-    'sb-session',
-  ];
+    'sb-session'
+  );
 
   for (const name of possibleNames) {
     const cookie = request.cookies.get(name);
@@ -63,7 +73,7 @@ export function middleware(request: NextRequest) {
 
   // Проверяем локальный режим
   const localUserCookie = request.cookies.get('lifeos_local_user');
-  
+
   // Проверяем анонимного пользователя
   const anonUserCookie = request.cookies.get('lifeos_anon_user_id');
 
