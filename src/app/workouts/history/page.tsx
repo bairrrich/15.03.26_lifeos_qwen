@@ -17,9 +17,11 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { useWorkoutLogs } from '@/modules/workouts/hooks';
+import { EmptyState } from '@/components/ui/empty-state';
+import { VirtualizedGrid } from '@/components/ui/virtualized-grid';
 
 export default function WorkoutHistoryPage() {
-  const { data: allLogs = [] } = useWorkoutLogs();
+  const { data: allLogs = [], isLoading } = useWorkoutLogs();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
 
@@ -40,7 +42,7 @@ export default function WorkoutHistoryPage() {
     return matchesSearch && matchesMonth;
   });
 
-  // Группировка по месяцам
+  // Группировка по месяцам (для отображения заголовков)
   const logsByMonth = filteredLogs.reduce((acc, log) => {
     const date = new Date(log.date);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -73,6 +75,74 @@ export default function WorkoutHistoryPage() {
       })
     )
   ).sort((a, b) => b.localeCompare(a));
+
+  // Компонент карточки тренировки
+  const renderWorkoutCard = (log: typeof allLogs[0]) => {
+    const totalSets = log.exercises.reduce(
+      (sum, ex) => sum + ex.sets.length,
+      0
+    );
+    const completedSets = log.exercises.reduce((sum, ex) => {
+      return sum + ex.sets.filter((s) => s.completed).length;
+    }, 0);
+
+    return (
+      <Card
+        className="cursor-pointer hover:shadow-md transition-shadow h-full"
+        onClick={() => (window.location.href = `/workouts/history/${log.id}`)}
+      >
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-lg">{log.workout_name}</CardTitle>
+              <CardDescription className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {format(log.date, 'dd MMMM yyyy', { locale: ru })}
+              </CardDescription>
+            </div>
+            {log.rating && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <TrendingUp className="h-3 w-3" />
+                {log.rating}/5
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {formatDuration(log.duration_seconds)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Dumbbell className="h-3 w-3" />
+              {completedSets}/{totalSets} сетов
+            </span>
+          </div>
+
+          {log.feeling && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>Самочувствие</span>
+                <span>{log.feeling}/5</span>
+              </div>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className={`h-2 flex-1 rounded-full ${log.feeling && i <= log.feeling
+                        ? 'bg-primary'
+                        : 'bg-muted'
+                      }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -120,15 +190,13 @@ export default function WorkoutHistoryPage() {
         </CardContent>
       </Card>
 
-      {/* Logs by Month */}
-      {Object.keys(logsByMonth).length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <Dumbbell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Нет тренировок</p>
-            <p className="text-sm">Завершите первую тренировку</p>
-          </CardContent>
-        </Card>
+      {/* Virtualized Grid or Empty State */}
+      {filteredLogs.length === 0 ? (
+        <EmptyState
+          icon={Dumbbell}
+          title="Нет тренировок"
+          description="Завершите первую тренировку, чтобы увидеть её здесь"
+        />
       ) : (
         <div className="space-y-6">
           {Object.entries(logsByMonth).map(([monthKey, logs]) => (
@@ -136,75 +204,14 @@ export default function WorkoutHistoryPage() {
               <h2 className="text-lg font-semibold mb-4 capitalize">
                 {getMonthLabel(monthKey)}
               </h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {logs.map((log) => {
-                  const totalSets = log.exercises.reduce(
-                    (sum, ex) => sum + ex.sets.length,
-                    0
-                  );
-                  const completedSets = log.exercises.reduce((sum, ex) => {
-                    return sum + ex.sets.filter((s) => s.completed).length;
-                  }, 0);
-
-                  return (
-                    <Card
-                      key={log.id}
-                      className="cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => (window.location.href = `/workouts/history/${log.id}`)}
-                    >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg">{log.workout_name}</CardTitle>
-                            <CardDescription className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {format(log.date, 'dd MMMM yyyy', { locale: ru })}
-                            </CardDescription>
-                          </div>
-                          {log.rating && (
-                            <Badge variant="secondary" className="flex items-center gap-1">
-                              <TrendingUp className="h-3 w-3" />
-                              {log.rating}/5
-                            </Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatDuration(log.duration_seconds)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Dumbbell className="h-3 w-3" />
-                            {completedSets}/{totalSets} сетов
-                          </span>
-                        </div>
-
-                        {log.feeling && (
-                          <div className="mt-3">
-                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                              <span>Самочувствие</span>
-                              <span>{log.feeling}/5</span>
-                            </div>
-                            <div className="flex gap-1">
-                              {[1, 2, 3, 4, 5].map((i) => (
-                                <div
-                                  key={i}
-                                  className={`h-2 flex-1 rounded-full ${log.feeling && i <= log.feeling
-                                    ? 'bg-primary'
-                                    : 'bg-muted'
-                                    }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+              <VirtualizedGrid
+                items={logs}
+                columns={3}
+                itemHeight={220}
+                gap={16}
+                height={Math.min(logs.length * 236 + 32, 500)}
+                renderItem={(log) => renderWorkoutCard(log)}
+              />
             </div>
           ))}
         </div>
@@ -212,3 +219,4 @@ export default function WorkoutHistoryPage() {
     </div>
   );
 }
+

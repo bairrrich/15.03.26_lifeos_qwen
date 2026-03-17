@@ -5,14 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -39,6 +31,7 @@ import { useEffect } from 'react';
 import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { VirtualizedTable } from '@/components/ui/virtualized-table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -579,98 +572,88 @@ export default function FinancePage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Дата</TableHead>
-                <TableHead>Описание</TableHead>
-                <TableHead>Категория</TableHead>
-                <TableHead className="text-right">Сумма</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    Нет транзакций
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredTransactions.map((transaction) => {
-                  const category = categories.find((c) => c.id === transaction.category_id);
-                  return (
-                    <TableRow key={transaction.id}>
-                      <TableCell>
-                        {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium">{transaction.description}</div>
-                            {transaction.receipt_url && (
-                              <a
-                                href={transaction.receipt_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-primary"
-                                title="Открыть чек"
-                              >
-                                <Paperclip className="h-4 w-4" />
-                              </a>
-                            )}
-                          </div>
-                          {transaction.merchant && (
-                            <div className="text-xs text-muted-foreground">
-                              {transaction.merchant}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-                          style={{
-                            backgroundColor: `${category?.color || '#e5e7eb'}20`,
-                            color: category?.color || '#6b7280',
-                          }}
+          <VirtualizedTable
+            items={filteredTransactions}
+            rowHeight={72}
+            columnCount={5}
+            headers={['Дата', 'Описание', 'Категория', 'Сумма', '']}
+            height={Math.min(filteredTransactions.length * 80, 500)}
+            isLoading={false}
+            emptyMessage="Нет транзакций"
+            renderRow={(transaction) => {
+              const category = categories.find((c) => c.id === transaction.category_id);
+              return (
+                <div
+                  className="grid items-center border-b"
+                  style={{ gridTemplateColumns: '140px 1fr 150px 150px 100px', height: 72 }}
+                >
+                  <div className="px-4">
+                    {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
+                  </div>
+                  <div className="px-4">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">{transaction.description}</div>
+                      {transaction.receipt_url && (
+                        <a
+                          href={transaction.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary"
+                          title="Открыть чек"
                         >
-                          {category?.name || 'Без категории'}
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        className={`text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                          }`}
-                      >
-                        {transaction.type === 'income' ? '+' : '-'}
-                        {transaction.amount.toFixed(2)} {transaction.currency}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 justify-end">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => handleEdit(transaction)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-red-600 hover:text-red-700"
-                            onClick={() => handleDelete(transaction.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+                          <Paperclip className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    {transaction.merchant && (
+                      <div className="text-xs text-muted-foreground">
+                        {transaction.merchant}
+                      </div>
+                    )}
+                  </div>
+                  <div className="px-4">
+                    <span
+                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                      style={{
+                        backgroundColor: `${category?.color || '#e5e7eb'}20`,
+                        color: category?.color || '#6b7280',
+                      }}
+                    >
+                      {category?.name || 'Без категории'}
+                    </span>
+                  </div>
+                  <div className={`px-4 text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    {transaction.type === 'income' ? '+' : '-'}
+                    {transaction.amount.toFixed(2)} {transaction.currency}
+                  </div>
+                  <div className="px-4 flex items-center gap-1 justify-end">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(transaction);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(transaction.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            }}
+          />
         </CardContent>
       </Card>
 
