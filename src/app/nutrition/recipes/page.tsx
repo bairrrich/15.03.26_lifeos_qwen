@@ -21,8 +21,9 @@ import {
   useCreateRecipe,
 } from '@/modules/nutrition/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, ChefHat, Clock, Users, Trash2 } from 'lucide-react';
+import { Plus, ChefHat, Clock, Users, Trash2, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function RecipesPage() {
   const { data: recipes = [] } = useRecipes();
@@ -151,11 +152,13 @@ export default function RecipesPage() {
       {/* Recipes List */}
       <div className="grid gap-4 md:grid-cols-2">
         {recipes.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center text-muted-foreground">
-              У вас пока нет рецептов
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={BookOpen}
+            title="Нет рецептов"
+            description="Добавьте свои любимые рецепты"
+            actionLabel="Добавить рецепт"
+            onAction={() => setDialogOpen(true)}
+          />
         ) : (
           recipes.map((recipe) => (
             <Card key={recipe.id}>

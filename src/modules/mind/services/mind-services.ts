@@ -25,7 +25,7 @@ export class BookService extends CrudService<Book> {
       pages_read: pagesRead,
       status,
       finished_at: status === 'completed' ? Date.now() : book.finished_at,
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

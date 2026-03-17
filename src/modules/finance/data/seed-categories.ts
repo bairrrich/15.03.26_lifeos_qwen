@@ -114,10 +114,9 @@ export async function initializeSeedCategories(categoryService: CategoryService)
     const createdParents: Record<string, string> = {}; // name -> id mapping
 
     for (const category of parentCategories) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const created = await categoryService.create({
         ...category,
-      } as any);
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
       createdParents[category.name] = created.id;
     }
 
@@ -128,11 +127,10 @@ export async function initializeSeedCategories(categoryService: CategoryService)
       // Находим ID родительской категории по имени
       const parentId = createdParents[category.parentName!];
       if (parentId) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await categoryService.create({
           ...category,
           parent_id: parentId,
-        } as any);
+        } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
       }
     }
 

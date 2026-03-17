@@ -8,10 +8,10 @@
     "start": "next start",
     "lint": "eslint --config config/eslint.config.mjs",
     "format": "prettier --config config/.prettierrc --write .",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest --config config/vitest.config.ts",
+    "test:ui": "vitest --config config/vitest.config.ts --ui",
+    "test:run": "vitest --config config/vitest.config.ts run",
+    "test:coverage": "vitest --config config/vitest.config.ts run --coverage",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -31,6 +31,7 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-virtual": "^3.13.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

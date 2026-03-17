@@ -371,5 +371,6 @@ db.version(2).stores({
   notes: '++id, user_id, title, parent_note_id, [user_id+title]',
 }).upgrade(tx => {
   // Миграция данных не требуется, просто добавляем новые индексы
+  void tx;
   console.log('Database upgraded to version 2 - added compound indexes');
 });

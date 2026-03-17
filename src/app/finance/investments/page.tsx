@@ -24,9 +24,10 @@ import {
   useCreateInvestmentTransaction,
 } from '@/modules/finance/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
-import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, Briefcase } from 'lucide-react'
 import { toast } from 'sonner';
 import type { InvestmentTransaction as InvestmentTransactionType } from '@/modules/finance/entities';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const typeLabels: Record<string, string> = {
   stock: 'Акции',
@@ -329,9 +330,13 @@ export default function InvestmentsPage() {
         <CardContent>
           <div className="space-y-4">
             {investments.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                У вас пока нет инвестиций
-              </p>
+              <EmptyState
+                icon={Briefcase}
+                title="Нет инвестиций"
+                description="Начните инвестировать для роста вашего капитала"
+                actionLabel="Добавить инвестицию"
+                onAction={() => setDialogOpen(true)}
+              />
             ) : (
               investments.map((inv) => {
                 const currentValue = (inv.current_price || inv.purchase_price) * inv.quantity;

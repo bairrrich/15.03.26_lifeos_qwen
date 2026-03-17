@@ -25,10 +25,11 @@ import {
   useSubscriptionPaymentHistory,
 } from '@/modules/finance/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell } from 'lucide-react';
+import { Plus, Calendar, DollarSign, Link as LinkIcon, Trash2, History, Bell, CreditCard } from 'lucide-react';
 import { format, addMonths, addWeeks, addYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function SubscriptionsPage() {
   const { data: subscriptions = [] } = useSubscriptions();
@@ -315,11 +316,13 @@ export default function SubscriptionsPage() {
       {/* Subscriptions List */}
       <div className="grid gap-4 md:grid-cols-2">
         {filteredSubscriptions.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center text-muted-foreground">
-              У вас пока нет подписок
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={CreditCard}
+            title="Нет подписок"
+            description="Добавьте свои подписки для отслеживания расходов"
+            actionLabel="Добавить подписку"
+            onAction={() => setDialogOpen(true)}
+          />
         ) : (
           filteredSubscriptions.map((sub) => {
             const nextBilling = getNextBillingLabel(sub.next_billing_date);

@@ -26,10 +26,11 @@ import {
 } from '@/modules/finance/hooks';
 import type { Budget } from '@/modules/finance/entities';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, AlertCircle, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { Plus, AlertCircle, CheckCircle2, Pencil, Trash2, PiggyBank } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -371,11 +372,13 @@ export default function BudgetsPage() {
       {/* Карточки бюджетов */}
       <div className="grid gap-4 md:grid-cols-2">
         {budgets.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center text-muted-foreground">
-              У вас пока нет бюджетов. Создайте первый!
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={PiggyBank}
+            title="Нет бюджетов"
+            description="Создайте свой первый бюджет для контроля расходов"
+            actionLabel="Создать бюджет"
+            onAction={() => setDialogOpen(true)}
+          />
         ) : (
           budgets.map((budget) => {
             const category = categories.find((c) => c.id === budget.category_id);

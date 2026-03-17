@@ -20,8 +20,9 @@ import {
   useCreateFood,
 } from '@/modules/nutrition/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search, Trash2, Apple } from 'lucide-react';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const categoryLabels: Record<string, string> = {
   protein: 'Белки',
@@ -181,11 +182,13 @@ export default function FoodsPage() {
       {/* Products List */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredFoods.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center text-muted-foreground">
-              {searchQuery ? 'Продукты не найдены' : 'У вас пока нет продуктов'}
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Apple}
+            title={searchQuery ? 'Продукты не найдены' : 'Нет продуктов'}
+            description={searchQuery ? 'Попробуйте изменить запрос' : 'Добавьте продукты для отслеживания питания'}
+            actionLabel={searchQuery ? undefined : 'Добавить продукт'}
+            onAction={searchQuery ? undefined : () => setDialogOpen(true)}
+          />
         ) : (
           filteredFoods.map((food) => (
             <Card key={food.id}>

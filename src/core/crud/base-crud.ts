@@ -19,6 +19,7 @@ export class CrudService<T extends BaseEntity> {
   protected syncService = syncService;
 
   constructor(tableName: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.table = (db as any)[tableName];
   }
 
@@ -164,13 +165,13 @@ export class CrudService<T extends BaseEntity> {
     const existing = await this.getById(id);
     if (!existing) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // Dexie update requires casting
     await this.table.update(id, {
       ...updates,
       updated_at: Date.now(),
       version: existing.version + 1,
       sync_status: 'local',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Запускаем синхронизацию после обновления
     this.triggerSync();
@@ -195,9 +196,10 @@ export class CrudService<T extends BaseEntity> {
    * Поиск сущностей по полю
    */
   async findByField<K extends keyof T>(field: K, value: T[K]): Promise<T[]> {
+    // Dexie query requires casting
     return await this.table
       .where(field as string)
-      .equals(value as any)
+      .equals(value as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .toArray();
   }
 

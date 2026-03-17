@@ -21,10 +21,11 @@ import {
   useDeleteAccount,
 } from '@/modules/finance/hooks';
 import type { Account } from '@/modules/finance/entities';
-import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw } from 'lucide-react';
+import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, Archive, Edit, Trash2, RotateCcw, Banknote } from 'lucide-react';
 import { toast } from 'sonner';
 import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -288,11 +289,13 @@ export default function AccountsPage() {
         <h2 className="text-lg font-semibold mb-4">Активные счета</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {activeAccounts.length === 0 ? (
-            <Card className="col-span-full">
-              <CardContent className="py-12 text-center text-muted-foreground">
-                У вас пока нет активных счетов
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={Banknote}
+              title="Нет активных счетов"
+              description="Создайте свой первый счёт для управления финансами"
+              actionLabel="Добавить счёт"
+              onAction={() => setDialogOpen(true)}
+            />
           ) : (
             activeAccounts.map((account) => {
               const Icon = typeIcons[account.type] || Wallet;

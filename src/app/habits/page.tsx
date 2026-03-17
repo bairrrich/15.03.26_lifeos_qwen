@@ -22,9 +22,10 @@ import {
   useTodayHabitsLog,
 } from '@/modules/habits/hooks';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Plus, Check, Flame, Calendar, TrendingUp } from 'lucide-react';
+import { Plus, Check, Flame, Calendar, TrendingUp, Target } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function HabitsPage() {
   const { data: habits = [] } = useHabits();
@@ -163,11 +164,13 @@ export default function HabitsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {habits.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center text-muted-foreground">
-              У вас пока нет привычек. Создайте первую!
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Target}
+            title="Нет привычек"
+            description="Создайте свою первую привычку для отслеживания"
+            actionLabel="Создать привычку"
+            onAction={() => setDialogOpen(true)}
+          />
         ) : (
           habits.map((habit) => {
             const isCompleted = completedToday.has(habit.id);
