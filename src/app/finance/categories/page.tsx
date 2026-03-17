@@ -248,13 +248,13 @@ export default function FinanceCategoriesPage() {
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-wrap gap-2 justify-end">
-          <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetSeed}>
+          <Button variant="destructive" size="sm" onClick={handleResetSeed}>
             <RotateCcw className="h-4 w-4 mr-2" />
             <span>Сбросить</span>
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button style={{ height: '32px' }}>
+              <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 <span>Добавить категорию</span>
               </Button>

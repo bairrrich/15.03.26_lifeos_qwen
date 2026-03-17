@@ -108,8 +108,6 @@ export default function SettingsPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Header Actions - пустой блок для единообразия */}
-        <div className="flex flex-wrap gap-2 justify-end"></div>
 
         <Card>
           <CardHeader>

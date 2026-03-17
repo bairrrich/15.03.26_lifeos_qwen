@@ -220,7 +220,7 @@ export default function ProgramsPage() {
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" style={{ height: '32px' }}>
+            <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
               <span>Создать программу</span>
             </Button>

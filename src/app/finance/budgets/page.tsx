@@ -248,7 +248,7 @@ export default function BudgetsPage() {
         <div className="flex flex-wrap gap-2 justify-end">
           <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
-              <Button style={{ height: '32px' }} onClick={() => setEditingBudget(null)}>
+              <Button onClick={() => setEditingBudget(null)}>
                 <Plus className="mr-2 h-4 w-4" />
                 <span>Создать бюджет</span>
               </Button>

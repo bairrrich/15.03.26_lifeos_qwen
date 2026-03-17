@@ -131,8 +131,8 @@ export default function WorkoutHistoryPage() {
                   <div
                     key={i}
                     className={`h-2 flex-1 rounded-full ${log.feeling && i <= log.feeling
-                        ? 'bg-primary'
-                        : 'bg-muted'
+                      ? 'bg-primary'
+                      : 'bg-muted'
                       }`}
                   />
                 ))}
@@ -148,7 +148,7 @@ export default function WorkoutHistoryPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="ghost" size="sm" style={{ height: '32px' }} onClick={() => window.history.back()}>
+        <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
           <ArrowLeft className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Назад</span>
         </Button>
@@ -219,4 +219,5 @@ export default function WorkoutHistoryPage() {
     </div>
   );
 }
+
 

@@ -23,7 +23,7 @@ import {
   useDeleteTransaction,
 } from '@/modules/finance/hooks';
 import type { Transaction } from '@/modules/finance/entities';
-import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip, Pencil } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight, Trash2, Wallet, Tags, PieChart, Repeat, Download, TrendingUp, BarChart3, Paperclip, Pencil, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -43,12 +43,24 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { PageTransition } from '@/components/ui/page-transition';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function ColoredTabsTrigger({ value, children }: { value: string; children: React.ReactNode }) {
   return (
     <TabsTrigger
       value={value}
-      className="transition-all duration-200"
+      className={`transition-all duration-200 ${value === 'income' ? 'data-[active]:bg-green-500 data-[state=active]:text-green-700 data-[state=active]:ring-2 data-[state=active]:ring-green-500/20' :
+        value === 'expense' ? 'data-[active]:bg-red-500 data-[state=active]:text-red-700 data-[state=active]:ring-2 data-[state=active]:ring-red-500/20' :
+          'data-[active]:bg-blue-500 data-[state=active]:text-blue-700 data-[state=active]:ring-2 data-[state=active]:ring-blue-500/20'
+        }`}
       data-tab-type={value}
     >
       {children}
@@ -74,7 +86,7 @@ export default function FinancePage() {
   }, []); // Пустой массив зависимостей - запускается только один раз при монтировании
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfer'>('all');
   const [selectedType, setSelectedType] = useState<'income' | 'expense' | 'transfer'>('expense');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -240,33 +252,33 @@ export default function FinancePage() {
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-wrap gap-2 justify-end">
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/categories'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/categories'}>
             <Tags className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Категории</span>
           </Button>
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/analytics'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/analytics'}>
             <BarChart3 className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Аналитика</span>
           </Button>
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/accounts'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/accounts'}>
             <Wallet className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Счета</span>
           </Button>
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/budgets'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/budgets'}>
             <PieChart className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Бюджеты</span>
           </Button>
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/subscriptions'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/subscriptions'}>
             <Repeat className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Подписки</span>
           </Button>
-          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/investments'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/finance/investments'}>
             <TrendingUp className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Инвестиции</span>
           </Button>
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingTransaction(null); }}>
             <DialogTrigger asChild>
-              <Button size="sm" style={{ height: '32px' }} onClick={() => setEditingTransaction(null)}>
+              <Button size="sm" onClick={() => setEditingTransaction(null)}>
                 <Plus className="h-4 w-4 mr-2" />
                 <span>Транзакцию</span>
               </Button>
@@ -298,23 +310,6 @@ export default function FinancePage() {
                         </ColoredTabsTrigger>
                       </TabsList>
                     </Tabs>
-                    <style>{`
-                    [data-slot="tabs-trigger"][data-tab-type="income"][data-active] {
-                      background-color: rgb(22 163 74) !important;
-                      color: white !important;
-                      border-color: rgb(22 163 74) !important;
-                    }
-                    [data-slot="tabs-trigger"][data-tab-type="expense"][data-active] {
-                      background-color: rgb(220 38 38) !important;
-                      color: white !important;
-                      border-color: rgb(220 38 38) !important;
-                    }
-                    [data-slot="tabs-trigger"][data-tab-type="transfer"][data-active] {
-                      background-color: rgb(37 99 235) !important;
-                      color: white !important;
-                      border-color: rgb(37 99 235) !important;
-                    }
-                  `}</style>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="amount">Сумма</Label>
@@ -475,111 +470,120 @@ export default function FinancePage() {
             </div>
 
             {/* Filters */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-              {/* Search */}
-              <div className="lg:col-span-2">
+            <div className="space-y-4">
+              {/* Row 1: Search */}
+              <div className="relative w-full">
                 <Input
                   placeholder="Поиск по описанию..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
+                  className="w-full h-8 pr-10"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
 
-              {/* Category */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="all">Все категории</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              {/* Row 2: Category, Account, Date */}
+              <div className="grid gap-4 md:grid-cols-3 w-full">
+                {/* Category */}
+                <Select value={selectedCategory} onValueChange={(value) => value && setSelectedCategory(value)}>
+                  <SelectTrigger className="h-8 w-full data-[placeholder]:text-muted-foreground">
+                    <SelectValue placeholder="Все категории" />
+                  </SelectTrigger>
+                  <SelectContent className="w-[var(--trigger-width)]" sideOffset={0}>
+                    <SelectItem value="all">Все категории</SelectItem>
+                    <SelectGroup>
+                      <SelectLabel>Расходы</SelectLabel>
+                      {categories.filter(c => c.type === 'expense').sort((a, b) => a.name.localeCompare(b.name, 'ru')).map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Доходы</SelectLabel>
+                      {categories.filter(c => c.type === 'income').sort((a, b) => a.name.localeCompare(b.name, 'ru')).map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
 
-              {/* Account */}
-              <select
-                value={selectedAccount}
-                onChange={(e) => setSelectedAccount(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="all">Все счета</option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name}
-                  </option>
-                ))}
-              </select>
+                {/* Account */}
+                <Select value={selectedAccount} onValueChange={(value) => value && setSelectedAccount(value)}>
+                  <SelectTrigger className="h-8 w-full data-[placeholder]:text-muted-foreground">
+                    <SelectValue placeholder="Все счета" />
+                  </SelectTrigger>
+                  <SelectContent className="w-[var(--trigger-width)]" sideOffset={0}>
+                    <SelectItem value="all">Все счета</SelectItem>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-              {/* Date Range */}
-              <div className="flex gap-2">
-                <Input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                  placeholder="От"
-                  className="flex-1"
-                />
-                <Input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
-                  placeholder="До"
-                  className="flex-1"
-                />
+                {/* Date Range */}
+                <div className="flex gap-2 w-full">
+                  <Input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    placeholder="От"
+                    className="flex-1 h-8"
+                  />
+                  <Input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    placeholder="До"
+                    className="flex-1 h-8 text-right"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Type Filter Buttons */}
-            <div className="mt-4 flex gap-2">
+            {/* Type Filter Tabs */}
+            <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="mt-4">
+              <TabsList className="h-8">
+                <TabsTrigger value="all" className="h-7">Все</TabsTrigger>
+                <TabsTrigger value="income" className="h-7">Доходы</TabsTrigger>
+                <TabsTrigger value="expense" className="h-7">Расходы</TabsTrigger>
+                <TabsTrigger value="transfer" className="h-7">Переводы</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {(searchQuery || selectedCategory !== 'all' || selectedAccount !== 'all' || dateFrom || dateTo) && (
               <Button
-                variant={filter === 'all' ? 'default' : 'outline'}
+                variant="ghost"
                 size="sm"
-                onClick={() => setFilter('all')}
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  setSelectedAccount('all');
+                  setDateFrom('');
+                  setDateTo('');
+                }}
               >
-                Все
+                Сбросить фильтры
               </Button>
-              <Button
-                variant={filter === 'income' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter('income')}
-              >
-                Доходы
-              </Button>
-              <Button
-                variant={filter === 'expense' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter('expense')}
-              >
-                Расходы
-              </Button>
-              {(searchQuery || selectedCategory !== 'all' || selectedAccount !== 'all' || dateFrom || dateTo) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('all');
-                    setSelectedAccount('all');
-                    setDateFrom('');
-                    setDateTo('');
-                  }}
-                >
-                  Сбросить фильтры
-                </Button>
-              )}
-            </div>
+            )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <VirtualizedTable
               items={filteredTransactions}
               rowHeight={72}
               columnCount={5}
               headers={['Дата', 'Описание', 'Категория', 'Сумма', '']}
-              height={Math.min(filteredTransactions.length * 80, 500)}
+              height={Math.max(filteredTransactions.length * 80, 200)}
               isLoading={false}
               emptyMessage="Нет транзакций"
               renderRow={(transaction) => {

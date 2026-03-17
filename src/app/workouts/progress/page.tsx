@@ -108,7 +108,7 @@ export default function ProgressPage() {
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
         <Select value={timeRange} onValueChange={(v) => { if (v) setTimeRange(v); }}>
-          <SelectTrigger className="w-[140px]" style={{ height: '32px' }}>
+          <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -119,7 +119,7 @@ export default function ProgressPage() {
         </Select>
 
         <Select value={selectedExercise} onValueChange={(value) => setSelectedExercise(value as string)}>
-          <SelectTrigger className="w-[200px]" style={{ height: '32px' }}>
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Все упражнения" />
           </SelectTrigger>
           <SelectContent>

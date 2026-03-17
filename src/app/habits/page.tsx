@@ -96,7 +96,7 @@ export default function HabitsPage() {
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" style={{ height: '32px' }}>
+            <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
               <span>Новая привычка</span>
             </Button>

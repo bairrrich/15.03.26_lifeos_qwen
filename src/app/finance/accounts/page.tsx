@@ -178,13 +178,13 @@ export default function AccountsPage() {
     <PageTransition>
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetAccounts}>
+        <Button variant="destructive" size="sm" onClick={handleResetAccounts}>
           <RotateCcw className="h-4 w-4 mr-2" />
           <span>Сбросить</span>
         </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingAccount(null)} style={{ height: '32px' }}>
+            <Button onClick={() => setEditingAccount(null)}>
               <Plus className="mr-2 h-4 w-4" />
               <span>Добавить счёт</span>
             </Button>

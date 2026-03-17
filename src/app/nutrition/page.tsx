@@ -111,17 +111,17 @@ export default function NutritionPage() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/nutrition/foods'}>
+        <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/foods'}>
           <Apple className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Продукты</span>
         </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/nutrition/recipes'}>
+        <Button variant="outline" size="sm" onClick={() => window.location.href = '/nutrition/recipes'}>
           <ChefHat className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Рецепты</span>
         </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" style={{ height: '32px' }}>
+            <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
               <span>Продукт</span>
             </Button>
