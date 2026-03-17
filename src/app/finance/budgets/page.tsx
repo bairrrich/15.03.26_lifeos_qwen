@@ -31,6 +31,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -241,235 +242,237 @@ export default function BudgetsPage() {
   const expenseCategories = categories.filter((c) => c.type === 'expense');
 
   return (
-    <div className="space-y-6">
-      {/* Кнопка создания бюджета - в самом верху */}
-      <div className="flex flex-wrap gap-2 justify-end">
-        <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
-          <DialogTrigger asChild>
-            <Button style={{ height: '32px' }} onClick={() => setEditingBudget(null)}>
-              <Plus className="mr-2 h-4 w-4" />
-              <span>Создать бюджет</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>{editingBudget ? 'Редактировать бюджет' : 'Новый бюджет'}</DialogTitle>
-                <DialogDescription>
-                  {editingBudget ? 'Внесите изменения в бюджет' : 'Установите лимит расходов на категорию'}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="category_id">Категория</Label>
-                  <select
-                    name="category_id"
-                    defaultValue={editingBudget?.category_id}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    required
-                  >
-                    <option value="">Выберите категорию</option>
-                    {expenseCategories
-                      .filter((c) => !c.parent_id)
-                      .map((rootCategory) => {
-                        const children = expenseCategories.filter(
-                          (c) => c.parent_id === rootCategory.id
-                        );
-                        return [
-                          // Родительская категория
-                          <option key={rootCategory.id} value={rootCategory.id}>
-                            {rootCategory.name}
-                          </option>,
-                          // Подкатегории с отступом
-                          ...children.map((child) => (
-                            <option key={child.id} value={child.id}>
-                              {'\u00A0\u00A0'}└─ {child.name}
-                            </option>
-                          ))
-                        ];
-                      })}
-                  </select>
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Кнопка создания бюджета - в самом верху */}
+        <div className="flex flex-wrap gap-2 justify-end">
+          <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
+            <DialogTrigger asChild>
+              <Button style={{ height: '32px' }} onClick={() => setEditingBudget(null)}>
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Создать бюджет</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <DialogHeader>
+                  <DialogTitle>{editingBudget ? 'Редактировать бюджет' : 'Новый бюджет'}</DialogTitle>
+                  <DialogDescription>
+                    {editingBudget ? 'Внесите изменения в бюджет' : 'Установите лимит расходов на категорию'}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="category_id">Категория</Label>
+                    <select
+                      name="category_id"
+                      defaultValue={editingBudget?.category_id}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      required
+                    >
+                      <option value="">Выберите категорию</option>
+                      {expenseCategories
+                        .filter((c) => !c.parent_id)
+                        .map((rootCategory) => {
+                          const children = expenseCategories.filter(
+                            (c) => c.parent_id === rootCategory.id
+                          );
+                          return [
+                            // Родительская категория
+                            <option key={rootCategory.id} value={rootCategory.id}>
+                              {rootCategory.name}
+                            </option>,
+                            // Подкатегории с отступом
+                            ...children.map((child) => (
+                              <option key={child.id} value={child.id}>
+                                {'\u00A0\u00A0'}└─ {child.name}
+                              </option>
+                            ))
+                          ];
+                        })}
+                    </select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="amount">Лимит (₽)</Label>
+                    <Input name="amount" type="number" step="0.01" defaultValue={editingBudget?.amount} required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="period">Период</Label>
+                    <select
+                      name="period"
+                      defaultValue={editingBudget?.period || 'month'}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="week">Неделя</option>
+                      <option value="month">Месяц</option>
+                      <option value="year">Год</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="amount">Лимит (₽)</Label>
-                  <Input name="amount" type="number" step="0.01" defaultValue={editingBudget?.amount} required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="period">Период</Label>
-                  <select
-                    name="period"
-                    defaultValue={editingBudget?.period || 'month'}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="week">Неделя</option>
-                    <option value="month">Месяц</option>
-                    <option value="year">Год</option>
-                  </select>
-                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                    Отмена
+                  </Button>
+                  <Button type="submit">Создать</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Общая статистика */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Статистика</CardTitle>
+                <CardDescription>{format(new Date(), 'LLLL yyyy', { locale: ru })}</CardDescription>
               </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Отмена
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={statsPeriod === 'week' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('week')}
+                >
+                  Неделя
                 </Button>
-                <Button type="submit">Создать</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+                <Button
+                  variant={statsPeriod === 'month' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('month')}
+                >
+                  Месяц
+                </Button>
+                <Button
+                  variant={statsPeriod === 'year' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('year')}
+                >
+                  Год
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
+              <div className="col-span-1">
+                <p className="text-sm text-muted-foreground">Всего бюджетов</p>
+                <p className="text-2xl font-bold">{stats.count}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="text-sm text-muted-foreground">В пределах бюджета</p>
+                <p className="text-2xl font-bold">{stats.withinBudget}</p>
+              </div>
+              <div className="col-span-2 md:col-span-1">
+                <p className="text-sm text-muted-foreground">Общий лимит</p>
+                <p className="text-2xl font-bold">{stats.totalLimit.toLocaleString()} ₽</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Общая статистика */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Статистика</CardTitle>
-              <CardDescription>{format(new Date(), 'LLLL yyyy', { locale: ru })}</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={statsPeriod === 'week' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatsPeriod('week')}
-              >
-                Неделя
-              </Button>
-              <Button
-                variant={statsPeriod === 'month' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatsPeriod('month')}
-              >
-                Месяц
-              </Button>
-              <Button
-                variant={statsPeriod === 'year' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatsPeriod('year')}
-              >
-                Год
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
-            <div className="col-span-1">
-              <p className="text-sm text-muted-foreground">Всего бюджетов</p>
-              <p className="text-2xl font-bold">{stats.count}</p>
-            </div>
-            <div className="col-span-1">
-              <p className="text-sm text-muted-foreground">В пределах бюджета</p>
-              <p className="text-2xl font-bold">{stats.withinBudget}</p>
-            </div>
-            <div className="col-span-2 md:col-span-1">
-              <p className="text-sm text-muted-foreground">Общий лимит</p>
-              <p className="text-2xl font-bold">{stats.totalLimit.toLocaleString()} ₽</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Карточки бюджетов */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {budgets.length === 0 ? (
+            <EmptyState
+              icon={PiggyBank}
+              title="Нет бюджетов"
+              description="Создайте свой первый бюджет для контроля расходов"
+              actionLabel="Создать бюджет"
+              onAction={() => setDialogOpen(true)}
+            />
+          ) : (
+            budgets.map((budget) => {
+              const category = categories.find((c) => c.id === budget.category_id);
+              const spent = getBudgetExpenses(budget);
+              const percentage = Math.round((spent / budget.amount) * 100);
+              const remaining = budget.amount - spent;
+              const isOverBudget = spent > budget.amount;
+              const alertThreshold = budget.alert_threshold || 80;
+              const isNearLimit = percentage >= alertThreshold && !isOverBudget;
 
-      {/* Карточки бюджетов */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {budgets.length === 0 ? (
-          <EmptyState
-            icon={PiggyBank}
-            title="Нет бюджетов"
-            description="Создайте свой первый бюджет для контроля расходов"
-            actionLabel="Создать бюджет"
-            onAction={() => setDialogOpen(true)}
-          />
-        ) : (
-          budgets.map((budget) => {
-            const category = categories.find((c) => c.id === budget.category_id);
-            const spent = getBudgetExpenses(budget);
-            const percentage = Math.round((spent / budget.amount) * 100);
-            const remaining = budget.amount - spent;
-            const isOverBudget = spent > budget.amount;
-            const alertThreshold = budget.alert_threshold || 80;
-            const isNearLimit = percentage >= alertThreshold && !isOverBudget;
-
-            return (
-              <Card key={budget.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-base">{category?.name || 'Категория'}</CardTitle>
-                      <CardDescription>
-                        Лимит: {budget.amount.toLocaleString()} ₽ / {budget.period === 'month' ? 'месяц' : budget.period === 'week' ? 'неделя' : 'год'}
-                      </CardDescription>
+              return (
+                <Card key={budget.id}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-base">{category?.name || 'Категория'}</CardTitle>
+                        <CardDescription>
+                          Лимит: {budget.amount.toLocaleString()} ₽ / {budget.period === 'month' ? 'месяц' : budget.period === 'week' ? 'неделя' : 'год'}
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEdit(budget)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-600 hover:text-red-700"
+                          onClick={() => handleDelete(budget.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleEdit(budget)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-red-600 hover:text-red-700"
-                        onClick={() => handleDelete(budget.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div className="flex items-center justify-end mt-2">
+                      <Badge variant={isOverBudget ? 'destructive' : isNearLimit ? 'default' : 'secondary'}>
+                        {isOverBudget ? (
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                        ) : isNearLimit ? (
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                        ) : (
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                        )}
+                        {percentage}%
+                      </Badge>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-end mt-2">
-                    <Badge variant={isOverBudget ? 'destructive' : isNearLimit ? 'default' : 'secondary'}>
-                      {isOverBudget ? (
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                      ) : isNearLimit ? (
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                      ) : (
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <Progress value={percentage} max={Math.max(100, percentage)} className={`h-2 ${isOverBudget ? '[&>div]:bg-red-600' : isNearLimit ? '[&>div]:bg-yellow-600' : ''}`} />
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Потрачено: {spent.toLocaleString()} ₽
+                        </span>
+                        <span className={isOverBudget ? 'text-red-600 font-medium' : 'text-green-600 font-medium'}>
+                          {isOverBudget ? 'Превышен!' : `Остаток: ${remaining.toLocaleString()} ₽`}
+                        </span>
+                      </div>
+                      {isNearLimit && (
+                        <p className="text-xs text-yellow-600 font-medium">
+                          ⚠️ Внимание: израсходовано {percentage}% бюджета
+                        </p>
                       )}
-                      {percentage}%
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <Progress value={percentage} max={Math.max(100, percentage)} className={`h-2 ${isOverBudget ? '[&>div]:bg-red-600' : isNearLimit ? '[&>div]:bg-yellow-600' : ''}`} />
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Потрачено: {spent.toLocaleString()} ₽
-                      </span>
-                      <span className={isOverBudget ? 'text-red-600 font-medium' : 'text-green-600 font-medium'}>
-                        {isOverBudget ? 'Превышен!' : `Остаток: ${remaining.toLocaleString()} ₽`}
-                      </span>
                     </div>
-                    {isNearLimit && (
-                      <p className="text-xs text-yellow-600 font-medium">
-                        ⚠️ Внимание: израсходовано {percentage}% бюджета
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
-      </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </div>
 
-      {/* Диалог подтверждения удаления */}
-      <AlertDialog open={!!deleteBudgetId} onOpenChange={() => setDeleteBudgetId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Удаление бюджета</AlertDialogTitle>
-            <AlertDialogDescription>
-              Вы уверены, что хотите удалить этот бюджет? Это действие нельзя отменить.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        {/* Диалог подтверждения удаления */}
+        <AlertDialog open={!!deleteBudgetId} onOpenChange={() => setDeleteBudgetId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Удаление бюджета</AlertDialogTitle>
+              <AlertDialogDescription>
+                Вы уверены, что хотите удалить этот бюджет? Это действие нельзя отменить.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </PageTransition>
   );
 }

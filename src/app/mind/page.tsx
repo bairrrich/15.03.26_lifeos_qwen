@@ -27,6 +27,7 @@ import {
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, BookOpen, GraduationCap, FileText, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/ui/page-transition';
 
 export default function MindPage() {
   const { data: books = [] } = useBooks();
@@ -118,7 +119,8 @@ export default function MindPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={bookDialogOpen} onOpenChange={setBookDialogOpen}>
@@ -402,6 +404,7 @@ export default function MindPage() {
         </TabsContent>
       </Tabs>
     </div>
+    </PageTransition>
   );
 }
 

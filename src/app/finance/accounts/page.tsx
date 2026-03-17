@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -174,6 +175,7 @@ export default function AccountsPage() {
   const archivedAccounts = accounts.filter((a) => a.is_archived);
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetAccounts}>
@@ -440,5 +442,6 @@ export default function AccountsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </PageTransition>
   );
 }

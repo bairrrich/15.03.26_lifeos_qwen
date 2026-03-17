@@ -26,6 +26,7 @@ import { Plus, Moon, Heart, Activity, Thermometer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/ui/page-transition';
 
 export default function HealthPage() {
   const today = new Date();
@@ -81,7 +82,8 @@ export default function HealthPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={sleepDialogOpen} onOpenChange={setSleepDialogOpen}>
           <DialogTrigger asChild>
@@ -260,5 +262,6 @@ export default function HealthPage() {
         </Card>
       </div>
     </div>
+    </PageTransition>
   );
 }

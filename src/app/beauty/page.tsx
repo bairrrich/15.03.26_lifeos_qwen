@@ -32,6 +32,8 @@ import {
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Sparkles, Droplets, Calendar, Star, Clock, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/ui/page-transition';
+import { BeautyProduct } from '@/modules/beauty/entities';
 
 const categoryLabels: Record<string, string> = {
   skincare: 'Уход за кожей',
@@ -91,7 +93,8 @@ export default function BeautyPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -341,7 +344,6 @@ export default function BeautyPage() {
         </TabsContent>
       </Tabs>
     </div>
+    </PageTransition>
   );
 }
-
-type BeautyProduct = import('@/modules/beauty/entities').BeautyProduct;

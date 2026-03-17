@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Dumbbell, Clock, Calendar, TrendingUp, Play, BarChart3, List } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/ui/page-transition';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
@@ -112,6 +113,7 @@ export default function WorkoutsPage() {
   }
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
@@ -379,6 +381,7 @@ export default function WorkoutsPage() {
           </CardContent>
         </Card>
       </div>
-    </div >
+    </div>
+    </PageTransition>
   );
 }

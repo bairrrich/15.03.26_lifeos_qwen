@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { format, subMonths, subYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { PageTransition } from '@/components/ui/page-transition';
 import {
   BarChart,
   Bar,
@@ -184,6 +185,7 @@ export default function FinanceAnalyticsPage() {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
@@ -486,5 +488,6 @@ export default function FinanceAnalyticsPage() {
         </TabsContent>
       </Tabs>
     </div>
+    </PageTransition>
   );
 }

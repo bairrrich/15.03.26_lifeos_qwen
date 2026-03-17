@@ -26,6 +26,7 @@ import { Plus, Check, Flame, Calendar, TrendingUp, Target } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
 
 export default function HabitsPage() {
   const { data: habits = [] } = useHabits();
@@ -90,7 +91,8 @@ export default function HabitsPage() {
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -247,5 +249,6 @@ export default function HabitsPage() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }

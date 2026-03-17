@@ -28,6 +28,7 @@ import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, Briefcase
 import { toast } from 'sonner';
 import type { InvestmentTransaction as InvestmentTransactionType } from '@/modules/finance/entities';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
 
 const typeLabels: Record<string, string> = {
   stock: 'Акции',
@@ -177,6 +178,7 @@ export default function InvestmentsPage() {
   }, {} as Record<string, number>);
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <div className="flex items-center gap-2">
@@ -458,5 +460,6 @@ export default function InvestmentsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </PageTransition>
   );
 }

@@ -42,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { PageTransition } from '@/components/ui/page-transition';
 
 function ColoredTabsTrigger({ value, children }: { value: string; children: React.ReactNode }) {
   return (
@@ -235,68 +236,69 @@ export default function FinancePage() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/categories'}>
-          <Tags className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Категории</span>
-        </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/analytics'}>
-          <BarChart3 className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Аналитика</span>
-        </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/accounts'}>
-          <Wallet className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Счета</span>
-        </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/budgets'}>
-          <PieChart className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Бюджеты</span>
-        </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/subscriptions'}>
-          <Repeat className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Подписки</span>
-        </Button>
-        <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/investments'}>
-          <TrendingUp className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Инвестиции</span>
-        </Button>
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingTransaction(null); }}>
-          <DialogTrigger asChild>
-            <Button size="sm" style={{ height: '32px' }} onClick={() => setEditingTransaction(null)}>
-              <Plus className="h-4 w-4 mr-2" />
-              <span>Транзакцию</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>{editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}</DialogTitle>
-                <DialogDescription>
-                  {editingTransaction ? 'Внесите изменения в транзакцию' : 'Добавьте новую транзакцию в систему'}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label>Тип транзакции</Label>
-                  <Tabs value={selectedType} onValueChange={(v) => setSelectedType(v as 'income' | 'expense' | 'transfer')}>
-                    <TabsList className="grid w-full grid-cols-3 bg-muted/50">
-                      <ColoredTabsTrigger value="income">
-                        <ArrowUpRight className="h-4 w-4 mr-2" />
-                        Доход
-                      </ColoredTabsTrigger>
-                      <ColoredTabsTrigger value="expense">
-                        <ArrowDownRight className="h-4 w-4 mr-2" />
-                        Расход
-                      </ColoredTabsTrigger>
-                      <ColoredTabsTrigger value="transfer">
-                        <Repeat className="h-4 w-4 mr-2" />
-                        Перевод
-                      </ColoredTabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                  <style>{`
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Header Actions */}
+        <div className="flex flex-wrap gap-2 justify-end">
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/categories'}>
+            <Tags className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Категории</span>
+          </Button>
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/analytics'}>
+            <BarChart3 className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Аналитика</span>
+          </Button>
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/accounts'}>
+            <Wallet className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Счета</span>
+          </Button>
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/budgets'}>
+            <PieChart className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Бюджеты</span>
+          </Button>
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/subscriptions'}>
+            <Repeat className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Подписки</span>
+          </Button>
+          <Button variant="outline" size="sm" style={{ height: '32px' }} onClick={() => window.location.href = '/finance/investments'}>
+            <TrendingUp className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Инвестиции</span>
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingTransaction(null); }}>
+            <DialogTrigger asChild>
+              <Button size="sm" style={{ height: '32px' }} onClick={() => setEditingTransaction(null)}>
+                <Plus className="h-4 w-4 mr-2" />
+                <span>Транзакцию</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <DialogHeader>
+                  <DialogTitle>{editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}</DialogTitle>
+                  <DialogDescription>
+                    {editingTransaction ? 'Внесите изменения в транзакцию' : 'Добавьте новую транзакцию в систему'}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label>Тип транзакции</Label>
+                    <Tabs value={selectedType} onValueChange={(v) => setSelectedType(v as 'income' | 'expense' | 'transfer')}>
+                      <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+                        <ColoredTabsTrigger value="income">
+                          <ArrowUpRight className="h-4 w-4 mr-2" />
+                          Доход
+                        </ColoredTabsTrigger>
+                        <ColoredTabsTrigger value="expense">
+                          <ArrowDownRight className="h-4 w-4 mr-2" />
+                          Расход
+                        </ColoredTabsTrigger>
+                        <ColoredTabsTrigger value="transfer">
+                          <Repeat className="h-4 w-4 mr-2" />
+                          Перевод
+                        </ColoredTabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <style>{`
                     [data-slot="tabs-trigger"][data-tab-type="income"][data-active] {
                       background-color: rgb(22 163 74) !important;
                       color: white !important;
@@ -313,49 +315,31 @@ export default function FinancePage() {
                       border-color: rgb(37 99 235) !important;
                     }
                   `}</style>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="amount">Сумма</Label>
-                  <div className="relative">
-                    <Input
-                      name="amount"
-                      type="number"
-                      step="0.01"
-                      defaultValue={editingTransaction?.amount}
-                      required
-                      className="pr-12 text-center text-lg font-semibold"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                      {accountCurrency}
-                    </span>
                   </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="account_id">
-                    {selectedType === 'income' ? 'Счёт пополнения' : 'Счёт списания'}
-                  </Label>
-                  <select
-                    name="account_id"
-                    defaultValue={editingTransaction?.account_id}
-                    onChange={(e) => setSelectedAccountId(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    required
-                  >
-                    <option value="">Выберите счёт</option>
-                    {accounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name} ({account.balance} {account.currency})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {selectedType === 'transfer' ? (
                   <div className="grid gap-2">
-                    <Label htmlFor="transfer_to_account_id">Счёт зачисления</Label>
+                    <Label htmlFor="amount">Сумма</Label>
+                    <div className="relative">
+                      <Input
+                        name="amount"
+                        type="number"
+                        step="0.01"
+                        defaultValue={editingTransaction?.amount}
+                        required
+                        className="pr-12 text-center text-lg font-semibold"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                        {accountCurrency}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="account_id">
+                      {selectedType === 'income' ? 'Счёт пополнения' : 'Счёт списания'}
+                    </Label>
                     <select
-                      name="transfer_to_account_id"
-                      defaultValue={editingTransaction?.transfer_to_account_id}
+                      name="account_id"
+                      defaultValue={editingTransaction?.account_id}
+                      onChange={(e) => setSelectedAccountId(e.target.value)}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       required
                     >
@@ -367,311 +351,330 @@ export default function FinancePage() {
                       ))}
                     </select>
                   </div>
-                ) : (
-                  <>
+
+                  {selectedType === 'transfer' ? (
                     <div className="grid gap-2">
-                      <Label htmlFor="category_id">Категория</Label>
+                      <Label htmlFor="transfer_to_account_id">Счёт зачисления</Label>
                       <select
-                        name="category_id"
-                        defaultValue={editingTransaction?.category_id}
+                        name="transfer_to_account_id"
+                        defaultValue={editingTransaction?.transfer_to_account_id}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')}
+                        required
                       >
-                        <option value="">Выберите категорию</option>
-                        {categories
-                          .filter((c) => !c.parent_id && c.type === selectedType)
-                          .map((rootCategory) => {
-                            const children = categories.filter(
-                              (c) => c.parent_id === rootCategory.id && c.type === selectedType
-                            );
-                            return [
-                              // Родительская категория
-                              <option key={rootCategory.id} value={rootCategory.id}>
-                                {rootCategory.name}
-                              </option>,
-                              // Подкатегории с отступом
-                              ...children.map((child) => (
-                                <option key={child.id} value={child.id}>
-                                  {'\u00A0\u00A0'}└─ {child.name}
-                                </option>
-                              ))
-                            ];
-                          })}
+                        <option value="">Выберите счёт</option>
+                        {accounts.map((account) => (
+                          <option key={account.id} value={account.id}>
+                            {account.name} ({account.balance} {account.currency})
+                          </option>
+                        ))}
                       </select>
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="description">Описание</Label>
-                      <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="merchant">Мерчант (опционально)</Label>
-                      <Input name="merchant" defaultValue={editingTransaction?.merchant} placeholder="Например: Пятёрочка" />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="receipt_url">Чек (URL или ссылка на фото)</Label>
-                      <Input name="receipt_url" type="url" defaultValue={editingTransaction?.receipt_url} placeholder="https://..." />
-                      <p className="text-xs text-muted-foreground">
-                        Ссылка на фото чека или скан (Google Drive, Dropbox и т.д.)
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Отмена
-                </Button>
-                <Button type="submit">Добавить</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Доходы</CardTitle>
-            <ArrowUpRight className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">+{totalIncome.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Расходы</CardTitle>
-            <ArrowDownRight className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">-{totalExpenses.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Баланс</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(totalIncome - totalExpenses).toFixed(2)}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Transactions Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <CardTitle>Транзакции</CardTitle>
-              <CardDescription>История всех ваших операций</CardDescription>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleExportCSV}>
-              <Download className="mr-2 h-4 w-4" />
-              Экспорт CSV
-            </Button>
-          </div>
-
-          {/* Filters */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            {/* Search */}
-            <div className="lg:col-span-2">
-              <Input
-                placeholder="Поиск по описанию..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-
-            {/* Category */}
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="all">Все категории</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Account */}
-            <select
-              value={selectedAccount}
-              onChange={(e) => setSelectedAccount(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="all">Все счета</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Date Range */}
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                placeholder="От"
-                className="flex-1"
-              />
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                placeholder="До"
-                className="flex-1"
-              />
-            </div>
-          </div>
-
-          {/* Type Filter Buttons */}
-          <div className="mt-4 flex gap-2">
-            <Button
-              variant={filter === 'all' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter('all')}
-            >
-              Все
-            </Button>
-            <Button
-              variant={filter === 'income' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter('income')}
-            >
-              Доходы
-            </Button>
-            <Button
-              variant={filter === 'expense' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter('expense')}
-            >
-              Расходы
-            </Button>
-            {(searchQuery || selectedCategory !== 'all' || selectedAccount !== 'all' || dateFrom || dateTo) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                  setSelectedAccount('all');
-                  setDateFrom('');
-                  setDateTo('');
-                }}
-              >
-                Сбросить фильтры
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <VirtualizedTable
-            items={filteredTransactions}
-            rowHeight={72}
-            columnCount={5}
-            headers={['Дата', 'Описание', 'Категория', 'Сумма', '']}
-            height={Math.min(filteredTransactions.length * 80, 500)}
-            isLoading={false}
-            emptyMessage="Нет транзакций"
-            renderRow={(transaction) => {
-              const category = categories.find((c) => c.id === transaction.category_id);
-              return (
-                <div
-                  className="grid items-center border-b"
-                  style={{ gridTemplateColumns: '140px 1fr 150px 150px 100px', height: 72 }}
-                >
-                  <div className="px-4">
-                    {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
-                  </div>
-                  <div className="px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium">{transaction.description}</div>
-                      {transaction.receipt_url && (
-                        <a
-                          href={transaction.receipt_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary"
-                          title="Открыть чек"
+                  ) : (
+                    <>
+                      <div className="grid gap-2">
+                        <Label htmlFor="category_id">Категория</Label>
+                        <select
+                          name="category_id"
+                          defaultValue={editingTransaction?.category_id}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')}
                         >
-                          <Paperclip className="h-4 w-4" />
-                        </a>
+                          <option value="">Выберите категорию</option>
+                          {categories
+                            .filter((c) => !c.parent_id && c.type === selectedType)
+                            .map((rootCategory) => {
+                              const children = categories.filter(
+                                (c) => c.parent_id === rootCategory.id && c.type === selectedType
+                              );
+                              return [
+                                // Родительская категория
+                                <option key={rootCategory.id} value={rootCategory.id}>
+                                  {rootCategory.name}
+                                </option>,
+                                // Подкатегории с отступом
+                                ...children.map((child) => (
+                                  <option key={child.id} value={child.id}>
+                                    {'\u00A0\u00A0'}└─ {child.name}
+                                  </option>
+                                ))
+                              ];
+                            })}
+                        </select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="description">Описание</Label>
+                        <Input name="description" defaultValue={editingTransaction?.description} placeholder="Например: Продукты" required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')} />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="merchant">Мерчант (опционально)</Label>
+                        <Input name="merchant" defaultValue={editingTransaction?.merchant} placeholder="Например: Пятёрочка" />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="receipt_url">Чек (URL или ссылка на фото)</Label>
+                        <Input name="receipt_url" type="url" defaultValue={editingTransaction?.receipt_url} placeholder="https://..." />
+                        <p className="text-xs text-muted-foreground">
+                          Ссылка на фото чека или скан (Google Drive, Dropbox и т.д.)
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                    Отмена
+                  </Button>
+                  <Button type="submit">Добавить</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Доходы</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">+{totalIncome.toFixed(2)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Расходы</CardTitle>
+              <ArrowDownRight className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">-{totalExpenses.toFixed(2)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Баланс</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{(totalIncome - totalExpenses).toFixed(2)}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Transactions Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <CardTitle>Транзакции</CardTitle>
+                <CardDescription>История всех ваших операций</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleExportCSV}>
+                <Download className="mr-2 h-4 w-4" />
+                Экспорт CSV
+              </Button>
+            </div>
+
+            {/* Filters */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              {/* Search */}
+              <div className="lg:col-span-2">
+                <Input
+                  placeholder="Поиск по описанию..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Category */}
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="all">Все категории</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Account */}
+              <select
+                value={selectedAccount}
+                onChange={(e) => setSelectedAccount(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="all">Все счета</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Date Range */}
+              <div className="flex gap-2">
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  placeholder="От"
+                  className="flex-1"
+                />
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  placeholder="До"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Type Filter Buttons */}
+            <div className="mt-4 flex gap-2">
+              <Button
+                variant={filter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilter('all')}
+              >
+                Все
+              </Button>
+              <Button
+                variant={filter === 'income' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilter('income')}
+              >
+                Доходы
+              </Button>
+              <Button
+                variant={filter === 'expense' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilter('expense')}
+              >
+                Расходы
+              </Button>
+              {(searchQuery || selectedCategory !== 'all' || selectedAccount !== 'all' || dateFrom || dateTo) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                    setSelectedAccount('all');
+                    setDateFrom('');
+                    setDateTo('');
+                  }}
+                >
+                  Сбросить фильтры
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <VirtualizedTable
+              items={filteredTransactions}
+              rowHeight={72}
+              columnCount={5}
+              headers={['Дата', 'Описание', 'Категория', 'Сумма', '']}
+              height={Math.min(filteredTransactions.length * 80, 500)}
+              isLoading={false}
+              emptyMessage="Нет транзакций"
+              renderRow={(transaction) => {
+                const category = categories.find((c) => c.id === transaction.category_id);
+                return (
+                  <div
+                    className="grid items-center border-b"
+                    style={{ gridTemplateColumns: '140px 1fr 150px 150px 100px', height: 72 }}
+                  >
+                    <div className="px-4">
+                      {format(transaction.date, 'dd MMM yyyy', { locale: ru })}
+                    </div>
+                    <div className="px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="font-medium">{transaction.description}</div>
+                        {transaction.receipt_url && (
+                          <a
+                            href={transaction.receipt_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground hover:text-primary"
+                            title="Открыть чек"
+                          >
+                            <Paperclip className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                      {transaction.merchant && (
+                        <div className="text-xs text-muted-foreground">
+                          {transaction.merchant}
+                        </div>
                       )}
                     </div>
-                    {transaction.merchant && (
-                      <div className="text-xs text-muted-foreground">
-                        {transaction.merchant}
-                      </div>
-                    )}
+                    <div className="px-4">
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                        style={{
+                          backgroundColor: `${category?.color || '#e5e7eb'}20`,
+                          color: category?.color || '#6b7280',
+                        }}
+                      >
+                        {category?.name || 'Без категории'}
+                      </span>
+                    </div>
+                    <div className={`px-4 text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                      {transaction.type === 'income' ? '+' : '-'}
+                      {transaction.amount.toFixed(2)} {transaction.currency}
+                    </div>
+                    <div className="px-4 flex items-center gap-1 justify-end">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(transaction);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-600 hover:text-red-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(transaction.id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="px-4">
-                    <span
-                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-                      style={{
-                        backgroundColor: `${category?.color || '#e5e7eb'}20`,
-                        color: category?.color || '#6b7280',
-                      }}
-                    >
-                      {category?.name || 'Без категории'}
-                    </span>
-                  </div>
-                  <div className={`px-4 text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                    {transaction.type === 'income' ? '+' : '-'}
-                    {transaction.amount.toFixed(2)} {transaction.currency}
-                  </div>
-                  <div className="px-4 flex items-center gap-1 justify-end">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(transaction);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600 hover:text-red-700"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(transaction.id);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            }}
-          />
-        </CardContent>
-      </Card>
+                );
+              }}
+            />
+          </CardContent>
+        </Card>
 
-      {/* Диалог подтверждения удаления транзакции */}
-      <AlertDialog open={!!deleteTransactionId} onOpenChange={() => setDeleteTransactionId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Удаление транзакции</AlertDialogTitle>
-            <AlertDialogDescription>
-              Вы уверены, что хотите удалить эту транзакцию? Это действие нельзя отменить.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        {/* Диалог подтверждения удаления транзакции */}
+        <AlertDialog open={!!deleteTransactionId} onOpenChange={() => setDeleteTransactionId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Удаление транзакции</AlertDialogTitle>
+              <AlertDialogDescription>
+                Вы уверены, что хотите удалить эту транзакцию? Это действие нельзя отменить.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </PageTransition>
   );
 }

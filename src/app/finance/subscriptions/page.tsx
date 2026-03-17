@@ -30,6 +30,7 @@ import { format, addMonths, addWeeks, addYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
 
 export default function SubscriptionsPage() {
   const { data: subscriptions = [] } = useSubscriptions();
@@ -153,6 +154,7 @@ export default function SubscriptionsPage() {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-end">
         <Button
@@ -421,5 +423,6 @@ export default function SubscriptionsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </PageTransition>
   );
 }

@@ -11,6 +11,7 @@ import {
   WorkoutCard,
   ExpensesPieChart,
 } from '@/features/dashboard/components';
+import { PageTransition, StaggerContainer } from '@/components/ui/page-transition';
 
 export default function DashboardPage() {
   const { data: stats } = useDashboardStats(30);
@@ -33,23 +34,25 @@ export default function DashboardPage() {
   const netWorth = totalBankBalance + totalInvestmentValue;
 
   return (
-    <div className="space-y-6">
-      <StatsCards stats={stats} netWorth={netWorth} investmentValue={totalInvestmentValue} />
+    <PageTransition variant="slide">
+      <StaggerContainer className="space-y-6">
+        <StatsCards stats={stats} netWorth={netWorth} investmentValue={totalInvestmentValue} />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <FinanceChart data={financeData} isLoading={financeLoading} />
-        <HabitsChart data={habitsData} isLoading={habitsLoading} />
-      </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <FinanceChart data={financeData} isLoading={financeLoading} />
+          <HabitsChart data={habitsData} isLoading={habitsLoading} />
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <WorkoutCard
-          totalWorkouts={weeklyWorkoutStats?.totalWorkouts}
-          totalDuration={weeklyWorkoutStats?.totalDuration}
-          avgRating={weeklyWorkoutStats?.avgRating}
-        />
-        <QuickActions />
-        <ExpensesPieChart />
-      </div>
-    </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <WorkoutCard
+            totalWorkouts={weeklyWorkoutStats?.totalWorkouts}
+            totalDuration={weeklyWorkoutStats?.totalDuration}
+            avgRating={weeklyWorkoutStats?.avgRating}
+          />
+          <QuickActions />
+          <ExpensesPieChart />
+        </div>
+      </StaggerContainer>
+    </PageTransition>
   );
 }

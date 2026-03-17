@@ -27,6 +27,7 @@ import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Utensils, Flame, TrendingUp, Apple, ChefHat } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { PageTransition } from '@/components/ui/page-transition';
 import { toast } from 'sonner';
 
 export default function NutritionPage() {
@@ -106,6 +107,7 @@ export default function NutritionPage() {
   const mealLogs = logs.filter((log) => log.meal_type === selectedMeal);
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-wrap gap-2 justify-end">
@@ -273,6 +275,7 @@ export default function NutritionPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div >
+    </div>
+    </PageTransition>
   );
 }

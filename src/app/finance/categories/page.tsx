@@ -26,6 +26,7 @@ import type { Category } from '@/modules/finance/entities';
 import { resetFinanceCategories } from '@/modules/finance/data/seed-init';
 import { cn } from '@/lib/utils';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
+import { PageTransition } from '@/components/ui/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -243,222 +244,224 @@ export default function FinanceCategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetSeed}>
-          <RotateCcw className="h-4 w-4 mr-2" />
-          <span>Сбросить</span>
-        </Button>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button style={{ height: '32px' }}>
-              <Plus className="mr-2 h-4 w-4" />
-              <span>Добавить категорию</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleCreate}>
-              <DialogHeader>
-                <DialogTitle>Новая категория</DialogTitle>
-                <DialogDescription>Добавьте новую категорию для транзакций</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Название</Label>
-                  <Input name="name" placeholder="Например: Продукты" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="type">Тип</Label>
-                  <select
-                    name="type"
-                    defaultValue="expense"
-                    onChange={(e) => {
-                      setSelectedType(e.target.value as 'income' | 'expense');
-                      setSelectedParent('');
-                      setSelectedIcon(e.target.value === 'expense' ? '🍔' : '💼');
-                    }}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="expense">Расход</option>
-                    <option value="income">Доход</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Header Actions */}
+        <div className="flex flex-wrap gap-2 justify-end">
+          <Button variant="destructive" size="sm" style={{ height: '32px' }} onClick={handleResetSeed}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            <span>Сбросить</span>
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button style={{ height: '32px' }}>
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Добавить категорию</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleCreate}>
+                <DialogHeader>
+                  <DialogTitle>Новая категория</DialogTitle>
+                  <DialogDescription>Добавьте новую категорию для транзакций</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label>Иконка</Label>
-                    <div className="relative">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full justify-start"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIconPickerOpen(!iconPickerOpen);
-                        }}
-                      >
-                        <span className="text-xl mr-2">{selectedIcon}</span>
-                        <span className="text-sm">Выбрать</span>
-                      </Button>
-                      {iconPickerOpen && (
-                        <div
-                          className="fixed left-2 right-2 sm:absolute sm:left-0 sm:right-auto sm:w-auto sm:min-w-[400px] sm:max-w-[700px] top-auto sm:top-full z-50 mt-1 p-3 bg-popover border rounded-lg shadow-lg"
-                          onClick={(e) => e.stopPropagation()}
+                    <Label htmlFor="name">Название</Label>
+                    <Input name="name" placeholder="Например: Продукты" required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="type">Тип</Label>
+                    <select
+                      name="type"
+                      defaultValue="expense"
+                      onChange={(e) => {
+                        setSelectedType(e.target.value as 'income' | 'expense');
+                        setSelectedParent('');
+                        setSelectedIcon(e.target.value === 'expense' ? '🍔' : '💼');
+                      }}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="expense">Расход</option>
+                      <option value="income">Доход</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Иконка</Label>
+                      <div className="relative">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full justify-start"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIconPickerOpen(!iconPickerOpen);
+                          }}
                         >
-                          <div className="grid grid-cols-[repeat(10,36px)] gap-0 max-h-80 overflow-y-auto justify-center">
-                            {(selectedType === 'expense' ? expenseIcons : incomeIcons).map((icon, index) => (
-                              <button
-                                key={`${icon}-${index}`}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedIcon(icon);
-                                  setIconPickerOpen(false);
-                                }}
-                                className={cn(
-                                  "flex h-9 w-9 items-center justify-center rounded-md text-lg transition-colors shrink-0",
-                                  selectedIcon === icon
-                                    ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-muted"
-                                )}
-                              >
-                                {icon}
-                              </button>
-                            ))}
+                          <span className="text-xl mr-2">{selectedIcon}</span>
+                          <span className="text-sm">Выбрать</span>
+                        </Button>
+                        {iconPickerOpen && (
+                          <div
+                            className="fixed left-2 right-2 sm:absolute sm:left-0 sm:right-auto sm:w-auto sm:min-w-[400px] sm:max-w-[700px] top-auto sm:top-full z-50 mt-1 p-3 bg-popover border rounded-lg shadow-lg"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="grid grid-cols-[repeat(10,36px)] gap-0 max-h-80 overflow-y-auto justify-center">
+                              {(selectedType === 'expense' ? expenseIcons : incomeIcons).map((icon, index) => (
+                                <button
+                                  key={`${icon}-${index}`}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedIcon(icon);
+                                    setIconPickerOpen(false);
+                                  }}
+                                  className={cn(
+                                    "flex h-9 w-9 items-center justify-center rounded-md text-lg transition-colors shrink-0",
+                                    selectedIcon === icon
+                                      ? "bg-primary text-primary-foreground"
+                                      : "hover:bg-muted"
+                                  )}
+                                >
+                                  {icon}
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="color">Цвет</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          name="color"
+                          type="color"
+                          defaultValue="#6366f1"
+                          className="w-16 h-10 p-1"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          Выберите цвет
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="color">Цвет</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        name="color"
-                        type="color"
-                        defaultValue="#6366f1"
-                        className="w-16 h-10 p-1"
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        Выберите цвет
-                      </span>
-                    </div>
+                    <Label htmlFor="parent_id">Родительская категория (опционально)</Label>
+                    <select
+                      value={selectedParent}
+                      onChange={(e) => setSelectedParent(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Без родительской</option>
+                      {categories
+                        .filter((c) => !c.parent_id && c.type === selectedType)
+                        .map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                    </select>
+                    <p className="text-xs text-muted-foreground">
+                      Если выбрать родительскую категорию, будет создана подкатегория
+                    </p>
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="parent_id">Родительская категория (опционально)</Label>
-                  <select
-                    value={selectedParent}
-                    onChange={(e) => setSelectedParent(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">Без родительской</option>
-                    {categories
-                      .filter((c) => !c.parent_id && c.type === selectedType)
-                      .map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                  </select>
-                  <p className="text-xs text-muted-foreground">
-                    Если выбрать родительскую категорию, будет создана подкатегория
-                  </p>
-                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => {
+                    setDialogOpen(false);
+                    setSelectedParent('');
+                    setSelectedIcon('🍔');
+                    setIconPickerOpen(false);
+                  }}>
+                    Отмена
+                  </Button>
+                  <Button type="submit" disabled={createCategory.isPending}>
+                    {createCategory.isPending ? 'Создание...' : 'Создать'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Income Categories */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FolderOpen className="h-5 w-5 text-green-600" />
+              Категории доходов
+            </CardTitle>
+            <CardDescription>Дерево категорий доходов</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {incomeTree.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                Нет категорий доходов
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {renderCategoryTree(incomeTree)}
               </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => {
-                  setDialogOpen(false);
-                  setSelectedParent('');
-                  setSelectedIcon('🍔');
-                  setIconPickerOpen(false);
-                }}>
-                  Отмена
-                </Button>
-                <Button type="submit" disabled={createCategory.isPending}>
-                  {createCategory.isPending ? 'Создание...' : 'Создать'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Expense Categories */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Folder className="h-5 w-5 text-red-600" />
+              Категории расходов
+            </CardTitle>
+            <CardDescription>Дерево категорий расходов</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {expenseTree.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                Нет категорий расходов
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {renderCategoryTree(expenseTree)}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <AlertDialog open={!!deleteCategoryId} onOpenChange={() => setDeleteCategoryId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Удаление категории</AlertDialogTitle>
+              <AlertDialogDescription>
+                Вы уверены, что хотите удалить категорию "{deleteCategoryName}"? Подкатегории также будут удалены.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+                Сброс категорий
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Это УДАЛИТ ВСЕ категории и создаст их заново с правильной иерархией. Продолжить?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmResetSeed}>Продолжить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-
-      {/* Income Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FolderOpen className="h-5 w-5 text-green-600" />
-            Категории доходов
-          </CardTitle>
-          <CardDescription>Дерево категорий доходов</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {incomeTree.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              Нет категорий доходов
-            </p>
-          ) : (
-            <div className="space-y-1">
-              {renderCategoryTree(incomeTree)}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Expense Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Folder className="h-5 w-5 text-red-600" />
-            Категории расходов
-          </CardTitle>
-          <CardDescription>Дерево категорий расходов</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {expenseTree.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              Нет категорий расходов
-            </p>
-          ) : (
-            <div className="space-y-1">
-              {renderCategoryTree(expenseTree)}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <AlertDialog open={!!deleteCategoryId} onOpenChange={() => setDeleteCategoryId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Удаление категории</AlertDialogTitle>
-            <AlertDialogDescription>
-              Вы уверены, что хотите удалить категорию "{deleteCategoryName}"? Подкатегории также будут удалены.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Сброс категорий
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Это УДАЛИТ ВСЕ категории и создаст их заново с правильной иерархией. Продолжить?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmResetSeed}>Продолжить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    </PageTransition>
   );
 }
