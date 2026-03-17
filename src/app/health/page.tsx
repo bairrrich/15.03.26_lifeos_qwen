@@ -16,6 +16,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   useWeeklySleepStats,
   useSleepLogs,
   useCreateSleepLog,
@@ -27,18 +34,32 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { PageTransition } from '@/components/ui/page-transition';
+import { StatCard } from '@/components/ui/stat-card';
+import { EmptySleep, EmptyHealth } from '@/components/ui/empty-state-variants';
+import { TouchButton, useIsMobile } from '@/components/ui/touch-targets';
+import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { usePullToRefresh } from '@/hooks/use-swipe-gesture';
 
 export default function HealthPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayTimestamp = today.getTime();
 
-  const { data: weeklySleep } = useWeeklySleepStats(todayTimestamp);
-  const { data: sleepLog } = useSleepLogs(todayTimestamp);
-  const { data: weight } = useLatestHealthMetric('weight');
+  const { data: weeklySleep, isLoading: sleepLoading } = useWeeklySleepStats(todayTimestamp);
+  const { data: sleepLog, isLoading: sleepLogLoading } = useSleepLogs(todayTimestamp);
+  const { data: weight, isLoading: weightLoading } = useLatestHealthMetric('weight');
   const createSleepLog = useCreateSleepLog();
+  const isMobile = useIsMobile();
 
   const [sleepDialogOpen, setSleepDialogOpen] = useState(false);
+  const [selectedQuality, setSelectedQuality] = useState<string>('3');
+
+  const handleRefresh = async () => {
+    // Trigger refetch of all data
+    toast.info('Данные обновлены');
+  };
+
+  const { ref: refreshRef, isRefreshing } = usePullToRefresh<HTMLDivElement>(handleRefresh, { threshold: 80 });
 
   const handleSleepSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,13 +76,14 @@ export default function HealthPage() {
         bedtime: bedtime.getTime(),
         wake_time: wakeTime.getTime(),
         duration_hours: Math.round(durationHours * 10) / 10,
-        quality: Number(formData.get('quality')) as 1 | 2 | 3 | 4 | 5,
+        quality: Number(selectedQuality) as 1 | 2 | 3 | 4 | 5,
         user_id: userId,
       },
       {
         onSuccess: () => {
           toast.success('Данные о сне сохранены');
           setSleepDialogOpen(false);
+          setSelectedQuality('3'); // Reset for next use
         },
         onError: () => {
           toast.error('Ошибка при сохранении');
@@ -83,119 +105,138 @@ export default function HealthPage() {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div ref={refreshRef} className="space-y-6">
         <div className="flex flex-wrap gap-2 justify-end">
-          <Dialog open={sleepDialogOpen} onOpenChange={setSleepDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                <span>Добавить сон</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          <TouchButton touchFriendly size="sm" onClick={() => setSleepDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            <span>Добавить сон</span>
+          </TouchButton>
+
+          {isMobile ? (
+            <BottomSheet
+              isOpen={sleepDialogOpen}
+              onClose={() => setSleepDialogOpen(false)}
+              title="Данные о сне"
+            >
               <form onSubmit={handleSleepSubmit}>
-                <DialogHeader>
-                  <DialogTitle>Данные о сне</DialogTitle>
-                  <DialogDescription>Укажите время отхода ко сну и пробуждения</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="bedtime">Время отхода ко сну</Label>
-                    <Input name="bedtime" type="datetime-local" required />
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Укажите время отхода ко сну и пробуждения</p>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="bedtime">Время отхода ко сну</Label>
+                      <Input name="bedtime" type="datetime-local" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="wake_time">Время пробуждения</Label>
+                      <Input name="wake_time" type="datetime-local" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="quality">Качество сна</Label>
+                      <Select value={selectedQuality} onValueChange={(value: string | null) => setSelectedQuality(value || '3')}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите качество" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 - Очень плохо 😴</SelectItem>
+                          <SelectItem value="2">2 - Плохо 😕</SelectItem>
+                          <SelectItem value="3">3 - Нормально 😐</SelectItem>
+                          <SelectItem value="4">4 - Хорошо 😊</SelectItem>
+                          <SelectItem value="5">5 - Отлично 😁</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="wake_time">Время пробуждения</Label>
-                    <Input name="wake_time" type="datetime-local" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="quality">Качество сна</Label>
-                    <select
-                      name="quality"
-                      defaultValue="3"
-
-
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите качество</option>
-                      <option value="1">1 - Очень плохо 😴</option>
-                      <option value="2">2 - Плохо 😕</option>
-                      <option value="3">3 - Нормально 😐</option>
-                      <option value="4">4 - Хорошо 😊</option>
-                      <option value="5">5 - Отлично 😁</option>
-                    </select>
+                  <div className="flex gap-2 justify-end">
+                    <Button type="button" variant="outline" onClick={() => setSleepDialogOpen(false)}>
+                      Отмена
+                    </Button>
+                    <Button type="submit">Сохранить</Button>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setSleepDialogOpen(false)}>
-                    Отмена
-                  </Button>
-                  <Button type="submit">Сохранить</Button>
-                </DialogFooter>
               </form>
-            </DialogContent>
-          </Dialog>
+            </BottomSheet>
+          ) : (
+            <Dialog open={sleepDialogOpen} onOpenChange={setSleepDialogOpen}>
+              <DialogContent>
+                <form onSubmit={handleSleepSubmit}>
+                  <DialogHeader>
+                    <DialogTitle>Данные о сне</DialogTitle>
+                    <DialogDescription>Укажите время отхода ко сну и пробуждения</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="bedtime">Время отхода ко сну</Label>
+                      <Input name="bedtime" type="datetime-local" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="wake_time">Время пробуждения</Label>
+                      <Input name="wake_time" type="datetime-local" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="quality">Качество сна</Label>
+                      <Select value={selectedQuality} onValueChange={(value: string | null) => setSelectedQuality(value || '3')}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите качество" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 - Очень плохо 😴</SelectItem>
+                          <SelectItem value="2">2 - Плохо 😕</SelectItem>
+                          <SelectItem value="3">3 - Нормально 😐</SelectItem>
+                          <SelectItem value="4">4 - Хорошо 😊</SelectItem>
+                          <SelectItem value="5">5 - Отлично 😁</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setSleepDialogOpen(false)}>
+                      Отмена
+                    </Button>
+                    <Button type="submit">Сохранить</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Сон (средний)</CardTitle>
-              <Moon className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{weeklySleep?.avgDuration.toFixed(1) || 0}ч</div>
-              <p className="text-xs text-muted-foreground">за последнюю неделю</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Качество сна</CardTitle>
-              <Heart className="h-4 w-4 text-pink-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {weeklySleep?.avgQuality ? getQualityEmoji(Math.round(weeklySleep.avgQuality)) : '-'}{' '}
-                {weeklySleep?.avgQuality.toFixed(1) || 0}/5
-              </div>
-              <p className="text-xs text-muted-foreground">за последнюю неделю</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Вес</CardTitle>
-              <Activity className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {weight && weight !== null && typeof weight === 'object' && 'value' in weight
-                  ? `${(weight as HealthMetric).value} ${(weight as HealthMetric).unit}`
-                  : '-'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {weight && weight !== null && typeof weight === 'object' && 'recorded_at' in weight
-                  ? format((weight as HealthMetric).recorded_at, 'dd MMM', { locale: ru })
-                  : 'Нет данных'}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Сон сегодня</CardTitle>
-              <Thermometer className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {sleepLog && (sleepLog as SleepLog[]).length > 0
-                  ? `${(sleepLog as SleepLog[])[0].duration_hours}ч ${getQualityEmoji((sleepLog as SleepLog[])[0].quality)}`
-                  : '-'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {sleepLog && (sleepLog as SleepLog[]).length > 0
-                  ? `Качество: ${(sleepLog as SleepLog[])[0].quality}/5`
-                  : 'Нет данных'}
-              </p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Сон (средний)"
+            value={`${weeklySleep?.avgDuration.toFixed(1) || 0}ч`}
+            description="за последнюю неделю"
+            icon={Moon}
+            isLoading={sleepLoading}
+          />
+          <StatCard
+            title="Качество сна"
+            value={weeklySleep?.avgQuality ? `${getQualityEmoji(Math.round(weeklySleep.avgQuality))} ${weeklySleep.avgQuality.toFixed(1)}/5` : '-'}
+            description="за последнюю неделю"
+            icon={Heart}
+            isLoading={sleepLoading}
+          />
+          <StatCard
+            title="Вес"
+            value={weight && weight !== null && typeof weight === 'object' && 'value' in weight
+              ? `${(weight as HealthMetric).value} ${(weight as HealthMetric).unit}`
+              : '-'}
+            description={weight && weight !== null && typeof weight === 'object' && 'recorded_at' in weight
+              ? format((weight as HealthMetric).recorded_at, 'dd MMM', { locale: ru })
+              : 'Нет данных'}
+            icon={Activity}
+            isLoading={weightLoading}
+          />
+          <StatCard
+            title="Сон сегодня"
+            value={sleepLog && (sleepLog as SleepLog[]).length > 0
+              ? `${(sleepLog as SleepLog[])[0].duration_hours}ч ${getQualityEmoji((sleepLog as SleepLog[])[0].quality)}`
+              : '-'}
+            description={sleepLog && (sleepLog as SleepLog[]).length > 0
+              ? `Качество: ${(sleepLog as SleepLog[])[0].quality}/5`
+              : 'Нет данных'}
+            icon={Thermometer}
+            isLoading={sleepLogLoading}
+          />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -237,7 +278,7 @@ export default function HealthPage() {
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Нет данных за сегодня</p>
+                  <EmptySleep />
                 )}
               </div>
             </CardContent>

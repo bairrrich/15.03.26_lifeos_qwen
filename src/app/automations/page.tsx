@@ -16,6 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useActiveAutomations, useCreateAutomation, useToggleAutomation, useRecentAutomationLogs } from '@/modules/automations/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Zap, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react'
@@ -23,6 +30,8 @@ import { toast } from 'sonner'
 import { PageTransition } from '@/components/ui/page-transition';
 import { format } from 'date-fns'
 import type { TriggerType, ActionType, AutomationLog } from '@/modules/automations/entities'
+import { EmptyAutomations } from '@/components/ui/empty-state-variants'
+import { TouchButton, useIsMobile } from '@/components/ui/touch-targets'
 
 const triggerLabels: Record<string, string> = {
   habit_completed: 'Привычка выполнена',
@@ -49,6 +58,9 @@ export default function AutomationsPage() {
   const toggleAutomation = useToggleAutomation()
 
   const [dialogOpen, setDialogOpen] = useState(false)
+  const isMobile = useIsMobile()
+  const [selectedTriggerType, setSelectedTriggerType] = useState<string>('time_of_day')
+  const [selectedActionType, setSelectedActionType] = useState<string>('send_notification')
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -60,12 +72,12 @@ export default function AutomationsPage() {
         name: formData.get('name') as string,
         description: formData.get('description') as string || undefined,
         trigger: {
-          type: formData.get('trigger_type') as TriggerType,
+          type: selectedTriggerType as TriggerType,
           config: {},
         },
         actions: [
           {
-            type: formData.get('action_type') as ActionType,
+            type: selectedActionType as ActionType,
             config: {
               message: formData.get('action_message') as string,
             },
@@ -79,6 +91,8 @@ export default function AutomationsPage() {
         onSuccess: () => {
           toast.success('Автоматизация создана')
           setDialogOpen(false)
+          setSelectedTriggerType('time_of_day') // Reset for next use
+          setSelectedActionType('send_notification') // Reset for next use
         },
         onError: () => {
           toast.error('Ошибка при создании')
@@ -102,13 +116,12 @@ export default function AutomationsPage() {
     <PageTransition>
       <div className="space-y-6">
         <div className="flex flex-wrap gap-2 justify-end">
+          <TouchButton touchFriendly size="sm" onClick={() => setDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            <span>Создать правило</span>
+          </TouchButton>
+
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                <span>Создать правило</span>
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <form onSubmit={handleCreate}>
                 <DialogHeader>
@@ -128,29 +141,29 @@ export default function AutomationsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label>Триггер</Label>
-                    <select
-                      name="trigger_type"
-                      defaultValue="time_of_day"
-
-
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите триггер</option>
-
-                    </select>
+                    <Select value={selectedTriggerType} onValueChange={(value: string | null) => setSelectedTriggerType(value || 'time_of_day')}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите триггер" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(triggerLabels).map(([key, label]) => (
+                          <SelectItem key={key} value={key}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label>Действие</Label>
-                    <select
-                      name="action_type"
-                      defaultValue="send_notification"
-
-
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Выберите действие</option>
-
-                    </select>
+                    <Select value={selectedActionType} onValueChange={(value: string | null) => setSelectedActionType(value || 'send_notification')}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите действие" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(actionLabels).map(([key, label]) => (
+                          <SelectItem key={key} value={key}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label>Сообщение</Label>
@@ -176,7 +189,7 @@ export default function AutomationsPage() {
             </CardHeader>
             <CardContent>
               {automations.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">Нет активных правил</p>
+                <EmptyAutomations onAction={() => setDialogOpen(true)} />
               ) : (
                 <div className="space-y-3">
                   {automations.map((rule) => (
@@ -210,7 +223,10 @@ export default function AutomationsPage() {
             </CardHeader>
             <CardContent>
               {recentLogs.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">Нет срабатываний</p>
+                <div className="text-center py-8">
+                  <Activity className="mx-auto h-8 w-8 text-muted-foreground mb-2 opacity-50" />
+                  <p className="text-muted-foreground">Нет срабатываний</p>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {recentLogs.map((log: AutomationLog) => (
