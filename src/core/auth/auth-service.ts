@@ -15,6 +15,27 @@ export interface AuthResult {
 }
 
 /**
+ * Get cookie options with Secure flag for production
+ */
+function getCookieOptions(maxAge: number = 60 * 60 * 24 * 30): { [key: string]: string | number | boolean } {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    path: '/',
+    maxAge,
+    sameSite: 'Lax' as const,
+    ...(isProduction && { secure: true }),
+  };
+}
+
+/**
+ * Encode session data for cookie storage
+ */
+function encodeSessionData(data: { access_token: string; refresh_token: string; user: unknown }): string {
+  const sessionStr = JSON.stringify(data);
+  return btoa(unescape(encodeURIComponent(sessionStr)));
+}
+
+/**
  * Войти через email и пароль (для зарегистрированных пользователей)
  */
 export async function signInWithEmail(email: string, password: string): Promise<AuthResult> {
@@ -35,14 +56,13 @@ export async function signInWithEmail(email: string, password: string): Promise<
   // После успешного входа сохраняем сессию в cookie
   // Это нужно для работы middleware
   if (data.session) {
-    const sessionStr = JSON.stringify({
+    const encoded = encodeSessionData({
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
       user: data.session.user,
     });
-    // Кодируем в base64 для cookie
-    const encoded = btoa(unescape(encodeURIComponent(sessionStr)));
-    document.cookie = `supabase-auth-token=${encoded}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+    const options = getCookieOptions();
+    document.cookie = `supabase-auth-token=${encoded}; ${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('; ')}`;
   }
 
   return { error: null };
@@ -104,7 +124,8 @@ export async function signOut(): Promise<void> {
   }
 
   // Очищаем cookie сессии
-  document.cookie = 'supabase-auth-token=; path=/; max-age=0; SameSite=Lax';
+  const options = getCookieOptions(0);
+  document.cookie = `supabase-auth-token=; ${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('; ')}`;
 
   // Перезагружаем страницу для редиректа на страницу логина
   window.location.href = '/login';
@@ -182,7 +203,8 @@ export function signInLocally(email: string): LocalUser {
   localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(localUser));
 
   // Сохраняем в cookie для middleware (на стороне сервера это не сработает, но для клиентской навигации ok)
-  document.cookie = `${LOCAL_USER_KEY}=${encodeURIComponent(JSON.stringify(localUser))}; path=/; max-age=${365 * 24 * 60 * 60}`;
+  const options = getCookieOptions();
+  document.cookie = `${LOCAL_USER_KEY}=${encodeURIComponent(JSON.stringify(localUser))}; ${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('; ')}`;
 
   return localUser;
 }
@@ -211,7 +233,8 @@ export function getLocalUser(): LocalUser | null {
 export function signOutLocally(): void {
   localStorage.removeItem(LOCAL_USER_KEY);
   // Очищаем cookie
-  document.cookie = `${LOCAL_USER_KEY}=; path=/; max-age=0`;
+  const options = getCookieOptions(0);
+  document.cookie = `${LOCAL_USER_KEY}=; ${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('; ')}`;
 }
 
 /**

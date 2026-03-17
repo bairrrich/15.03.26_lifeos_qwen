@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -43,13 +43,13 @@ export async function GET(request: NextRequest) {
     // Filter by program
     const programId = searchParams.get('program_id');
     if (programId) {
-        query = query.eq('program_id', programId);
+        query = query.eq('program_id', programId.substring(0, 100));
     }
 
     const { data, error, count } = await query;
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('workout history fetch');
     }
 
     return paginatedResponse(
@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
 
         const workoutData = {
             user_id: userId,
-            workout_name: body.workout_name,
-            program_id: body.program_id || null,
-            duration_seconds: body.duration_seconds,
+            workout_name: body.workout_name?.substring(0, 200) || '',
+            program_id: body.program_id?.substring(0, 100) || null,
+            duration_seconds: Math.max(body.duration_seconds || 0, 0),
             date: body.date || Date.now(),
             exercises: body.exercises || [],
-            rating: body.rating || null,
-            feeling: body.feeling || null,
-            notes: body.notes || null,
+            rating: body.rating ? Math.min(Math.max(body.rating, 1), 5) : null,
+            feeling: body.feeling ? Math.min(Math.max(body.feeling, 1), 5) : null,
+            notes: body.notes?.substring(0, 5000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('workout log insert');
         }
 
         return successResponse(data, 201);

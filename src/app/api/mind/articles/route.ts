@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('articles fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
 
         const articleData = {
             user_id: userId,
-            title: body.title,
-            url: body.url || null,
-            source: body.source || null,
-            category: body.category || null,
-            status: body.status || 'unread', // unread, reading, read, archived
-            notes: body.notes || null,
+            title: body.title?.substring(0, 500) || '',
+            url: body.url?.substring(0, 2048) || null,
+            source: body.source?.substring(0, 200) || null,
+            category: body.category?.substring(0, 100) || null,
+            status: body.status || 'unread',
+            notes: body.notes?.substring(0, 5000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('articles insert');
 
         return successResponse(data, 201);
     } catch {

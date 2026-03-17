@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         .order('name', { ascending: true })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('foods fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
 
         const foodData = {
             user_id: userId,
-            name: body.name,
-            calories_per_100g: body.calories_per_100g || 0,
-            protein_per_100g: body.protein_per_100g || 0,
-            carbs_per_100g: body.carbs_per_100g || 0,
-            fat_per_100g: body.fat_per_100g || 0,
-            serving_size: body.serving_size || 100,
-            barcode: body.barcode || null,
+            name: body.name?.substring(0, 200) || '',
+            calories_per_100g: Math.max(body.calories_per_100g || 0, 0),
+            protein_per_100g: Math.max(body.protein_per_100g || 0, 0),
+            carbs_per_100g: Math.max(body.carbs_per_100g || 0, 0),
+            fat_per_100g: Math.max(body.fat_per_100g || 0, 0),
+            serving_size: Math.max(body.serving_size || 100, 1),
+            barcode: body.barcode?.substring(0, 50) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('foods insert');
 
         return successResponse(data, 201);
     } catch {

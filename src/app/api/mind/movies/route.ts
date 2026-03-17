@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('movies fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
 
         const movieData = {
             user_id: userId,
-            title: body.title,
-            type: body.type || 'movie', // movie, tv_show, anime
-            genre: body.genre || null,
-            status: body.status || 'planned', // planned, watching, completed, dropped
-            rating: body.rating || null,
-            episodes_watched: body.episodes_watched || 0,
-            total_episodes: body.total_episodes || null,
-            notes: body.notes || null,
+            title: body.title?.substring(0, 500) || '',
+            type: body.type || 'movie',
+            genre: body.genre?.substring(0, 100) || null,
+            status: body.status || 'planned',
+            rating: body.rating ? Math.min(Math.max(body.rating, 0), 10) : null,
+            episodes_watched: Math.max(body.episodes_watched || 0, 0),
+            total_episodes: body.total_episodes ? Math.max(body.total_episodes, 0) : null,
+            notes: body.notes?.substring(0, 5000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('movies insert');
 
         return successResponse(data, 201);
     } catch {

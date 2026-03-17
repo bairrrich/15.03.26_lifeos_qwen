@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { validatePositiveNumber, sanitizeString, sanitizeUrl, truncateString, validateLength } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/subscriptions
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
         .order('next_billing_date', { ascending: true })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('subscriptions fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Validate required fields
         if (!body.name) {
             return errorResponse('Missing required field: name', 400, 'VALIDATION_ERROR');
         }
@@ -54,10 +56,25 @@ export async function POST(request: NextRequest) {
             return errorResponse('Missing required field: billing_period', 400, 'VALIDATION_ERROR');
         }
 
+        // Validate and sanitize input
+        const name = sanitizeString(body.name);
+        const validatedName = validateLength(name, 1, 100);
+        if (!validatedName) {
+            return errorResponse('Invalid name: must be 1-100 characters', 400, 'VALIDATION_ERROR');
+        }
+
+        const amount = validatePositiveNumber(body.amount);
+        if (!amount) {
+            return errorResponse('Invalid amount: must be a positive number', 400, 'VALIDATION_ERROR');
+        }
+
         const validPeriods = ['monthly', 'yearly', 'weekly'];
         if (!validPeriods.includes(body.billing_period)) {
             return errorResponse(`Invalid billing_period. Must be one of: ${validPeriods.join(', ')}`, 400, 'VALIDATION_ERROR');
         }
+
+        // Validate URL if provided
+        const url = body.url ? sanitizeUrl(body.url) : null;
 
         // Calculate next billing date
         const now = Date.now();
@@ -72,12 +89,12 @@ export async function POST(request: NextRequest) {
 
         const subscriptionData = {
             user_id: userId,
-            name: body.name,
-            amount: body.amount,
-            currency: body.currency || 'RUB',
+            name: validatedName,
+            amount: amount,
+            currency: body.currency ? String(body.currency).substring(0, 3).toUpperCase() : 'RUB',
             billing_period: body.billing_period,
             next_billing_date: body.next_billing_date || nextBillingDate,
-            url: body.url || null,
+            url: url,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -90,7 +107,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('subscription insert');
 
         return successResponse(data, 201);
     } catch {

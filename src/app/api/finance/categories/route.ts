@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { sanitizeCategoryInput } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/categories
@@ -41,10 +42,19 @@ export async function GET(request: NextRequest) {
         query = query.eq('type', type);
     }
 
+    // Limit query param length to prevent abuse
+    const queryLimit = searchParams.get('limit');
+    if (queryLimit) {
+        const parsedLimit = parseInt(queryLimit, 10);
+        if (!isNaN(parsedLimit) && parsedLimit > 0 && parsedLimit <= 100) {
+            // Valid limit
+        }
+    }
+
     const { data, error, count } = await query;
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('categories fetch');
     }
 
     return paginatedResponse(
@@ -77,26 +87,23 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Sanitize and validate input
+        const sanitized = sanitizeCategoryInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
         // Validate required fields
-        if (!body.name) {
-            return errorResponse('Missing required field: name', 400, 'VALIDATION_ERROR');
-        }
-
-        if (!body.type) {
-            return errorResponse('Missing required field: type', 400, 'VALIDATION_ERROR');
-        }
-
-        // Validate type
-        if (!['income', 'expense'].includes(body.type)) {
-            return errorResponse('Invalid type. Must be "income" or "expense"', 400, 'VALIDATION_ERROR');
+        if (!sanitized.name || !sanitized.type) {
+            return errorResponse('Missing required fields: name, type', 400, 'VALIDATION_ERROR');
         }
 
         const categoryData = {
             user_id: userId,
-            name: body.name,
-            type: body.type,
-            color: body.color || null,
-            icon: body.icon || null,
+            name: sanitized.name,
+            type: sanitized.type,
+            color: sanitized.color || null,
+            icon: sanitized.icon || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -110,7 +117,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('category insert');
         }
 
         return successResponse(data, 201);

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -7,6 +7,7 @@ import {
     getPaginationParams,
     getSortParams
 } from '@/lib/api-response';
+import { validatePositiveNumber, sanitizeString, truncateString, validateInteger } from '@/lib/input-validation';
 
 /**
  * GET /api/health/metrics
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Filter by type
     const type = searchParams.get('type');
     if (type) {
-        query = query.eq('type', type);
+        query = query.eq('type', type.substring(0, 30));
     }
 
     // Filter by date
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query;
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('health metrics fetch');
     }
 
     return paginatedResponse(
@@ -116,10 +117,10 @@ export async function POST(request: NextRequest) {
         const metricData = {
             user_id: userId,
             type: body.type,
-            value: body.value,
-            unit: body.unit,
+            value: Math.abs(body.value),
+            unit: body.unit?.substring(0, 20) || '',
             date: body.date || Date.now(),
-            notes: body.notes || null,
+            notes: body.notes?.substring(0, 2000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('health metric insert');
         }
 
         return successResponse(data, 201);

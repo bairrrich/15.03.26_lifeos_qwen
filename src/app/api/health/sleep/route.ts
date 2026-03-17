@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { validateInteger, sanitizeString, truncateString } from '@/lib/input-validation';
 
 /**
  * GET /api/health/sleep
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
         .order('date', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('sleep logs fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -61,9 +62,9 @@ export async function POST(request: NextRequest) {
             date: body.date,
             sleep_start: body.sleep_start || null,
             sleep_end: body.sleep_end || null,
-            sleep_duration_minutes: sleep_duration_minutes || 0,
-            quality: body.quality || null, // 1-5
-            notes: body.notes || null,
+            sleep_duration_minutes: Math.max(sleep_duration_minutes || 0, 0),
+            quality: body.quality ? Math.min(Math.max(body.quality, 1), 5) : null,
+            notes: body.notes?.substring(0, 2000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('sleep log insert');
 
         return successResponse(data, 201);
     } catch {

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { sanitizeProfileInput } from '@/lib/input-validation';
 
 /**
  * GET /api/user/profile
@@ -20,12 +21,15 @@ export async function GET(request: NextRequest) {
 
     if (error) {
         // If profile doesn't exist, return basic user info from auth
-        const { data: { user } } = await supabase.auth.getUser();
-        return successResponse({
-            id: user?.id,
-            email: user?.email,
-            created_at: user?.created_at,
-        });
+        if (error.code === 'PGRST116') {
+            const { data: { user } } = await supabase.auth.getUser();
+            return successResponse({
+                id: user?.id,
+                email: user?.email,
+                created_at: user?.created_at,
+            });
+        }
+        return handleDatabaseError('profile fetch');
     }
 
     return successResponse(profile);
@@ -44,12 +48,19 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Sanitize and validate input
+        const sanitized = sanitizeProfileInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
+        // If no valid fields to update, return early
+        if (Object.keys(sanitized).length === 0) {
+            return errorResponse('No valid fields to update', 400, 'VALIDATION_ERROR');
+        }
+
         const updateData = {
-            ...(body.full_name && { full_name: body.full_name }),
-            ...(body.avatar_url && { avatar_url: body.avatar_url }),
-            ...(body.bio && { bio: body.bio }),
-            ...(body.website && { website: body.website }),
-            ...(body.location && { location: body.location }),
+            ...sanitized,
             updated_at: Date.now(),
         };
 
@@ -62,7 +73,7 @@ export async function PUT(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'UPDATE_ERROR');
+        if (error) return handleDatabaseError('profile update');
 
         return successResponse(data);
     } catch {

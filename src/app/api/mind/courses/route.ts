@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('courses fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -50,16 +50,16 @@ export async function POST(request: NextRequest) {
 
         const courseData = {
             user_id: userId,
-            title: body.title,
-            platform: body.platform || null,
-            instructor: body.instructor || null,
-            category: body.category || null,
-            status: body.status || 'planned', // planned, in_progress, completed, dropped
-            progress_percent: body.progress_percent || 0,
-            total_lessons: body.total_lessons || 0,
-            completed_lessons: body.completed_lessons || 0,
-            rating: body.rating || null,
-            notes: body.notes || null,
+            title: body.title?.substring(0, 500) || '',
+            platform: body.platform?.substring(0, 200) || null,
+            instructor: body.instructor?.substring(0, 200) || null,
+            category: body.category?.substring(0, 100) || null,
+            status: body.status || 'planned',
+            progress_percent: Math.min(Math.max(body.progress_percent || 0, 0), 100),
+            total_lessons: Math.max(body.total_lessons || 0, 0),
+            completed_lessons: Math.max(body.completed_lessons || 0, 0),
+            rating: body.rating ? Math.min(Math.max(body.rating, 0), 10) : null,
+            notes: body.notes?.substring(0, 5000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('courses insert');
 
         return successResponse(data, 201);
     } catch {

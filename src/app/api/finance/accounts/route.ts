@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { sanitizeAccountInput } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/accounts
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
         .range(offset, offset + limit - 1);
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('accounts fetch');
     }
 
     return paginatedResponse(
@@ -69,28 +70,24 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Sanitize and validate input
+        const sanitized = sanitizeAccountInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
         // Validate required fields
-        if (!body.name) {
-            return errorResponse('Missing required field: name', 400, 'VALIDATION_ERROR');
-        }
-
-        if (!body.type) {
-            return errorResponse('Missing required field: type', 400, 'VALIDATION_ERROR');
-        }
-
-        // Validate type
-        const validTypes = ['bank', 'cash', 'card', 'investment'];
-        if (!validTypes.includes(body.type)) {
-            return errorResponse(`Invalid type. Must be one of: ${validTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
+        if (!sanitized.name || !sanitized.type) {
+            return errorResponse('Missing required fields: name, type', 400, 'VALIDATION_ERROR');
         }
 
         const accountData = {
             user_id: userId,
-            name: body.name,
-            type: body.type,
-            balance: body.balance || 0,
-            currency: body.currency || 'RUB',
-            color: body.color || null,
+            name: sanitized.name,
+            type: sanitized.type,
+            balance: sanitized.balance || 0,
+            currency: sanitized.currency || 'RUB',
+            color: sanitized.color || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -104,7 +101,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('account insert');
         }
 
         return successResponse(data, 201);

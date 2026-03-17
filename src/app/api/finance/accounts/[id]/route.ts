@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { sanitizeAccountInput } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/accounts/[id]
@@ -74,20 +75,19 @@ export async function PUT(
 
         const body = await request.json();
 
-        // Validate type if provided
-        if (body.type) {
-            const validTypes = ['bank', 'cash', 'card', 'investment'];
-            if (!validTypes.includes(body.type)) {
-                return errorResponse(`Invalid type. Must be one of: ${validTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
-            }
+        // Sanitize and validate input
+        const sanitized = sanitizeAccountInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
+        // If no valid fields to update, return early
+        if (Object.keys(sanitized).length === 0) {
+            return errorResponse('No valid fields to update', 400, 'VALIDATION_ERROR');
         }
 
         const updateData = {
-            ...(body.name && { name: body.name }),
-            ...(body.type && { type: body.type }),
-            ...(body.balance !== undefined && { balance: body.balance }),
-            ...(body.currency && { currency: body.currency }),
-            ...(body.color !== undefined && { color: body.color }),
+            ...sanitized,
             updated_at: Date.now(),
             version: existing.version + 1,
             sync_status: 'pending',
@@ -102,7 +102,7 @@ export async function PUT(
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'UPDATE_ERROR');
+            return handleDatabaseError('account update');
         }
 
         return successResponse(data);
@@ -137,7 +137,7 @@ export async function DELETE(
         .eq('user_id', userId!);
 
     if (txError) {
-        return errorResponse(txError.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('transactions check');
     }
 
     // Optionally, you could prevent deletion if there are transactions
@@ -151,7 +151,7 @@ export async function DELETE(
         .eq('user_id', userId!);
 
     if (error) {
-        return errorResponse(error.message, 500, 'DELETE_ERROR');
+        return handleDatabaseError('account delete');
     }
 
     return successResponse({ success: true, id });

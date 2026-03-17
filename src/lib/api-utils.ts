@@ -5,6 +5,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NextResponse } from 'next/server';
 
 /**
+ * Handle database errors safely - sanitize error messages
+ */
+export function handleDatabaseError(operation: string): NextResponse {
+    console.error(`Database error during ${operation}`);
+    return errorResponse(`Database error during ${operation}`, 500, 'DB_ERROR');
+}
+
+/**
  * Get authenticated Supabase client for API routes
  * This handles both cookie-based and token-based authentication
  */

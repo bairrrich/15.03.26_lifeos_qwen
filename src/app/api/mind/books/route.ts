@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('books fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
 
         const bookData = {
             user_id: userId,
-            title: body.title,
-            author: body.author || null,
-            genre: body.genre || null,
-            status: body.status || 'planned', // planned, reading, completed, dropped
-            rating: body.rating || null,
-            notes: body.notes || null,
+            title: body.title?.substring(0, 500) || '',
+            author: body.author?.substring(0, 200) || null,
+            genre: body.genre?.substring(0, 100) || null,
+            status: body.status || 'planned',
+            rating: body.rating ? Math.min(Math.max(body.rating, 0), 10) : null,
+            notes: body.notes?.substring(0, 5000) || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('books insert');
 
         return successResponse(data, 201);
     } catch {

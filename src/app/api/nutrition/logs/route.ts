@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -7,6 +7,7 @@ import {
     getPaginationParams,
     getSortParams
 } from '@/lib/api-response';
+import { sanitizeNutritionLogInput } from '@/lib/input-validation';
 
 /**
  * GET /api/nutrition/logs
@@ -54,13 +55,13 @@ export async function GET(request: NextRequest) {
     // Filter by meal type
     const mealType = searchParams.get('meal_type');
     if (mealType) {
-        query = query.eq('meal_type', mealType);
+        query = query.eq('meal_type', mealType.substring(0, 20));
     }
 
     const { data, error, count } = await query;
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('nutrition logs fetch');
     }
 
     return paginatedResponse(
@@ -97,27 +98,27 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        // Validate required fields
-        if (!body.meal_type) {
-            return errorResponse('Missing required field: meal_type', 400, 'VALIDATION_ERROR');
+        // Sanitize and validate input
+        const sanitized = sanitizeNutritionLogInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
         }
 
-        // Validate meal type
-        const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
-        if (!validMealTypes.includes(body.meal_type)) {
-            return errorResponse(`Invalid meal_type. Must be one of: ${validMealTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
+        // Validate required fields
+        if (!sanitized.meal_type) {
+            return errorResponse('Missing required field: meal_type', 400, 'VALIDATION_ERROR');
         }
 
         const nutritionData = {
             user_id: userId,
-            meal_type: body.meal_type,
-            date: body.date || Date.now(),
-            foods: body.foods || [],
-            total_calories: body.total_calories || 0,
-            total_protein: body.total_protein || 0,
-            total_carbs: body.total_carbs || 0,
-            total_fat: body.total_fat || 0,
-            notes: body.notes || null,
+            meal_type: sanitized.meal_type,
+            date: sanitized.date || Date.now(),
+            foods: sanitized.foods || [],
+            total_calories: sanitized.total_calories || 0,
+            total_protein: sanitized.total_protein || 0,
+            total_carbs: sanitized.total_carbs || 0,
+            total_fat: sanitized.total_fat || 0,
+            notes: sanitized.notes || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('nutrition log insert');
         }
 
         return successResponse(data, 201);

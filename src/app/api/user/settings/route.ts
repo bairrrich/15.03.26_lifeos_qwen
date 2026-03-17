@@ -1,6 +1,65 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
+
+/**
+ * Validate user settings input
+ */
+function sanitizeSettingsInput(input: unknown): Record<string, unknown> | null {
+    if (typeof input !== 'object' || input === null) {
+        return null;
+    }
+
+    const data = input as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+
+    // Validate theme
+    if (data.theme !== undefined) {
+        const validThemes = ['light', 'dark', 'system'];
+        if (validThemes.includes(data.theme as string)) {
+            result.theme = data.theme;
+        }
+    }
+
+    // Validate language
+    if (data.language !== undefined) {
+        const validLanguages = ['ru', 'en'];
+        if (validLanguages.includes(data.language as string)) {
+            result.language = data.language;
+        }
+    }
+
+    // Validate currency (3 letter code)
+    if (data.currency !== undefined) {
+        const currency = data.currency;
+        if (typeof currency === 'string' && /^[A-Z]{3}$/.test(currency.toUpperCase())) {
+            result.currency = currency.toUpperCase();
+        }
+    }
+
+    // Validate date format
+    if (data.date_format !== undefined) {
+        const validFormats = ['DD.MM.YYYY', 'MM.DD.YYYY', 'YYYY-MM-DD'];
+        if (validFormats.includes(data.date_format as string)) {
+            result.date_format = data.date_format;
+        }
+    }
+
+    // Validate booleans
+    if (data.notifications_enabled !== undefined) {
+        if (typeof data.notifications_enabled === 'boolean') {
+            result.notifications_enabled = data.notifications_enabled;
+        }
+    }
+
+    if (data.email_notifications !== undefined) {
+        if (typeof data.email_notifications === 'boolean') {
+            result.email_notifications = data.email_notifications;
+        }
+    }
+
+    return result;
+}
 
 /**
  * GET /api/user/settings
@@ -47,14 +106,15 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Sanitize and validate input
+        const sanitized = sanitizeSettingsInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
         const updateData = {
             user_id: userId,
-            ...(body.theme && { theme: body.theme }),
-            ...(body.language && { language: body.language }),
-            ...(body.currency && { currency: body.currency }),
-            ...(body.date_format && { date_format: body.date_format }),
-            ...(body.notifications_enabled !== undefined && { notifications_enabled: body.notifications_enabled }),
-            ...(body.email_notifications !== undefined && { email_notifications: body.email_notifications }),
+            ...sanitized,
             updated_at: Date.now(),
         };
 
@@ -64,10 +124,11 @@ export async function PUT(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'UPDATE_ERROR');
+        if (error) return handleDatabaseError('settings update');
 
         return successResponse(data);
     } catch {
         return errorResponse('Invalid request body', 400, 'PARSE_ERROR');
     }
 }
+

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
+import { sanitizeTransactionInput } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/transactions/[id]
@@ -107,7 +108,7 @@ export async function PUT(
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'UPDATE_ERROR');
+            return handleDatabaseError('transaction update');
         }
 
         return successResponse(data);
@@ -154,7 +155,7 @@ export async function DELETE(
         .eq('user_id', userId!);
 
     if (error) {
-        return errorResponse(error.message, 500, 'DELETE_ERROR');
+        return handleDatabaseError('transaction delete');
     }
 
     // Update account balance

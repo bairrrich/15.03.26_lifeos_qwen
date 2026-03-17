@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
 
 /**
@@ -47,8 +47,8 @@ export async function POST(
         const logData = {
             user_id: userId,
             habit_id: habitId,
-            completed: body.completed,
-            note: body.note || null,
+            completed: Boolean(body.completed),
+            note: body.note?.substring(0, 1000) || null,
             completed_at: body.completed ? Date.now() : null,
             created_at: Date.now(),
             updated_at: Date.now(),
@@ -63,7 +63,7 @@ export async function POST(
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('habit log insert');
         }
 
         return successResponse(data, 201);

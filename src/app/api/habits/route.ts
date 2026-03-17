@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { sanitizeHabitInput } from '@/lib/input-validation';
 
 /**
  * GET /api/habits
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
         .range(offset, offset + limit - 1);
 
     if (error) {
-        return errorResponse(error.message, 500, 'FETCH_ERROR');
+        return handleDatabaseError('habits fetch');
     }
 
     return paginatedResponse(
@@ -71,30 +72,26 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Sanitize and validate input
+        const sanitized = sanitizeHabitInput(body);
+        if (!sanitized) {
+            return errorResponse('Invalid input data. Please check your fields.', 400, 'VALIDATION_ERROR');
+        }
+
         // Validate required fields
-        if (!body.name) {
-            return errorResponse('Missing required field: name', 400, 'VALIDATION_ERROR');
-        }
-
-        if (!body.frequency) {
-            return errorResponse('Missing required field: frequency', 400, 'VALIDATION_ERROR');
-        }
-
-        // Validate frequency
-        const validFrequencies = ['daily', 'weekly', 'custom'];
-        if (!validFrequencies.includes(body.frequency)) {
-            return errorResponse(`Invalid frequency. Must be one of: ${validFrequencies.join(', ')}`, 400, 'VALIDATION_ERROR');
+        if (!sanitized.name || !sanitized.frequency) {
+            return errorResponse('Missing required fields: name, frequency', 400, 'VALIDATION_ERROR');
         }
 
         const habitData = {
             user_id: userId,
-            name: body.name,
-            description: body.description || null,
-            frequency: body.frequency,
-            target_days: body.target_days || null,
-            reminder_time: body.reminder_time || null,
-            color: body.color || null,
-            icon: body.icon || null,
+            name: sanitized.name,
+            description: sanitized.description || null,
+            frequency: sanitized.frequency,
+            target_days: sanitized.target_days || null,
+            reminder_time: sanitized.reminder_time || null,
+            color: sanitized.color || null,
+            icon: sanitized.icon || null,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -108,7 +105,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'INSERT_ERROR');
+            return handleDatabaseError('habit insert');
         }
 
         return successResponse(data, 201);

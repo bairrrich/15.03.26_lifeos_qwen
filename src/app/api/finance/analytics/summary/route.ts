@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
 
 /**
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
             .lte('date', dateTo);
 
         if (incomeError) {
-            return errorResponse(incomeError.message, 500, 'FETCH_ERROR');
+            return handleDatabaseError('income fetch');
         }
 
         // Get expenses for period
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
             .lte('date', dateTo);
 
         if (expenseError) {
-            return errorResponse(expenseError.message, 500, 'FETCH_ERROR');
+            return handleDatabaseError('expense fetch');
         }
 
         // Calculate totals
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
             .eq('user_id', userId!);
 
         if (accountsError) {
-            return errorResponse(accountsError.message, 500, 'FETCH_ERROR');
+            return handleDatabaseError('accounts fetch');
         }
 
         const totalBalance = accounts?.reduce((sum, a) => sum + a.balance, 0) || 0;

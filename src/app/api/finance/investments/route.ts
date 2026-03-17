@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
     errorResponse,
     getPaginationParams
 } from '@/lib/api-response';
+import { validatePositiveNumber, sanitizeString, truncateString, validateLength } from '@/lib/input-validation';
 
 /**
  * GET /api/finance/investments
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('investments fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Validate required fields
         if (!body.name) {
             return errorResponse('Missing required field: name', 400, 'VALIDATION_ERROR');
         }
@@ -57,14 +59,40 @@ export async function POST(request: NextRequest) {
             return errorResponse('Missing required field: purchase_price', 400, 'VALIDATION_ERROR');
         }
 
+        // Validate and sanitize input
+        const name = sanitizeString(body.name);
+        const validatedName = validateLength(name, 1, 200);
+        if (!validatedName) {
+            return errorResponse('Invalid name: must be 1-200 characters', 400, 'VALIDATION_ERROR');
+        }
+
+        // Validate type
+        const validTypes = ['stock', 'bond', 'crypto', 'fund', 'real_estate', 'other'];
+        if (!validTypes.includes(body.type)) {
+            return errorResponse(`Invalid type. Must be one of: ${validTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
+        }
+
+        // Validate numbers
+        const quantity = validatePositiveNumber(body.quantity);
+        if (!quantity) {
+            return errorResponse('Invalid quantity: must be a positive number', 400, 'VALIDATION_ERROR');
+        }
+
+        const purchasePrice = validatePositiveNumber(body.purchase_price);
+        if (!purchasePrice) {
+            return errorResponse('Invalid purchase_price: must be a positive number', 400, 'VALIDATION_ERROR');
+        }
+
+        const currentPrice = body.current_price ? validatePositiveNumber(body.current_price) : purchasePrice;
+
         const investmentData = {
             user_id: userId,
-            name: body.name,
+            name: validatedName,
             type: body.type,
-            ticker: body.ticker || null,
-            quantity: body.quantity,
-            purchase_price: body.purchase_price,
-            current_price: body.current_price || body.purchase_price,
+            ticker: body.ticker ? truncateString(sanitizeString(body.ticker), 20) : null,
+            quantity: quantity,
+            purchase_price: purchasePrice,
+            current_price: currentPrice || purchasePrice,
             created_at: Date.now(),
             updated_at: Date.now(),
             version: 1,
@@ -77,7 +105,7 @@ export async function POST(request: NextRequest) {
             .select()
             .single();
 
-        if (error) return errorResponse(error.message, 500, 'INSERT_ERROR');
+        if (error) return handleDatabaseError('investment insert');
 
         return successResponse(data, 201);
     } catch {

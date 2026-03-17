@@ -3,6 +3,14 @@ import { getAuthenticatedSupabase } from '@/lib/api-utils';
 import { successResponse, errorResponse } from '@/lib/api-response';
 
 /**
+ * Sanitized error responses - don't expose internal errors
+ */
+function handleDatabaseError(operation: string) {
+    console.error(`Database error during ${operation}:`, operation);
+    return errorResponse('An error occurred while processing your request', 500, 'DATABASE_ERROR');
+}
+
+/**
  * GET /api/habits/[id]
  * 
  * Get a single habit by ID
@@ -108,7 +116,7 @@ export async function PUT(
             .single();
 
         if (error) {
-            return errorResponse(error.message, 500, 'UPDATE_ERROR');
+            return handleDatabaseError('habit update');
         }
 
         return successResponse(data);
@@ -155,7 +163,7 @@ export async function DELETE(
         .eq('user_id', userId!);
 
     if (error) {
-        return errorResponse(error.message, 500, 'DELETE_ERROR');
+        return handleDatabaseError('habit delete');
     }
 
     return successResponse({ success: true, id });

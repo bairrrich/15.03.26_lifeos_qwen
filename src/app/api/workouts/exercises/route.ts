@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAuthenticatedSupabase } from '@/lib/api-utils';
+import { getAuthenticatedSupabase, handleDatabaseError } from '@/lib/api-utils';
 import {
     successResponse,
     paginatedResponse,
@@ -32,16 +32,16 @@ export async function GET(request: NextRequest) {
         .range(offset, offset + limit - 1);
 
     if (muscleGroup) {
-        query = query.eq('muscle_group', muscleGroup);
+        query = query.eq('muscle_group', muscleGroup.substring(0, 50));
     }
 
     if (equipment) {
-        query = query.eq('equipment', equipment);
+        query = query.eq('equipment', equipment.substring(0, 50));
     }
 
     const { data, error, count } = await query;
 
-    if (error) return errorResponse(error.message, 500, 'FETCH_ERROR');
+    if (error) return handleDatabaseError('exercises fetch');
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
