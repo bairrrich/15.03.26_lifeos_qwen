@@ -26,6 +26,9 @@ export default function LoginPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<AuthMode>('signin');
+  const [touchedEmail, setTouchedEmail] = useState(false);
+  const [touchedPassword, setTouchedPassword] = useState(false);
+  const [touchedConfirmPassword, setTouchedConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,7 +171,14 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
                     required
+                    aria-invalid={mode === 'signup' && !email && touchedEmail}
+                    aria-describedby={mode === 'signup' && !email && touchedEmail ? 'email-error' : undefined}
                   />
+                  {mode === 'signup' && touchedEmail && !email && (
+                    <p id="email-error" className="text-xs text-destructive">
+                      Email is required
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -185,10 +195,15 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         placeholder="••••••••"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setTouchedPassword(true);
+                        }}
                         className="pl-10 pr-10"
                         required
                         minLength={mode === 'signup' ? 8 : undefined}
+                        aria-invalid={mode === 'signup' && (!password || !isPasswordValid) && touchedPassword}
+                        aria-describedby={mode === 'signup' && (!password || !isPasswordValid) && touchedPassword ? 'password-error' : undefined}
                       />
                       <button
                         type="button"
@@ -231,10 +246,15 @@ export default function LoginPage() {
                           type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="••••••••"
                           value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          onChange={(e) => {
+                            setConfirmPassword(e.target.value);
+                            setTouchedConfirmPassword(true);
+                          }}
                           className="pl-10 pr-10"
                           required
                           minLength={8}
+                          aria-invalid={mode === 'signup' && !doPasswordsMatch && touchedConfirmPassword}
+                          aria-describedby={mode === 'signup' && !doPasswordsMatch && touchedConfirmPassword ? 'confirm-password-error' : undefined}
                         />
                         <button
                           type="button"
@@ -353,3 +373,4 @@ export default function LoginPage() {
 
 // Отключаем статическую генерацию
 export const dynamic = 'force-dynamic';
+

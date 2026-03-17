@@ -54,60 +54,77 @@ export class AnalyticsService {
     const cutoff = now - days * 24 * 60 * 60 * 1000
 
     // Finance
-    const transactions = await db.table('transactions').toArray() as Transaction[];
-    const recentTransactions = transactions.filter((t) => t.date >= cutoff && !t.deleted_at);
+    const transactions = await db.table('transactions')
+      .where('date')
+      .aboveOrEqual(cutoff)
+      .filter((t) => !t.deleted_at)
+      .toArray() as Transaction[];
 
-    const totalIncome = recentTransactions
+    const totalIncome = transactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
 
-    const totalExpenses = recentTransactions
+    const totalExpenses = transactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0)
 
     // Habits
     const habits = await db.table('habits').toArray()
-    const habitLogs = await db.table('habit_logs').toArray() as HabitLog[];
-    const recentHabitLogs = habitLogs.filter((log) => log.date >= cutoff && !log.deleted_at);
+    const habitLogs = await db.table('habit_logs')
+      .where('date')
+      .aboveOrEqual(cutoff)
+      .filter((l) => !l.deleted_at)
+      .toArray() as HabitLog[];
 
-    const habitsCompleted = recentHabitLogs.filter((log) => log.completed).length;
+    const habitsCompleted = habitLogs.filter((log) => log.completed).length;
     const habitsTotal = habits.length * days
     const habitsCompletionRate = habitsTotal > 0 ? Math.round((habitsCompleted / habitsTotal) * 100) : 0
 
     // Workouts
-    const workoutLogs = await db.table('workout_logs').toArray() as WorkoutLog[];
-    const recentWorkoutLogs = workoutLogs.filter((log) => log.date >= cutoff && !log.deleted_at);
+    const workoutLogs = await db.table('workout_logs')
+      .where('date')
+      .aboveOrEqual(cutoff)
+      .filter((l) => !l.deleted_at)
+      .toArray() as WorkoutLog[];
 
-    const workoutsCompleted = recentWorkoutLogs.length;
-    const totalWorkoutDuration = recentWorkoutLogs.reduce((sum, log) => sum + (log.duration_seconds || 0), 0);
+    const workoutsCompleted = workoutLogs.length;
+    const totalWorkoutDuration = workoutLogs.reduce((sum, log) => sum + (log.duration_seconds || 0), 0);
     const avgWorkoutDuration = workoutsCompleted > 0 ? Math.round(totalWorkoutDuration / workoutsCompleted / 60) : 0
 
     // Nutrition
-    const nutritionLogs = await db.table('nutrition_logs').toArray() as NutritionLog[];
-    const recentNutritionLogs = nutritionLogs.filter((log) => log.date >= cutoff && !log.deleted_at);
+    const nutritionLogs = await db.table('nutrition_logs')
+      .where('date')
+      .aboveOrEqual(cutoff)
+      .filter((l) => !l.deleted_at)
+      .toArray() as NutritionLog[];
 
-    const daysWithNutrition = new Set(recentNutritionLogs.map((log) => log.date)).size;
-    const totalCalories = recentNutritionLogs.reduce((sum, log) => sum + log.calories, 0);
-    const totalProtein = recentNutritionLogs.reduce((sum, log) => sum + log.protein, 0);
-    const totalFat = recentNutritionLogs.reduce((sum, log) => sum + log.fat, 0);
-    const totalCarbs = recentNutritionLogs.reduce((sum, log) => sum + log.carbs, 0);
+    const daysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
+    const totalCalories = nutritionLogs.reduce((sum, log) => sum + log.calories, 0);
+    const totalProtein = nutritionLogs.reduce((sum, log) => sum + log.protein, 0);
+    const totalFat = nutritionLogs.reduce((sum, log) => sum + log.fat, 0);
+    const totalCarbs = nutritionLogs.reduce((sum, log) => sum + log.carbs, 0);
 
     // Sleep
-    const sleepLogs = await db.table('sleep_logs').toArray() as SleepLog[];
-    const recentSleepLogs = sleepLogs.filter((log) => log.date >= cutoff && !log.deleted_at);
+    const sleepLogs = await db.table('sleep_logs')
+      .where('date')
+      .aboveOrEqual(cutoff)
+      .filter((l) => !l.deleted_at)
+      .toArray() as SleepLog[];
 
-    const avgSleepDuration = recentSleepLogs.length > 0
-      ? Math.round(recentSleepLogs.reduce((sum, log) => sum + log.duration_hours, 0) / recentSleepLogs.length * 10) / 10
+    const avgSleepDuration = sleepLogs.length > 0
+      ? Math.round(sleepLogs.reduce((sum, log) => sum + log.duration_hours, 0) / sleepLogs.length * 10) / 10
       : 0;
 
-    const avgSleepQuality = recentSleepLogs.length > 0
-      ? Math.round(recentSleepLogs.reduce((sum, log) => sum + log.quality, 0) / recentSleepLogs.length)
+    const avgSleepQuality = sleepLogs.length > 0
+      ? Math.round(sleepLogs.reduce((sum, log) => sum + log.quality, 0) / sleepLogs.length)
       : 0;
 
     // Goals
-    const goals = await db.table('goals').toArray() as Goal[];
-    const activeGoals = goals.filter((g) => g.status === 'active' && !g.deleted_at).length;
-    const completedGoals = goals.filter((g) => g.status === 'completed' && !g.deleted_at).length;
+    const goals = await db.table('goals')
+      .filter((g) => !g.deleted_at)
+      .toArray() as Goal[];
+    const activeGoals = goals.filter((g) => g.status === 'active').length;
+    const completedGoals = goals.filter((g) => g.status === 'completed').length;
     const avgGoalProgress = goals.length > 0
       ? Math.round(goals.reduce((sum, g) => sum + g.progress, 0) / goals.length)
       : 0;
@@ -141,9 +158,6 @@ export class AnalyticsService {
    * Получить данные для графика финансов по месяцам
    */
   async getFinanceChartData(months = 6): Promise<Array<{ month: string; income: number; expenses: number }>> {
-    const transactions = await db.table('transactions').toArray()
-    const validTransactions = transactions.filter((t: unknown) => !(t as Record<string, unknown>).deleted_at)
-
     const data: Array<{ month: string; income: number; expenses: number }> = []
 
     for (let i = months - 1; i >= 0; i--) {
@@ -152,9 +166,11 @@ export class AnalyticsService {
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).getTime()
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0).getTime()
 
-      const monthTransactions = validTransactions.filter((t: Transaction) =>
-        t.date >= monthStart && t.date <= monthEnd
-      );
+      const monthTransactions = await db.table('transactions')
+        .where('date')
+        .between(monthStart, monthEnd, true, true)
+        .filter((t) => !t.deleted_at)
+        .toArray() as Transaction[];
 
       const income = monthTransactions
         .filter((t) => t.type === 'income')
@@ -178,13 +194,14 @@ export class AnalyticsService {
    * Получить данные для графика привычек по дням недели
    */
   async getHabitsChartData(): Promise<Array<{ day: string; completed: number }>> {
-    const habitLogs = await db.table('habit_logs').toArray() as HabitLog[];
-    const validLogs = habitLogs.filter((log) => !log.deleted_at);
+    const habitLogs = await db.table('habit_logs')
+      .filter((log) => !log.deleted_at)
+      .toArray() as HabitLog[];
 
     const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
     const data: Array<{ day: string; completed: number }> = days.map((day) => ({ day, completed: 0 }));
 
-    validLogs.forEach((log) => {
+    habitLogs.forEach((log) => {
       const date = new Date(log.date);
       const dayIndex = date.getDay();
       if (log.completed) {

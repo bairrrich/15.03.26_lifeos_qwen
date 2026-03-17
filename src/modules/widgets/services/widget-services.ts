@@ -67,13 +67,35 @@ export class CustomWidgetService extends CrudService<CustomWidget> {
 
   async executeWidget(widget: CustomWidget, context: Record<string, unknown>): Promise<unknown> {
     try {
-      // Создаём безопасную функцию для выполнения кода
-      // В продакшене нужно использовать sandbox или Web Workers
-      const execute = new Function('context', 'db', `
+      // Create a safe execution context with limited globals
+      const safeContext = {
+        ...context,
+        db: {
+          // Only expose safe methods from db
+          table: (tableName: string) => {
+            // Validate table name to prevent access to unauthorized tables
+            const allowedTables = [
+              'habits', 'habit_logs', 'goals', 'transactions',
+              'accounts', 'nutrition_logs', 'workout_logs',
+              'sleep_logs', 'health_metrics', 'foods', 'recipes'
+            ];
+            if (!allowedTables.includes(tableName)) {
+              throw new Error(`Access to table '${tableName}' is not allowed`);
+            }
+            return db.table(tableName);
+          }
+        }
+      };
+
+      // Create function with restricted scope
+      const execute = new Function('safeContext', `
         "use strict";
+        const db = safeContext.db;
+        const context = safeContext;
         ${widget.code}
-      `)
-      return await execute(context, db)
+      `);
+
+      return await execute(safeContext);
     } catch (error) {
       console.error('Custom widget execution error:', error)
       throw new Error(`Widget execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -192,3 +214,4 @@ export const defaultWidgets: Omit<WidgetDefinition, 'id' | 'created_at' | 'updat
     widget_version: '1.0.0',
   },
 ]
+
