@@ -1,10 +1,10 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Badge } from '@/ui/components/badge';
+import { Progress } from '@/ui/components/progress';
 import {
   ArrowLeft,
   Clock,

@@ -27,3 +27,4 @@ export interface GoalLog extends BaseEntity {
   progress: number;
   notes?: string;
 }
+

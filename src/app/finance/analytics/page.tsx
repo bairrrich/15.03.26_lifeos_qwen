@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from '@/ui/components/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import {
   useTransactions,
   useCategories,
@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { format, subMonths, subYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import {
   BarChart,
   Bar,
@@ -491,3 +491,4 @@ export default function FinanceAnalyticsPage() {
     </PageTransition>
   );
 }
+

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/select';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/ui/components/dialog'
 import { Plus, Dumbbell, Play, CheckCircle2, Calendar, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner';
 
@@ -512,3 +512,4 @@ export default function ProgramsPage() {
     </div>
   );
 }
+

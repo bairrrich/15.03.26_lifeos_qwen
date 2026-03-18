@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Progress } from '@/ui/components/progress';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useGoals,
   useActiveGoals,
@@ -25,12 +25,12 @@ import {
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Target, CheckCircle2, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { Goal } from '@/modules/goals/entities';
 import { getCategoryColor } from '@/lib/category-colors';
-import { EmptyGoals, EmptyCompletedGoals } from '@/components/ui/empty-state-variants';
-import { StatCard } from '@/components/ui/stat-card';
-import { TouchButton, TouchListItem } from '@/components/ui/touch-targets';
+import { EmptyGoals, EmptyCompletedGoals } from '@/ui/components/empty-state-variants';
+import { StatCard } from '@/ui/components/stat-card';
+import { TouchButton, TouchListItem } from '@/ui/components/touch-targets';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import {
   Select,
@@ -38,7 +38,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 
 function GoalItem({
   goal,
@@ -283,3 +283,4 @@ export default function GoalsPage() {
       </div>
     </PageTransition>);
 }
+

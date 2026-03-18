@@ -114,3 +114,4 @@ export function useExecuteCustomWidget() {
       customWidgetService.executeWidget(widget, context),
   })
 }
+

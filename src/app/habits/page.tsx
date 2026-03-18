@@ -1,11 +1,11 @@
-п»ї'use client';
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Progress } from '@/ui/components/progress';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useHabits,
   useCreateHabit,
@@ -25,8 +25,8 @@ import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Check, Flame, Calendar, TrendingUp, Target } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { EmptyState } from '@/components/ui/empty-state';
-import { PageTransition } from '@/components/ui/page-transition';
+import { EmptyState } from '@/ui/components/empty-state';
+import { PageTransition } from '@/ui/components/page-transition';
 
 export default function HabitsPage() {
   const { data: habits = [] } = useHabits();
@@ -49,10 +49,10 @@ export default function HabitsPage() {
       { habitId, date: todayTimestamp },
       {
         onSuccess: () => {
-          toast.success('РџСЂРёРІС‹С‡РєР° РІС‹РїРѕР»РЅРµРЅР°!');
+          toast.success('Привычка выполнена!');
         },
         onError: () => {
-          toast.error('РћС€РёР±РєР° РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё');
+          toast.error('Ошибка при обновлении');
         },
       }
     );
@@ -76,11 +76,11 @@ export default function HabitsPage() {
       },
       {
         onSuccess: () => {
-          toast.success('РџСЂРёРІС‹С‡РєР° СЃРѕР·РґР°РЅР°');
+          toast.success('Привычка создана');
           setDialogOpen(false);
         },
         onError: () => {
-          toast.error('РћС€РёР±РєР° РїСЂРё СЃРѕР·РґР°РЅРёРё');
+          toast.error('Ошибка при создании');
         },
       }
     );
@@ -98,51 +98,51 @@ export default function HabitsPage() {
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              <span>РќРѕРІР°СЏ РїСЂРёРІС‹С‡РєР°</span>
+              <span>Новая привычка</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
             <form onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle>РќРѕРІР°СЏ РїСЂРёРІС‹С‡РєР°</DialogTitle>
-                <DialogDescription>РЎРѕР·РґР°Р№С‚Рµ РЅРѕРІСѓСЋ РїСЂРёРІС‹С‡РєСѓ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ</DialogDescription>
+                <DialogTitle>Новая привычка</DialogTitle>
+                <DialogDescription>Создайте новую привычку для отслеживания</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">РќР°Р·РІР°РЅРёРµ</Label>
-                  <Input name="name" placeholder="РќР°РїСЂРёРјРµСЂ: Р§С‚РµРЅРёРµ РєРЅРёРі" required />
+                  <Label htmlFor="name">Название</Label>
+                  <Input name="name" placeholder="Например: Чтение книг" required />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="description">РћРїРёСЃР°РЅРёРµ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)</Label>
-                  <Input name="description" placeholder="30 РјРёРЅСѓС‚ РІ РґРµРЅСЊ" />
+                  <Label htmlFor="description">Описание (опционально)</Label>
+                  <Input name="description" placeholder="30 минут в день" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="frequency">Р§Р°СЃС‚РѕС‚Р°</Label>
+                  <Label htmlFor="frequency">Частота</Label>
                   <select
                     name="frequency"
                     defaultValue="daily"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <option value="">Р’С‹Р±РµСЂРёС‚Рµ С‡Р°СЃС‚РѕС‚Сѓ</option>
-                    <option value="daily">Р•Р¶РµРґРЅРµРІРЅРѕ</option>
-                    <option value="weekly">Р•Р¶РµРЅРµРґРµР»СЊРЅРѕ</option>
-                    <option value="monthly">Р•Р¶РµРјРµСЃСЏС‡РЅРѕ</option>
+                    <option value="">Выберите частоту</option>
+                    <option value="daily">Ежедневно</option>
+                    <option value="weekly">Еженедельно</option>
+                    <option value="monthly">Ежемесячно</option>
                   </select>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="target_count">Р¦РµР»СЊ (СЂР°Р·)</Label>
+                  <Label htmlFor="target_count">Цель (раз)</Label>
                   <Input name="target_count" type="number" min="1" defaultValue="1" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="color">Р¦РІРµС‚</Label>
+                  <Label htmlFor="color">Цвет</Label>
                   <Input name="color" type="color" defaultValue="#6366f1" />
                 </div>
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  РћС‚РјРµРЅР°
+                  Отмена
                 </Button>
-                <Button type="submit">РЎРѕР·РґР°С‚СЊ</Button>
+                <Button type="submit">Создать</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -151,9 +151,9 @@ export default function HabitsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>РџСЂРѕРіСЂРµСЃСЃ СЃРµРіРѕРґРЅСЏ</CardTitle>
+          <CardTitle>Прогресс сегодня</CardTitle>
           <CardDescription>
-            {completedCount} РёР· {totalCount} РїСЂРёРІС‹С‡РµРє РІС‹РїРѕР»РЅРµРЅРѕ
+            {completedCount} из {totalCount} привычек выполнено
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -168,9 +168,9 @@ export default function HabitsPage() {
         {habits.length === 0 ? (
           <EmptyState
             icon={Target}
-            title="РќРµС‚ РїСЂРёРІС‹С‡РµРє"
-            description="РЎРѕР·РґР°Р№С‚Рµ СЃРІРѕСЋ РїРµСЂРІСѓСЋ РїСЂРёРІС‹С‡РєСѓ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ"
-            actionLabel="РЎРѕР·РґР°С‚СЊ РїСЂРёРІС‹С‡РєСѓ"
+            title="Нет привычек"
+            description="Создайте свою первую привычку для отслеживания"
+            actionLabel="Создать привычку"
             onAction={() => setDialogOpen(true)}
           />
         ) : (
@@ -223,22 +223,22 @@ export default function HabitsPage() {
                           habit.streak && habit.streak > 0 ? 'text-orange-500' : ''
                         )}
                       />
-                      <span>{habit.streak || 0} РґРЅРµР№</span>
+                      <span>{habit.streak || 0} дней</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4" />
                       <span>
                         {habit.frequency === 'daily'
-                          ? 'Р•Р¶РµРґРЅРµРІРЅРѕ'
+                          ? 'Ежедневно'
                           : habit.frequency === 'weekly'
-                            ? 'Р•Р¶РµРЅРµРґРµР»СЊРЅРѕ'
-                            : 'Р•Р¶РµРјРµСЃСЏС‡РЅРѕ'}
+                            ? 'Еженедельно'
+                            : 'Ежемесячно'}
                       </span>
                     </div>
                     {habit.completed_total && habit.completed_total > 0 && (
                       <div className="flex items-center gap-1">
                         <TrendingUp className="h-4 w-4" />
-                        <span>{habit.completed_total} СЂР°Р·</span>
+                        <span>{habit.completed_total} раз</span>
                       </div>
                     )}
                   </div>
@@ -252,3 +252,4 @@ export default function HabitsPage() {
     </PageTransition>
   );
 }
+

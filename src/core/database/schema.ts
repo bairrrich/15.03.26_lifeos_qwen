@@ -374,3 +374,4 @@ db.version(2).stores({
   void tx;
   console.log('Database upgraded to version 2 - added compound indexes');
 });
+

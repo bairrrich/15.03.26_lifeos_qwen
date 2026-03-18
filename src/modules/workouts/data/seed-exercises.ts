@@ -94,3 +94,4 @@ export const seedExercises: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 
   { user_id: 'system', name: 'Броски мяча', description: 'Взрывная сила', muscle_group: 'other', equipment: 'other', difficulty: 'intermediate', is_compound: true },
   { user_id: 'system', name: 'Бой с тенью', description: 'Кардио и координация', muscle_group: 'other', equipment: 'bodyweight', difficulty: 'beginner', is_compound: false },
 ];
+

@@ -110,3 +110,4 @@ export class NoteService extends CrudService<Note> {
     );
   }
 }
+

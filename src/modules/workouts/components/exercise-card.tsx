@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Badge } from '@/ui/components/badge';
 import { Dumbbell, Star, StarOff, Video, Trash2, Edit } from 'lucide-react';
 import type { Exercise } from '../entities';
 import { cn } from '@/lib/utils';
@@ -147,3 +147,4 @@ export function ExerciseCard({
     </Card>
   );
 }
+

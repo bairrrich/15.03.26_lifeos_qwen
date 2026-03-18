@@ -18,3 +18,4 @@ export interface HabitLog extends BaseEntity {
   completed: boolean;
   notes?: string;
 }
+

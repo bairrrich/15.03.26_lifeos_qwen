@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/ui/components/input';
+import { Button } from '@/ui/components/button';
 import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@/ui/components/command';
 import { Search, Star, Filter } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/ui/components/badge';
+import { ScrollArea } from '@/ui/components/scroll-area';
 import { useExercises, useFavoriteExercises } from '../hooks';
 import type { Exercise, MuscleGroup, Equipment } from '../entities';
 import { cn } from '@/lib/utils';
@@ -173,3 +173,4 @@ export function ExerciseSearch({
     </CommandDialog>
   );
 }
+

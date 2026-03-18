@@ -60,3 +60,4 @@ export interface NutritionGoal extends BaseEntity {
   goal_type: 'lose' | 'maintain' | 'gain';
   target_weight?: number;
 }
+

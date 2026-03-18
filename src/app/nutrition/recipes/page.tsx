@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Badge } from '@/ui/components/badge';
+import { Textarea } from '@/ui/components/textarea';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useRecipes,
   useCreateRecipe,
@@ -23,7 +23,7 @@ import {
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, ChefHat, Clock, Users, Trash2, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
-import { EmptyState } from '@/components/ui/empty-state';
+import { EmptyState } from '@/ui/components/empty-state';
 
 export default function RecipesPage() {
   const { data: recipes = [] } = useRecipes();
@@ -230,3 +230,4 @@ export default function RecipesPage() {
     </div>
   );
 }
+

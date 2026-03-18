@@ -103,3 +103,4 @@ export interface PRRecord extends BaseEntity {
   date: number;
   workout_log_id?: string;
 }
+

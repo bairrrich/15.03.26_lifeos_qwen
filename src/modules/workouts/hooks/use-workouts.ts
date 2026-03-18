@@ -362,3 +362,4 @@ export function useActiveWorkout(workoutId?: string) {
     isLogging: createSet.isPending,
   };
 }
+

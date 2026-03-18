@@ -137,3 +137,4 @@ export function useHabitCompletionRate(habitId: string, days: number = 30) {
     enabled: !!habitId,
   });
 }
+

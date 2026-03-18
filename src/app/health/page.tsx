@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import type { HealthMetric, SleepLog } from '@/modules/health/entities';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
 import {
   Dialog,
   DialogContent,
@@ -14,14 +14,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 import {
   useWeeklySleepStats,
   useSleepLogs,
@@ -33,11 +33,11 @@ import { Plus, Moon, Heart, Activity, Thermometer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
-import { StatCard } from '@/components/ui/stat-card';
-import { EmptySleep, EmptyHealth } from '@/components/ui/empty-state-variants';
-import { TouchButton, useIsMobile } from '@/components/ui/touch-targets';
-import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { PageTransition } from '@/ui/components/page-transition';
+import { StatCard } from '@/ui/components/stat-card';
+import { EmptySleep, EmptyHealth } from '@/ui/components/empty-state-variants';
+import { TouchButton, useIsMobile } from '@/ui/components/touch-targets';
+import { BottomSheet } from '@/ui/components/bottom-sheet';
 import { usePullToRefresh } from '@/hooks/use-swipe-gesture';
 
 export default function HealthPage() {
@@ -288,3 +288,4 @@ export default function HealthPage() {
     </PageTransition>
   );
 }
+

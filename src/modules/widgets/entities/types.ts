@@ -48,3 +48,4 @@ export interface CustomWidget extends BaseEntity {
   config: Record<string, unknown>
   is_active: boolean
 }
+

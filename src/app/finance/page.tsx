@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+} from '@/ui/components/dialog';
+import { Label } from '@/ui/components/label';
 import {
   useTransactions,
   useCategories,
@@ -30,8 +30,8 @@ import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { VirtualizedTable } from '@/components/ui/virtualized-table';
+import { Tabs, TabsList, TabsTrigger } from '@/ui/components/tabs';
+import { VirtualizedTable } from '@/ui/components/virtualized-table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,8 +41,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { PageTransition } from '@/components/ui/page-transition';
+} from '@/ui/components/alert-dialog';
+import { PageTransition } from '@/ui/components/page-transition';
 import {
   Select,
   SelectContent,
@@ -51,7 +51,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 
 function ColoredTabsTrigger({ value, children }: { value: string; children: React.ReactNode }) {
   return (
@@ -682,3 +682,4 @@ export default function FinancePage() {
     </PageTransition>
   );
 }
+

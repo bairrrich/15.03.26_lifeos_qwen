@@ -25,3 +25,4 @@ export function PRBadge({ value, className }: PRBadgeProps) {
     </div>
   );
 }
+

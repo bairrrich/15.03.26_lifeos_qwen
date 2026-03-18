@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState, type ReactNode, useEffect } from 'react';
 import { syncService } from '@/core/sync';
-import { MigrationPrompt } from '@/components/ui/migration-prompt';
+import { MigrationPrompt } from '@/ui/components/migration-prompt';
 import { AuthProvider } from '@/core/auth/auth-context';
 
 interface ProvidersProps {
@@ -46,3 +46,4 @@ export function Providers({ children }: ProvidersProps) {
     </AuthProvider>
   );
 }
+

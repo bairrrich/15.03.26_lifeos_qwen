@@ -88,3 +88,4 @@ export interface InvestmentTransaction extends BaseEntity {
   currency: string;
   notes?: string;
 }
+

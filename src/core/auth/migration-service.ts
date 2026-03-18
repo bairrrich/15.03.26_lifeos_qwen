@@ -176,3 +176,4 @@ export async function hasLocalData(localUserId: string): Promise<{ hasData: bool
 
   return { hasData: recordCount > 0, recordCount };
 }
+

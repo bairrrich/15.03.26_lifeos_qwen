@@ -113,3 +113,4 @@ export class SupplementLogService extends CrudService<SupplementLog> {
     return Math.round((takenCount / supplementLogs.length) * 100);
   }
 }
+

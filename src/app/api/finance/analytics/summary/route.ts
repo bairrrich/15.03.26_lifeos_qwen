@@ -104,3 +104,4 @@ export async function GET(request: NextRequest) {
         return errorResponse('Failed to calculate summary', 500, 'CALCULATION_ERROR');
     }
 }
+

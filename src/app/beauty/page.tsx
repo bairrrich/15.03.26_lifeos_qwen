@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
 
 // Вынесено в отдельную функцию для соблюдения purity правил React
 function getExpiringProducts(products: Array<{ expiry_date?: number }>) {
@@ -9,10 +9,10 @@ function getExpiringProducts(products: Array<{ expiry_date?: number }>) {
   const monthFromNow = now + 30 * 24 * 60 * 60 * 1000;
   return products.filter((p) => p.expiry_date && p.expiry_date <= monthFromNow);
 }
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -21,15 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from '@/ui/components/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 import {
   useBeautyProducts,
   useActiveBeautyRoutines,
@@ -39,12 +39,12 @@ import {
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Sparkles, Droplets, Calendar, Star, Clock, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { BeautyProduct } from '@/modules/beauty/entities';
-import { StatCard } from '@/components/ui/stat-card';
-import { EmptyBeauty, EmptyRoutines } from '@/components/ui/empty-state-variants';
-import { TouchButton, useIsMobile } from '@/components/ui/touch-targets';
-import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { StatCard } from '@/ui/components/stat-card';
+import { EmptyBeauty, EmptyRoutines } from '@/ui/components/empty-state-variants';
+import { TouchButton, useIsMobile } from '@/ui/components/touch-targets';
+import { BottomSheet } from '@/ui/components/bottom-sheet';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 
 const categoryLabels: Record<string, string> = {
@@ -393,3 +393,4 @@ export default function BeautyPage() {
     </PageTransition>
   );
 }
+

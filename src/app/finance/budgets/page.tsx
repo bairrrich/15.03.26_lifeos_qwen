@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Progress } from '@/ui/components/progress';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useBudgets,
   useCategories,
@@ -30,8 +30,8 @@ import { Plus, AlertCircle, CheckCircle2, Pencil, Trash2, PiggyBank } from 'luci
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { EmptyState } from '@/components/ui/empty-state';
-import { PageTransition } from '@/components/ui/page-transition';
+import { EmptyState } from '@/ui/components/empty-state';
+import { PageTransition } from '@/ui/components/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +41,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 
 export default function BudgetsPage() {
   const { data: budgets = [] } = useBudgets();
@@ -476,3 +476,4 @@ export default function BudgetsPage() {
     </PageTransition>
   );
 }
+

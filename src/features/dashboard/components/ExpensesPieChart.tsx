@@ -6,7 +6,7 @@ import {
     Cell,
     Tooltip,
 } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
 
 const COLORS = ['#6366f1', '#22c55e', '#eab308', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4'];
 
@@ -47,3 +47,4 @@ export function ExpensesPieChart() {
         </Card>
     );
 }
+

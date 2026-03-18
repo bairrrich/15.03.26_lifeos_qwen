@@ -80,3 +80,4 @@ export async function PUT(request: NextRequest) {
         return errorResponse('Invalid request body', 400, 'PARSE_ERROR');
     }
 }
+

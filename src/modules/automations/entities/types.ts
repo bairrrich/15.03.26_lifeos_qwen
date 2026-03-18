@@ -44,3 +44,4 @@ export interface AutomationLog extends BaseEntity {
     error?: string
   }>
 }
+

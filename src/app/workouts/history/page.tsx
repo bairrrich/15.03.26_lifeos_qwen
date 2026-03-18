@@ -1,24 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Badge } from '@/ui/components/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 import { ArrowLeft, Clock, Dumbbell, Search, Calendar, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { useWorkoutLogs } from '@/modules/workouts/hooks';
-import { EmptyState } from '@/components/ui/empty-state';
-import { VirtualizedGrid } from '@/components/ui/virtualized-grid';
+import { EmptyState } from '@/ui/components/empty-state';
+import { VirtualizedGrid } from '@/ui/components/virtualized-grid';
 
 export default function WorkoutHistoryPage() {
   const { data: allLogs = [], isLoading } = useWorkoutLogs();
@@ -219,5 +219,6 @@ export default function WorkoutHistoryPage() {
     </div>
   );
 }
+
 
 

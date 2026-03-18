@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useAccounts,
   useCreateAccount,
@@ -25,8 +25,8 @@ import { Plus, Wallet, CreditCard, DollarSign, TrendingUp, Bitcoin, PiggyBank, A
 import { toast } from 'sonner';
 import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { EmptyState } from '@/components/ui/empty-state';
-import { PageTransition } from '@/components/ui/page-transition';
+import { EmptyState } from '@/ui/components/empty-state';
+import { PageTransition } from '@/ui/components/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +36,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 
 const typeIcons: Record<string, React.ElementType> = {
   cash: Wallet,
@@ -445,3 +445,4 @@ export default function AccountsPage() {
     </PageTransition>
   );
 }
+

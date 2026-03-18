@@ -137,3 +137,4 @@ export class SkinAnalysisService extends CrudService<SkinAnalysis> {
     return all.filter((a) => a.date >= start && a.date <= end);
   }
 }
+

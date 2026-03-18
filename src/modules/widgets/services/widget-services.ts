@@ -215,3 +215,4 @@ export const defaultWidgets: Omit<WidgetDefinition, 'id' | 'created_at' | 'updat
   },
 ]
 
+

@@ -247,3 +247,4 @@ export function getPresetsByGoal(goal: WorkoutGoal): WorkoutPreset[] {
 export function getPresetsByDifficulty(difficulty: string): WorkoutPreset[] {
   return workoutPresets.filter((p) => p.difficulty === difficulty);
 }
+

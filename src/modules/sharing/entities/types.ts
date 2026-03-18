@@ -46,3 +46,4 @@ export interface SharedData extends BaseEntity {
   visibility: 'all' | 'admins' | 'owner_only'
   created_at: number
 }
+

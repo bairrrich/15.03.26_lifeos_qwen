@@ -1,7 +1,7 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/ui/components/input';
+import { Button } from '@/ui/components/button';
 import { Check, ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SetType } from '../entities';
@@ -136,3 +136,4 @@ export function SetRow({
     </div>
   );
 }
+

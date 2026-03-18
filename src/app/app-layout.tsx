@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/shared/hooks/use-app-store';
 import { CommandPalette } from '@/ui/navigation/command-palette';
 import { QuickAdd } from '@/ui/navigation/quick-add';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/components/button';
 import { Menu, Bell, X, LayoutDashboard, CreditCard, Utensils, Dumbbell, Target, Heart, BookOpen, Sparkles, Zap, Settings, LogOut, LogIn, DollarSign, PieChart, Repeat, TrendingUp, Wallet, Calendar, CalendarCheck, Tags, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
@@ -404,3 +404,4 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </div>
   );
 }
+

@@ -70,3 +70,4 @@ export class GoalLogService extends CrudService<GoalLog> {
     return logs.sort((a, b) => a.date - b.date);
   }
 }
+

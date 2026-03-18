@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   useCategories,
   useCreateCategory,
@@ -26,7 +26,7 @@ import type { Category } from '@/modules/finance/entities';
 import { resetFinanceCategories } from '@/modules/finance/data/seed-init';
 import { cn } from '@/lib/utils';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +36,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 
 export default function FinanceCategoriesPage() {
   const { data: categories = [] } = useCategories();
@@ -465,3 +465,4 @@ export default function FinanceCategoriesPage() {
     </PageTransition>
   );
 }
+

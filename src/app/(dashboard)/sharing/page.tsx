@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card'
+import { Button } from '@/ui/components/button'
+import { Input } from '@/ui/components/input'
+import { Label } from '@/ui/components/label'
+import { Badge } from '@/ui/components/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/components/avatar'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/ui/components/dialog'
 import { useFamily, useFamilyMembers, useCreateFamily, useCreateInvitation, useRemoveMember } from '@/modules/sharing/hooks'
 import type { FamilyRole } from '@/modules/sharing/entities'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
@@ -30,7 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@/ui/components/alert-dialog'
 
 const roleLabels: Record<string, string> = {
   owner: 'Владелец',
@@ -368,3 +368,4 @@ export default function SharingPage() {
     </div>
   )
 }
+

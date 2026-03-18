@@ -68,3 +68,4 @@ export function useRecentAutomationLogs() {
     queryFn: () => automationLogService.getRecentLogs(20),
   })
 }
+

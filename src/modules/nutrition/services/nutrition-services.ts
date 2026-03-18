@@ -106,3 +106,4 @@ export class NutritionGoalService extends CrudService<NutritionGoal> {
     return goals[0]; // Возвращаем первую (текущую) цель
   }
 }
+

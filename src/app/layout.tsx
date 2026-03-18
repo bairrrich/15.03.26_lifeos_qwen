@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from '@/shared/hooks/providers';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/ui/components/sonner';
 import { PWAInstallPrompt } from '@/shared/components/pwa-install-prompt';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { ErrorBoundary } from '@/ui/components/error-boundary';
 import AppLayout from './app-layout';
 
 export const viewport: Viewport = {
@@ -49,3 +49,4 @@ export default function RootLayout({
     </html>
   );
 }
+

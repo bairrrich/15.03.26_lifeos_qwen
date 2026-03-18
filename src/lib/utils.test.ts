@@ -64,3 +64,4 @@ describe('cn utility', () => {
     expect(cn('base', condition && 'active')).toBe('base');
   });
 });
+

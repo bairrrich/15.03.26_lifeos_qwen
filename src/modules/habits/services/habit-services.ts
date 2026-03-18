@@ -56,3 +56,4 @@ export class HabitLogService extends CrudService<HabitLog> {
     return Math.round((completed / recentLogs.length) * 100);
   }
 }
+

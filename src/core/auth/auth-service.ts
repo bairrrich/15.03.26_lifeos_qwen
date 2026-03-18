@@ -255,3 +255,4 @@ export async function getCurrentUserOrLocal(): Promise<User | LocalUser | null> 
   // Если нет - пробуем локального
   return getLocalUser();
 }
+

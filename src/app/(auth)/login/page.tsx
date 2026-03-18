@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
 import {
   signInWithEmail,
   signUpWithEmail,
@@ -373,4 +373,5 @@ export default function LoginPage() {
 
 // Отключаем статическую генерацию
 export const dynamic = 'force-dynamic';
+
 

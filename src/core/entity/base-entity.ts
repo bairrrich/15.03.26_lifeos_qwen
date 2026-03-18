@@ -19,3 +19,4 @@ export interface BaseEntity {
   tags?: string[];
   notes?: string;
 }
+

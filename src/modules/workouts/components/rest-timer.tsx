@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/components/button';
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -144,3 +144,4 @@ export function RestTimer({ initialSeconds = 90, onComplete, className }: RestTi
     </div>
   );
 }
+

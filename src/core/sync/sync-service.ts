@@ -388,3 +388,4 @@ export class SyncService {
 
 // Экспорт singleton экземпляра
 export const syncService = new SyncService();
+

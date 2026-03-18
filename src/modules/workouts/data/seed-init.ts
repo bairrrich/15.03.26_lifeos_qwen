@@ -48,3 +48,4 @@ export async function resetSeedExercises(): Promise<void> {
   }
   console.log('[Seed] Reset - exercises will be re-added on next load');
 }
+

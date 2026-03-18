@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { DollarSign, Dumbbell, Target, Utensils } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
 
 const actions = [
     {
@@ -53,3 +53,4 @@ export function QuickActions() {
         </Card>
     );
 }
+

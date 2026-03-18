@@ -231,3 +231,4 @@ export class InvestmentTransactionService extends CrudService<InvestmentTransact
     return dividends.reduce((sum, t) => sum + t.total, 0);
   }
 }
+

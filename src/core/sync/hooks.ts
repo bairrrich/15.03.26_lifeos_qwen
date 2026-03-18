@@ -109,3 +109,4 @@ export function useOnlineStatus(): { isOnline: boolean; isOffline: boolean } {
     isOffline: !isOnline,
   };
 }
+

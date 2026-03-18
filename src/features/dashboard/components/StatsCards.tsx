@@ -12,7 +12,7 @@ import {
     Zap,
     type LucideIcon,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/components/card';
 
 interface StatsCardsProps {
     stats?: {
@@ -155,3 +155,4 @@ export function StatsCards({ stats, netWorth = 0, investmentValue = 0 }: StatsCa
         </div>
     );
 }
+

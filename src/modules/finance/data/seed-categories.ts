@@ -143,3 +143,4 @@ export async function initializeSeedCategories(categoryService: CategoryService)
     console.error('[Seed] Error initializing categories:', error);
   }
 }
+

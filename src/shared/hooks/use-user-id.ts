@@ -34,3 +34,4 @@ function getAnonymousUserId(): string {
   }
   return anonId;
 }
+

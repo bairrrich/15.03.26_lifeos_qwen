@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Progress } from '@/ui/components/progress';
 import {
   Dialog,
   DialogContent,
@@ -14,8 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from '@/ui/components/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import {
   useDailyNutrition,
   useNutritionLogs,
@@ -27,7 +27,7 @@ import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Plus, Utensils, Flame, TrendingUp, Apple, ChefHat } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { toast } from 'sonner';
 
 export default function NutritionPage() {
@@ -279,3 +279,4 @@ export default function NutritionPage() {
     </PageTransition>
   );
 }
+

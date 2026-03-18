@@ -9,7 +9,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
 
 interface HabitsChartProps {
     data?: Array<{ day: string; completed: number }>;
@@ -51,3 +51,4 @@ export function HabitsChart({ data, isLoading }: HabitsChartProps) {
         </Card>
     );
 }
+

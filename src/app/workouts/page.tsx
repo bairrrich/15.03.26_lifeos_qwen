@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -11,12 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/ui/components/dialog';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
 import { Plus, Dumbbell, Clock, Calendar, TrendingUp, Play, BarChart3, List } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
@@ -385,4 +385,5 @@ export default function WorkoutsPage() {
     </PageTransition>
   );
 }
+
 

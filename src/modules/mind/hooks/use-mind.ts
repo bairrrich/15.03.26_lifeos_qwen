@@ -184,3 +184,4 @@ export function useSearchNotes(query: string) {
     enabled: query.length > 0,
   });
 }
+

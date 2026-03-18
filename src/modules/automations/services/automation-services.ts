@@ -64,3 +64,4 @@ export class AutomationLogService extends CrudService<AutomationLog> {
     }
   }
 }
+

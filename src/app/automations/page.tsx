@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card'
+import { Button } from '@/ui/components/button'
+import { Input } from '@/ui/components/input'
+import { Label } from '@/ui/components/label'
+import { Switch } from '@/ui/components/switch'
+import { Badge } from '@/ui/components/badge'
 import {
   Dialog,
   DialogContent,
@@ -15,23 +15,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/ui/components/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/ui/components/select'
 import { useActiveAutomations, useCreateAutomation, useToggleAutomation, useRecentAutomationLogs } from '@/modules/automations/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, Zap, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react'
 import { toast } from 'sonner'
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { format } from 'date-fns'
 import type { TriggerType, ActionType, AutomationLog } from '@/modules/automations/entities'
-import { EmptyAutomations } from '@/components/ui/empty-state-variants'
-import { TouchButton, useIsMobile } from '@/components/ui/touch-targets'
+import { EmptyAutomations } from '@/ui/components/empty-state-variants'
+import { TouchButton, useIsMobile } from '@/ui/components/touch-targets'
 
 const triggerLabels: Record<string, string> = {
   habit_completed: 'Привычка выполнена',
@@ -296,3 +296,4 @@ export default function AutomationsPage() {
     </PageTransition>
   )
 }
+

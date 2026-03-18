@@ -754,3 +754,4 @@ export function sanitizeNutritionLogInput(input: unknown): SanitizedNutritionLog
 
     return result;
 }
+

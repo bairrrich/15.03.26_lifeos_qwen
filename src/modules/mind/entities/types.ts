@@ -59,3 +59,4 @@ export interface Note extends BaseEntity {
   is_favorite: boolean;
   word_count?: number;
 }
+

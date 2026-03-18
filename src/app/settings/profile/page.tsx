@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Separator } from '@/ui/components/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/components/avatar';
 import { User, Mail, Camera, Save, X, Target, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -296,3 +296,4 @@ export default function ProfilePage() {
     </PageTransition>
   );
 }
+

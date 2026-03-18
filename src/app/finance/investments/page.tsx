@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
+import { Badge } from '@/ui/components/badge';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/ui/components/dialog'
 import {
   useInvestments,
   useCreateInvestment,
@@ -27,8 +27,8 @@ import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, History, Briefcase } from 'lucide-react'
 import { toast } from 'sonner';
 import type { InvestmentTransaction as InvestmentTransactionType } from '@/modules/finance/entities';
-import { EmptyState } from '@/components/ui/empty-state';
-import { PageTransition } from '@/components/ui/page-transition';
+import { EmptyState } from '@/ui/components/empty-state';
+import { PageTransition } from '@/ui/components/page-transition';
 
 const typeLabels: Record<string, string> = {
   stock: 'Акции',
@@ -463,3 +463,4 @@ export default function InvestmentsPage() {
     </PageTransition>
   );
 }
+

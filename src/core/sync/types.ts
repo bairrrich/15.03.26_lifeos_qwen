@@ -63,3 +63,4 @@ export const DEFAULT_SYNC_CONFIG: SyncConfig = {
   maxRetries: 3,
   retryDelay: 1000, // 1 секунда
 };
+

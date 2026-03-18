@@ -71,3 +71,4 @@ export async function getAuthenticatedSupabase(): Promise<{
         error: null,
     };
 }
+

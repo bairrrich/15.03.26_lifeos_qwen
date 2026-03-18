@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Label } from '@/ui/components/label';
+import { Switch } from '@/ui/components/switch';
+import { Separator } from '@/ui/components/separator';
 import { useAppStore, useTheme } from '@/shared/hooks';
 import { NotificationSettingsCard } from '@/shared/components/notification-settings';
 import { Moon, Sun, Monitor, User as UserIcon, Database, LogOut, Download, Upload, Trash2, LayoutGrid, Users, LogIn } from 'lucide-react';
 import { signOut, getCurrentUserOrLocal } from '@/core/auth';
 import { toast } from 'sonner';
-import { PageTransition } from '@/components/ui/page-transition';
+import { PageTransition } from '@/ui/components/page-transition';
 import { useRouter } from 'next/navigation';
 import { dataExportImportService } from '@/core/database/export-import';
 import type { User } from '@supabase/supabase-js';
@@ -25,7 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -349,3 +349,4 @@ export default function SettingsPage() {
     </PageTransition>
   );
 }
+

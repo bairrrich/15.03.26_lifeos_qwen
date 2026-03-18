@@ -65,3 +65,4 @@ export async function initializeSeedAccounts(accountService: AccountService): Pr
     console.error('[Seed] Error initializing accounts:', error);
   }
 }
+

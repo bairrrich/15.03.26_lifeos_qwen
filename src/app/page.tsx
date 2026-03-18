@@ -11,7 +11,7 @@ import {
   WorkoutCard,
   ExpensesPieChart,
 } from '@/features/dashboard/components';
-import { PageTransition, StaggerContainer } from '@/components/ui/page-transition';
+import { PageTransition, StaggerContainer } from '@/ui/components/page-transition';
 
 export default function DashboardPage() {
   const { data: stats } = useDashboardStats(30);
@@ -56,3 +56,4 @@ export default function DashboardPage() {
     </PageTransition>
   );
 }
+

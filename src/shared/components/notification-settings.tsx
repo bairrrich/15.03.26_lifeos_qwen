@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
+import { Label } from '@/ui/components/label';
+import { Switch } from '@/ui/components/switch';
+import { Separator } from '@/ui/components/separator';
+import { Input } from '@/ui/components/input';
 import { useNotification } from '@/core/notifications/use-notification';
 import { Bell, BellOff, Check, Clock, Target, Droplets, Award, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -294,3 +294,4 @@ export function NotificationSettingsCard() {
     </Card>
   );
 }
+

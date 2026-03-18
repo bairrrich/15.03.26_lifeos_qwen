@@ -55,3 +55,4 @@ export interface SkinAnalysis extends BaseEntity {
   notes?: string;
   photos?: string[]; // URLs или base64
 }
+

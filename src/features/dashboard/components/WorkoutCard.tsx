@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
 import { Dumbbell } from 'lucide-react';
 
 interface WorkoutCardProps {
@@ -62,3 +62,4 @@ export function WorkoutCard({ totalWorkouts = 0, totalDuration = 0, avgRating = 
         </Card>
     );
 }
+

@@ -9,7 +9,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/components/card';
 
 interface FinanceChartProps {
     data?: Array<{ month: string; income: number; expenses: number }>;
@@ -66,3 +66,4 @@ export function FinanceChart({ data, isLoading }: FinanceChartProps) {
         </Card>
     );
 }
+

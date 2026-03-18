@@ -218,3 +218,4 @@ export class CrudService<T extends BaseEntity> {
     await this.table.update(id, { sync_status: 'synced', last_synced_at: Date.now() } as any);
   }
 }
+

@@ -9,7 +9,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@/ui/components/command';
 import { useAppStore } from '@/shared/hooks/use-app-store';
 import {
   CreditCard,
@@ -94,3 +94,4 @@ export function CommandPalette() {
     </CommandDialog>
   );
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/ui/components/dialog';
 import { RefreshCw, Download } from 'lucide-react';
 
 // Тип для события установки PWA
@@ -166,3 +166,4 @@ export function PWAInstallPrompt() {
     </>
   );
 }
+

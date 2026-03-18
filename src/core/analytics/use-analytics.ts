@@ -30,3 +30,4 @@ export function useWeightChartData(days = 30) {
     queryFn: () => analyticsService.getWeightChartData(days),
   })
 }
+

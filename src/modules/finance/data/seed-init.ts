@@ -28,3 +28,4 @@ export async function resetFinanceCategories(): Promise<void> {
 
   console.log('[Seed] Finance categories reset and re-initialized');
 }
+

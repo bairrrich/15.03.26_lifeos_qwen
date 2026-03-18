@@ -7,22 +7,22 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/ui/components/dialog';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
+import { Label } from '@/ui/components/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/ui/components/select';
 import { useAppStore } from '@/shared/hooks/use-app-store';
 import { Plus, DollarSign, Target, BookOpen, Utensils, Dumbbell } from 'lucide-react';
 import { toast } from 'sonner';
-import { TouchButton, useIsMobile } from '@/components/ui/touch-targets';
-import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { TouchButton, useIsMobile } from '@/ui/components/touch-targets';
+import { BottomSheet } from '@/ui/components/bottom-sheet';
 
 export function QuickAdd() {
   const [open, setOpen] = useState(false);
@@ -533,3 +533,4 @@ export function QuickAdd() {
     </>
   );
 }
+

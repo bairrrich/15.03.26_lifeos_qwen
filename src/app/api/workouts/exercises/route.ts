@@ -45,3 +45,4 @@ export async function GET(request: NextRequest) {
 
     return paginatedResponse(data || [], page, limit, count || 0);
 }
+

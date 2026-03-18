@@ -24,8 +24,8 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button';
-import { SyncStatus } from '@/components/ui/sync-status';
+import { Button } from '@/ui/components/button';
+import { SyncStatus } from '@/ui/components/sync-status';
 import { signOut, isLocalMode, getLocalUser } from '@/core/auth';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -181,3 +181,4 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     </aside>
   );
 }
+

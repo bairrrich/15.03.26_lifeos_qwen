@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card'
+import { Button } from '@/ui/components/button'
+import { Input } from '@/ui/components/input'
+import { Label } from '@/ui/components/label'
+import { Badge } from '@/ui/components/badge'
 import {
   Dialog,
   DialogContent,
@@ -14,9 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/ui/components/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs'
+import { Textarea } from '@/ui/components/textarea'
 import { useWidgetDefinitions, useVisibleWidgets, useCreateWidgetInstance, useCreateCustomWidget } from '@/modules/widgets/hooks'
 import { getCurrentUserId } from '@/shared/hooks/use-user-id'
 import { Plus, LayoutGrid, Code, Settings, Trash2, EyeOff } from 'lucide-react'
@@ -313,3 +313,4 @@ return { glasses: waterLogs.length };`}
     </div>
   )
 }
+

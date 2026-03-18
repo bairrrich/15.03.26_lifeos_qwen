@@ -46,3 +46,4 @@ export interface SupplementLog extends BaseEntity {
   time_taken?: number;
   notes?: string;
 }
+
