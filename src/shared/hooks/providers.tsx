@@ -6,6 +6,7 @@ import { useState, type ReactNode, useEffect } from 'react';
 import { syncService } from '@/core/sync';
 import { MigrationPrompt } from '@/ui/components/migration-prompt';
 import { AuthProvider } from '@/core/auth/auth-context';
+import { ThemeProvider } from './theme-provider';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -38,6 +39,7 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <AuthProvider>
+      <ThemeProvider />
       <QueryClientProvider client={queryClient}>
         {children}
         <MigrationPrompt />

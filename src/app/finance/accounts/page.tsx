@@ -27,6 +27,7 @@ import { initializeFinanceAccounts, resetFinanceAccounts } from '@/modules/finan
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { EmptyState } from '@/ui/components/empty-state';
 import { PageTransition } from '@/ui/components/page-transition';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,6 +64,7 @@ export default function AccountsPage() {
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
   const deleteAccount = useDeleteAccount();
+  const queryClient = useQueryClient();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<{ id: string; name: string; balance: number; type: string; currency?: string } | null>(null);
@@ -73,9 +75,11 @@ export default function AccountsPage() {
   // Инициализация счетов по умолчанию
   useEffect(() => {
     if (!isLoading && accounts.length === 0) {
-      initializeFinanceAccounts();
+      initializeFinanceAccounts().then(() => {
+        queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      });
     }
-  }, [isLoading, accounts.length]);
+  }, [isLoading, accounts.length, queryClient]);
 
   const handleResetAccounts = () => {
     setShowResetConfirm(true);
@@ -176,272 +180,272 @@ export default function AccountsPage() {
 
   return (
     <PageTransition>
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="destructive" size="sm" onClick={handleResetAccounts}>
-          <RotateCcw className="h-4 w-4 mr-2" />
-          <span>Сбросить</span>
-        </Button>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setEditingAccount(null)}>
-              <Plus className="mr-2 h-4 w-4" />
-              <span>Добавить счёт</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>{editingAccount ? 'Редактировать счёт' : 'Новый счёт'}</DialogTitle>
-                <DialogDescription>Добавьте новый финансовый счёт</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Название</Label>
-                  <Input
-                    name="name"
-                    defaultValue={editingAccount?.name || ''}
-                    placeholder="Например: Основной счёт"
-                    required
-                  />
+      <div className="space-y-6">
+        <div className="flex flex-wrap gap-2 justify-end">
+          <Button variant="destructive" size="sm" onClick={handleResetAccounts}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            <span>Сбросить</span>
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setEditingAccount(null)}>
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Добавить счёт</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <DialogHeader>
+                  <DialogTitle>{editingAccount ? 'Редактировать счёт' : 'Новый счёт'}</DialogTitle>
+                  <DialogDescription>Добавьте новый финансовый счёт</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Название</Label>
+                    <Input
+                      name="name"
+                      defaultValue={editingAccount?.name || ''}
+                      placeholder="Например: Основной счёт"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="type">Тип</Label>
+                    <select
+                      name="type"
+                      defaultValue={editingAccount?.type || 'bank'}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="cash">Наличные</option>
+                      <option value="bank">Банковский счёт</option>
+                      <option value="card">Карта</option>
+                      <option value="investment">Инвестиции</option>
+                      <option value="savings">Вклад</option>
+                      <option value="crypto">Криптовалюта</option>
+                      <option value="other">Другое</option>
+                    </select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="balance">Баланс</Label>
+                    <Input
+                      name="balance"
+                      type="number"
+                      step="0.01"
+                      defaultValue={editingAccount?.balance || 0}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="currency">Валюта</Label>
+                    <select
+                      name="currency"
+                      defaultValue={editingAccount?.currency || 'RUB'}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="RUB">RUB</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="type">Тип</Label>
-                  <select
-                    name="type"
-                    defaultValue={editingAccount?.type || 'bank'}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="cash">Наличные</option>
-                    <option value="bank">Банковский счёт</option>
-                    <option value="card">Карта</option>
-                    <option value="investment">Инвестиции</option>
-                    <option value="savings">Вклад</option>
-                    <option value="crypto">Криптовалюта</option>
-                    <option value="other">Другое</option>
-                  </select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="balance">Баланс</Label>
-                  <Input
-                    name="balance"
-                    type="number"
-                    step="0.01"
-                    defaultValue={editingAccount?.balance || 0}
-                    required
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="currency">Валюта</Label>
-                  <select
-                    name="currency"
-                    defaultValue={editingAccount?.currency || 'RUB'}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="RUB">RUB</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                  </select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); setEditingAccount(null); }}>
-                  Отмена
-                </Button>
-                <Button type="submit">{editingAccount ? 'Сохранить' : 'Создать'}</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Summary */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Общий баланс</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalBalance.toLocaleString()} ₽</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Активные счета</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeAccounts.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Архивировано</CardTitle>
-            <Archive className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{archivedAccounts.length}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Active Accounts */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Активные счета</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {activeAccounts.length === 0 ? (
-            <EmptyState
-              icon={Banknote}
-              title="Нет активных счетов"
-              description="Создайте свой первый счёт для управления финансами"
-              actionLabel="Добавить счёт"
-              onAction={() => setDialogOpen(true)}
-            />
-          ) : (
-            activeAccounts.map((account) => {
-              const Icon = typeIcons[account.type] || Wallet;
-              return (
-                <Card key={account.id}>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                          <Icon className="h-5 w-5 text-primary shrink-0" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-base">{account.name}</CardTitle>
-                          <CardDescription>{typeLabels[account.type]}</CardDescription>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold">
-                        {account.balance.toLocaleString()} {account.currency}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => handleEdit(account)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => handleArchive(account)}
-                        >
-                          <Archive className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive"
-                          onClick={() => handleDeleteClick(account.id, account.name)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); setEditingAccount(null); }}>
+                    Отмена
+                  </Button>
+                  <Button type="submit">{editingAccount ? 'Сохранить' : 'Создать'}</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
-      </div>
 
-      {/* Archived Accounts */}
-      {archivedAccounts.length > 0 && (
+        {/* Summary */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Общий баланс</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalBalance.toLocaleString()} ₽</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Активные счета</CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{activeAccounts.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Архивировано</CardTitle>
+              <Archive className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{archivedAccounts.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Active Accounts */}
         <div>
-          <h2 className="text-lg font-semibold mb-4">Архивированные счета</h2>
+          <h2 className="text-lg font-semibold mb-4">Активные счета</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {archivedAccounts.map((account) => {
-              const Icon = typeIcons[account.type] || Wallet;
-              return (
-                <Card key={account.id} className="opacity-60">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
+            {activeAccounts.length === 0 ? (
+              <EmptyState
+                icon={Banknote}
+                title="Нет активных счетов"
+                description="Создайте свой первый счёт для управления финансами"
+                actionLabel="Добавить счёт"
+                onAction={() => setDialogOpen(true)}
+              />
+            ) : (
+              activeAccounts.map((account) => {
+                const Icon = typeIcons[account.type] || Wallet;
+                return (
+                  <Card key={account.id}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                            <Icon className="h-5 w-5 text-primary shrink-0" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-base">{account.name}</CardTitle>
+                            <CardDescription>{typeLabels[account.type]}</CardDescription>
+                          </div>
                         </div>
-                        <div>
-                          <CardTitle className="text-base">{account.name}</CardTitle>
-                          <CardDescription>{typeLabels[account.type]}</CardDescription>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <div className="text-2xl font-bold">
+                          {account.balance.toLocaleString()} {account.currency}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => handleEdit(account)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => handleArchive(account)}
+                          >
+                            <Archive className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-destructive"
+                            onClick={() => handleDeleteClick(account.id, account.name)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold">
-                        {account.balance.toLocaleString()} {account.currency}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => handleArchive(account)}
-                        >
-                          <Wallet className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive"
-                          onClick={() => handleDeleteClick(account.id, account.name)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
           </div>
         </div>
-      )}
 
-      {/* Диалог подтверждения удаления счёта */}
-      <AlertDialog open={!!deleteAccountId} onOpenChange={() => setDeleteAccountId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Удаление счёта</AlertDialogTitle>
-            <AlertDialogDescription>
-              Вы уверены, что хотите удалить счёт "{deleteAccountName}"?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* Archived Accounts */}
+        {archivedAccounts.length > 0 && (
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Архивированные счета</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {archivedAccounts.map((account) => {
+                const Icon = typeIcons[account.type] || Wallet;
+                return (
+                  <Card key={account.id} className="opacity-60">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                            <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-base">{account.name}</CardTitle>
+                            <CardDescription>{typeLabels[account.type]}</CardDescription>
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <div className="text-2xl font-bold">
+                          {account.balance.toLocaleString()} {account.currency}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => handleArchive(account)}
+                          >
+                            <Wallet className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-destructive"
+                            onClick={() => handleDeleteClick(account.id, account.name)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-      {/* Диалог подтверждения сброса счетов */}
-      <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Сброс счетов</AlertDialogTitle>
-            <AlertDialogDescription>
-              Это УДАЛИТ ВСЕ счета и создаст их заново со стандартными счетами по умолчанию. Продолжить?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmResetAccounts}>Продолжить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        {/* Диалог подтверждения удаления счёта */}
+        <AlertDialog open={!!deleteAccountId} onOpenChange={() => setDeleteAccountId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Удаление счёта</AlertDialogTitle>
+              <AlertDialogDescription>
+                Вы уверены, что хотите удалить счёт "{deleteAccountName}"?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>Удалить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Диалог подтверждения сброса счетов */}
+        <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Сброс счетов</AlertDialogTitle>
+              <AlertDialogDescription>
+                Это УДАЛИТ ВСЕ счета и создаст их заново со стандартными счетами по умолчанию. Продолжить?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmResetAccounts}>Продолжить</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </PageTransition>
   );
 }

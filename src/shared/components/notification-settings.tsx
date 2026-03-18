@@ -22,15 +22,7 @@ interface NotificationSettings {
 }
 
 export function NotificationSettingsCard() {
-  const {
-    isSupported,
-    permission,
-    requestPermission,
-    sendNotification,
-    sendHabitReminder,
-    sendWorkoutReminder,
-    sendWaterReminder,
-  } = useNotification();
+  const { isSupported, permission, requestPermission } = useNotification();
 
   const [settings, setSettings] = useState<NotificationSettings>(() => {
     if (typeof window !== 'undefined') {
@@ -50,8 +42,6 @@ export function NotificationSettingsCard() {
     };
   });
 
-  const [isTesting, setIsTesting] = useState(false);
-
   const saveSettings = (newSettings: NotificationSettings) => {
     setSettings(newSettings);
     localStorage.setItem('notification-settings', JSON.stringify(newSettings));
@@ -61,38 +51,6 @@ export function NotificationSettingsCard() {
     const newSettings = { ...settings, [key]: value };
     saveSettings(newSettings);
     toast.success('Настройки сохранены');
-  };
-
-  const handleTestNotification = async () => {
-    setIsTesting(true);
-    const granted = await requestPermission();
-
-    if (granted) {
-      await sendNotification(
-        '🔔 Тест уведомления LifeOS',
-        'Уведомления работают корректно!',
-        '/icons/icon-192x192.png'
-      );
-      toast.success('Тестовое уведомление отправлено');
-    } else {
-      toast.error('Разрешение на уведомления не получено');
-    }
-    setIsTesting(false);
-  };
-
-  const handleTestHabit = async () => {
-    await sendHabitReminder('Чтение книг');
-    toast.success('Тест: напоминание о привычке');
-  };
-
-  const handleTestWorkout = async () => {
-    await sendWorkoutReminder('День ног');
-    toast.success('Тест: напоминание о тренировке');
-  };
-
-  const handleTestWater = async () => {
-    await sendWaterReminder();
-    toast.success('Тест: напоминание о воде');
   };
 
   if (!isSupported) {
@@ -141,65 +99,34 @@ export function NotificationSettingsCard() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Тестовые уведомления */}
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Тест уведомлений</Label>
-            <p className="text-sm text-muted-foreground">Отправить тестовое уведомление</p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={handleTestNotification}
-            disabled={isTesting || !permission.granted}
-          >
-            <Bell className="h-4 w-4 mr-2" />
-            Тест
-          </Button>
-        </div>
-
-        <Separator />
 
         {/* Привычки */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-blue-500" />
-              <div>
-                <Label>Привычки</Label>
-                <p className="text-sm text-muted-foreground">Напоминания о привычках</p>
-              </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Target className="h-4 w-4 text-blue-500" />
+            <div>
+              <Label>Привычки</Label>
+              <p className="text-sm text-muted-foreground">Напоминания о привычках</p>
             </div>
-            <Switch checked={settings.habits} onCheckedChange={(v) => handleToggle('habits', v)} />
           </div>
-          {settings.habits && permission.granted && (
-            <Button variant="outline" size="sm" onClick={handleTestHabit}>
-              Тест привычки
-            </Button>
-          )}
+          <Switch checked={settings.habits} onCheckedChange={(v) => handleToggle('habits', v)} />
         </div>
 
         <Separator />
 
         {/* Тренировки */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-500" />
-              <div>
-                <Label>Тренировки</Label>
-                <p className="text-sm text-muted-foreground">Напоминания о тренировках</p>
-              </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-purple-500" />
+            <div>
+              <Label>Тренировки</Label>
+              <p className="text-sm text-muted-foreground">Напоминания о тренировках</p>
             </div>
-            <Switch
-              checked={settings.workouts}
-              onCheckedChange={(v) => handleToggle('workouts', v)}
-            />
           </div>
-          {settings.workouts && permission.granted && (
-            <Button variant="outline" size="sm" onClick={handleTestWorkout}>
-              Тест тренировки
-            </Button>
-          )}
+          <Switch
+            checked={settings.workouts}
+            onCheckedChange={(v) => handleToggle('workouts', v)}
+          />
         </div>
 
         <Separator />
@@ -217,28 +144,21 @@ export function NotificationSettingsCard() {
             <Switch checked={settings.water} onCheckedChange={(v) => handleToggle('water', v)} />
           </div>
           {settings.water && (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="water-interval" className="text-sm">
-                  Интервал (мин):
-                </Label>
-                <Input
-                  id="water-interval"
-                  type="number"
-                  min="15"
-                  max="240"
-                  value={settings.waterInterval}
-                  onChange={(e) =>
-                    saveSettings({ ...settings, waterInterval: Number(e.target.value) })
-                  }
-                  className="w-20"
-                />
-              </div>
-              {permission.granted && (
-                <Button variant="outline" size="sm" onClick={handleTestWater}>
-                  Тест воды
-                </Button>
-              )}
+            <div className="flex items-center gap-2">
+              <Label htmlFor="water-interval" className="text-sm">
+                Интервал (мин):
+              </Label>
+              <Input
+                id="water-interval"
+                type="number"
+                min="15"
+                max="240"
+                value={settings.waterInterval}
+                onChange={(e) =>
+                  saveSettings({ ...settings, waterInterval: Number(e.target.value) })
+                }
+                className="w-20"
+              />
             </div>
           )}
         </div>

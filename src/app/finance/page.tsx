@@ -28,7 +28,9 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { initializeFinanceCategories } from '@/modules/finance/data/seed-init';
+import { initializeFinanceAccounts } from '@/modules/finance/data/accounts-seed-init';
 import { getCurrentUserId } from '@/shared/hooks/use-user-id';
 import { Tabs, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import { VirtualizedTable } from '@/ui/components/virtualized-table';
@@ -75,15 +77,29 @@ export default function FinancePage() {
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
   const deleteTransaction = useDeleteTransaction();
+  const queryClient = useQueryClient();
 
   // Инициализация seed-категорий (только один раз)
   useEffect(() => {
     const hasInitialized = sessionStorage.getItem('finance_categories_init');
     if (categories.length === 0 && !hasInitialized) {
       sessionStorage.setItem('finance_categories_init', 'true');
-      initializeFinanceCategories();
+      initializeFinanceCategories().then(() => {
+        queryClient.invalidateQueries({ queryKey: ['categories'] });
+      });
     }
-  }, []); // Пустой массив зависимостей - запускается только один раз при монтировании
+  }, [queryClient]); // Добавляем queryClient в зависимости
+
+  // Инициализация seed-счетов (только один раз)
+  useEffect(() => {
+    const hasInitialized = sessionStorage.getItem('finance_accounts_init');
+    if (accounts.length === 0 && !hasInitialized) {
+      sessionStorage.setItem('finance_accounts_init', 'true');
+      initializeFinanceAccounts().then(() => {
+        queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      });
+    }
+  }, [queryClient]); // Добавляем queryClient в зависимости
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfer'>('all');
@@ -337,13 +353,20 @@ export default function FinancePage() {
                       onChange={(e) => setSelectedAccountId(e.target.value)}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       required
+                      disabled={accounts.length === 0}
                     >
-                      <option value="">Выберите счёт</option>
-                      {accounts.map((account) => (
-                        <option key={account.id} value={account.id}>
-                          {account.name} ({account.balance} {account.currency})
-                        </option>
-                      ))}
+                      {accounts.length === 0 ? (
+                        <option value="">Загрузка счетов...</option>
+                      ) : (
+                        <>
+                          <option value="">Выберите счёт</option>
+                          {accounts.map((account) => (
+                            <option key={account.id} value={account.id}>
+                              {account.name} ({account.balance} {account.currency})
+                            </option>
+                          ))}
+                        </>
+                      )}
                     </select>
                   </div>
 
@@ -355,13 +378,20 @@ export default function FinancePage() {
                         defaultValue={editingTransaction?.transfer_to_account_id}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         required
+                        disabled={accounts.length === 0}
                       >
-                        <option value="">Выберите счёт</option>
-                        {accounts.map((account) => (
-                          <option key={account.id} value={account.id}>
-                            {account.name} ({account.balance} {account.currency})
-                          </option>
-                        ))}
+                        {accounts.length === 0 ? (
+                          <option value="">Загрузка счетов...</option>
+                        ) : (
+                          <>
+                            <option value="">Выберите счёт</option>
+                            {accounts.map((account) => (
+                              <option key={account.id} value={account.id}>
+                                {account.name} ({account.balance} {account.currency})
+                              </option>
+                            ))}
+                          </>
+                        )}
                       </select>
                     </div>
                   ) : (
@@ -373,27 +403,34 @@ export default function FinancePage() {
                           defaultValue={editingTransaction?.category_id}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                           required={selectedType !== ('transfer' as 'income' | 'expense' | 'transfer')}
+                          disabled={categories.length === 0}
                         >
-                          <option value="">Выберите категорию</option>
-                          {categories
-                            .filter((c) => !c.parent_id && c.type === selectedType)
-                            .map((rootCategory) => {
-                              const children = categories.filter(
-                                (c) => c.parent_id === rootCategory.id && c.type === selectedType
-                              );
-                              return [
-                                // Родительская категория
-                                <option key={rootCategory.id} value={rootCategory.id}>
-                                  {rootCategory.name}
-                                </option>,
-                                // Подкатегории с отступом
-                                ...children.map((child) => (
-                                  <option key={child.id} value={child.id}>
-                                    {'\u00A0\u00A0'}└─ {child.name}
-                                  </option>
-                                ))
-                              ];
-                            })}
+                          {categories.length === 0 ? (
+                            <option value="">Загрузка категорий...</option>
+                          ) : (
+                            <>
+                              <option value="">Выберите категорию</option>
+                              {categories
+                                .filter((c) => !c.parent_id && c.type === selectedType)
+                                .map((rootCategory) => {
+                                  const children = categories.filter(
+                                    (c) => c.parent_id === rootCategory.id && c.type === selectedType
+                                  );
+                                  return [
+                                    // Родительская категория
+                                    <option key={rootCategory.id} value={rootCategory.id}>
+                                      {rootCategory.name}
+                                    </option>,
+                                    // Подкатегории с отступом
+                                    ...children.map((child) => (
+                                      <option key={child.id} value={child.id}>
+                                        {'\u00A0\u00A0'}└─ {child.name}
+                                      </option>
+                                    ))
+                                  ];
+                                })}
+                            </>
+                          )}
                         </select>
                       </div>
                       <div className="grid gap-2">
